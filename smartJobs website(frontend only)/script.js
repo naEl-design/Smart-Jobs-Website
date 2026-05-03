@@ -646,6 +646,52 @@ function updateCharCount(textarea, counterId, max) {
 }
 
 function applyNow(id) {
+  // ── AUTH GATE ──────────────────────────────────────────────
+  if (!getUser()) {
+    // Show a styled sign-in prompt modal
+    document.getElementById('signin-prompt-modal')?.remove();
+    const prompt = document.createElement('div');
+    prompt.id = 'signin-prompt-modal';
+    prompt.style.cssText = `
+      position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;
+      background:rgba(15,10,58,0.55);backdrop-filter:blur(6px);animation:fadeIn .2s ease;
+    `;
+    prompt.innerHTML = `
+      <div style="background:white;border-radius:20px;padding:40px 36px;max-width:400px;width:90%;
+                  text-align:center;box-shadow:0 24px 60px rgba(59,47,201,.18);animation:popIn .3s cubic-bezier(.34,1.56,.64,1);">
+        <div style="width:62px;height:62px;border-radius:50%;background:linear-gradient(135deg,#3b2fc9,#6d51f7);
+                    display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+          <i class="fas fa-lock" style="color:white;font-size:1.5rem;"></i>
+        </div>
+        <h2 style="font-size:1.35rem;font-weight:800;color:#111827;margin:0 0 10px;">Sign in to apply</h2>
+        <p style="color:#6b7280;font-size:.93rem;margin:0 0 26px;line-height:1.55;">
+          You need an account to apply for jobs.<br>It's free and takes less than a minute!
+        </p>
+        <a href="auth.html" style="display:block;background:linear-gradient(135deg,#3b2fc9,#6d51f7);
+                color:white;padding:13px 24px;border-radius:12px;font-weight:700;font-size:.95rem;
+                text-decoration:none;margin-bottom:12px;transition:opacity .2s;"
+           onmouseover="this.style.opacity='.88'" onmouseout="this.style.opacity='1'">
+          <i class="fas fa-sign-in-alt" style="margin-right:8px;"></i>Sign In
+        </a>
+        <button onclick="document.getElementById('signin-prompt-modal').remove();document.body.style.overflow='';"
+                style="width:100%;padding:11px;border:1.5px solid #e5e7eb;border-radius:12px;
+                       background:white;color:#6b7280;font-weight:600;font-size:.9rem;cursor:pointer;
+                       transition:border-color .2s;" onmouseover="this.style.borderColor='#3b2fc9';this.style.color='#3b2fc9'"
+                onmouseout="this.style.borderColor='#e5e7eb';this.style.color='#6b7280'">
+          Maybe later
+        </button>
+      </div>
+    `;
+    document.body.appendChild(prompt);
+    document.body.style.overflow = 'hidden';
+    prompt.addEventListener('click', e => {
+      if (e.target === prompt) { prompt.remove(); document.body.style.overflow = ''; }
+    });
+    showToast('Please sign in to apply for jobs', 'error', 'fas fa-lock', 3000);
+    return;
+  }
+  // ── END AUTH GATE ──────────────────────────────────────────
+
   const jobs = getJobs();
   const job = jobs.find(j => j.id === id);
   if (!job) return;
@@ -907,6 +953,11 @@ function submitModalApplication(jobId, title, company) {
 }
 
 function submitApplication(jobId, title, company) {
+  if (!getUser()) {
+    showToast('Please sign in to submit an application', 'error', 'fas fa-lock', 3000);
+    setTimeout(() => { window.location.href = 'auth.html'; }, 1200);
+    return;
+  }
   const nameEl     = document.getElementById(`apply-name-${jobId}`);
   const emailEl    = document.getElementById(`apply-email-${jobId}`);
   const phoneEl    = document.getElementById(`apply-phone-${jobId}`);
@@ -1479,10 +1530,13 @@ function handleLogin(e) {
   setTimeout(() => {
     const user = { name: authRole === 'Admin' ? 'Admin User' : email.split('@')[0], email, role: authRole };
     if (authRole === 'Admin') {
-      if (!email.toLowerCase().includes('admin') && pass !== 'admin123') {
+      if (pass !== 'admin123') {
         btn.classList.remove('loading');
         btn.textContent = `Sign In as ${authRole}`;
-        showToast('Invalid admin credentials.', 'error', 'fas fa-lock', 4000);
+        alert('only for admin');
+        showToast('Access denied. Admin credentials required.', 'error', 'fas fa-lock', 4000);
+        document.getElementById('auth-password').value = '';
+        document.getElementById('auth-password').focus();
         return;
       }
       setUser(user);
@@ -1646,4 +1700,3 @@ document.addEventListener('DOMContentLoaded', () => {
   initImageScrollReveal();
   initParallax();
 });
-
