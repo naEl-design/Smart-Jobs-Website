@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In | smartJobs Rwanda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-brand">
+      <a href="home.html" class="logo logo-glitch" data-text="smartJobs">smart<span>Jobs</span></a>
+      <p id="auth-msg">Welcome back! Sign in to continue.</p>
+    </div>
+
+    <div class="role-tabs">
+      <button class="role-tab active" data-role="Job Seeker" onclick="setAuthRole('Job Seeker')">Job Seeker</button>
+      <button class="role-tab" data-role="Employer"   onclick="setAuthRole('Employer')">Employer</button>
+      <button class="role-tab" data-role="Admin"      onclick="setAuthRole('Admin')">Admin</button>
+    </div>
+
+    <form onsubmit="handleLogin(event)">
+      <label class="auth-label">Email Address</label>
+      <input class="auth-input" type="email" id="auth-email" placeholder="you@email.com" required>
+
+      <label class="auth-label">Password</label>
+      <div class="pass-wrapper">
+        <input class="auth-input" type="password" id="auth-password" placeholder="••••••••" required style="padding-right:44px">
+        <i class="fas fa-eye pass-toggle" onclick="togglePassword('auth-password', this)"></i>
+      </div>
+
+      <div class="auth-extras">
+        <label><input type="checkbox"> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="btn-auth" id="auth-submit-btn">Sign In as Job Seeker</button>
+    </form>
+
+    <div class="divider-row">or continue with</div>
+    <div class="social-row">
+      <button class="btn-social" onclick="googleLogin()">
+        <i class="fab fa-google" style="color:#EA4335"></i> Google
+      </button>
+      <button class="btn-social">
+        <i class="fab fa-linkedin" style="color:#0A66C2"></i> LinkedIn
+      </button>
+    </div>
+
+    <p class="auth-foot">New here? <a href="#" onclick="showRegister()">Create an account</a></p>
+  </div>
+</div>
+
+<script src="script.js"></script>
+<script>
+function googleLogin() {
+  const user = { name: 'Google User', email: 'user@gmail.com', role: authRole };
+  setUser(user);
+  if (authRole === 'Admin' || authRole === 'Employer') window.location.href = 'admin.html';
+  else window.location.href = 'home.html';
+}
+function showRegister() {
+  window.location.href = 'auth.html#register';
+  alert('Registration flow coming soon! For now, just sign in.');
+}
+</script>
+<script src="animations.js"></script>
+</body>
+</html>
