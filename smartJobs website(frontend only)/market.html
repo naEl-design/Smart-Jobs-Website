@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salary Guide | smartJobs Rwanda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-content">
+    <div class="nav-left">
+      <a href="home.html" class="logo logo-glitch" data-text="smartJobs">smart<span>Jobs</span></a>
+      <ul class="main-menu">
+        <li><a href="home.html">Find Jobs</a></li>
+        <li><a href="employer-hub.html">Employer Hub</a></li>
+        <li><a href="market.html" class="active">Salaries</a></li>
+      </ul>
+    </div>
+    <div class="nav-right" id="dynamic-auth">
+      <a href="post-job.html" class="nav-btn-ghost">Post a Job</a>
+      <div class="nav-divider"></div>
+      <a href="auth.html" class="nav-btn-primary">Sign In</a>
+      <button class="nav-hamburger" onclick="openMobileNav()" aria-label="Open menu">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Nav Drawer -->
+<div class="mobile-nav-drawer" id="mobile-nav">
+  <div class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
+  <div class="mobile-nav-panel">
+    <div class="mobile-nav-close"><button onclick="closeMobileNav()"><i class="fas fa-times"></i></button></div>
+    <ul class="mobile-nav-links">
+      <li><a href="home.html"><i class="fas fa-briefcase"></i> Find Jobs</a></li>
+      <li><a href="employer-hub.html"><i class="fas fa-building"></i> Employer Hub</a></li>
+      <li><a href="market.html" class="active"><i class="fas fa-chart-bar"></i> Salaries</a></li>
+    </ul>
+    <div class="mobile-nav-divider"></div>
+    <div class="mobile-nav-actions">
+      <a href="post-job.html" class="ghost">Post a Job</a>
+      <a href="auth.html" class="primary">Sign In</a>
+    </div>
+  </div>
+</div>
+
+<header class="hero-blue">
+  <div class="container">
+    <h1>Discover your earning potential</h1>
+    <p>Explore salaries and high-paying careers across Rwanda</p>
+    <div class="search-container">
+      <input type="text" class="search-input" placeholder="Job title, e.g. Software Engineer">
+      <input type="text" class="search-input" value="Rwanda" style="max-width:160px">
+      <button class="search-btn" style="padding:0 30px;height:54px;">Search</button>
+    </div>
+  </div>
+</header>
+
+<section class="container" style="padding:60px 24px;">
+
+  <!-- Photo banner -->
+  <div class="market-photo-banner">
+    <img src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="Professionals working in Rwanda">
+    <div class="market-photo-banner-overlay">
+      <div class="market-photo-banner-text">
+        <h3>Know your worth before you negotiate</h3>
+        <p>Real salary data from 500+ companies across Rwanda</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="section-title">Top paying jobs by industry</h2>
+  <div class="card-grid">
+    <div class="salary-card" onclick="goToJobs('technology','Software Engineer')" style="cursor:pointer;">
+      <span class="badge badge-blue" style="margin-bottom:10px;">Technology</span>
+      <h4>Software Engineer</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>MTN Rwanda &bull; Airtel Rwanda</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 1,500,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>42 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('finance','Accountant')" style="cursor:pointer;">
+      <span class="badge badge-amber" style="margin-bottom:10px;">Finance</span>
+      <h4>Accountant</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>Bank of Kigali &bull; I&M Bank</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 800,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>28 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('technology','Data Analyst')" style="cursor:pointer;">
+      <span class="badge badge-blue" style="margin-bottom:10px;">Technology</span>
+      <h4>Data Analyst</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>Rwanda Revenue &bull; RDB</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 1,100,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>17 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('finance','Bank Manager')" style="cursor:pointer;">
+      <span class="badge badge-amber" style="margin-bottom:10px;">Finance</span>
+      <h4>Bank Manager</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>National Bank Rwanda &bull; BK</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 1,800,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>9 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('healthcare','Medical Doctor')" style="cursor:pointer;">
+      <span class="badge badge-green" style="margin-bottom:10px;">Healthcare</span>
+      <h4>Medical Doctor</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>CHUK Hospital &bull; MOH Rwanda</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 2,000,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>31 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('technology','Sales Manager')" style="cursor:pointer;">
+      <span class="badge badge-blue" style="margin-bottom:10px;">Technology</span>
+      <h4>Sales Manager</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>Bralirwa &bull; Inyange Industries</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 750,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>22 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('education','University Lecturer')" style="cursor:pointer;">
+      <span class="badge badge-green" style="margin-bottom:10px;">Education</span>
+      <h4>University Lecturer</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>University of Rwanda &bull; FAWE</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 900,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>14 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('energy','Solar Engineer')" style="cursor:pointer;">
+      <span class="badge badge-amber" style="margin-bottom:10px;">Energy</span>
+      <h4>Solar Engineer</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>Ignite Power &bull; REG Rwanda</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 950,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>11 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+    <div class="salary-card" onclick="goToJobs('agriculture','Agronomist')" style="cursor:pointer;">
+      <span class="badge badge-green" style="margin-bottom:10px;">Agriculture</span>
+      <h4>Agronomist</h4>
+      <p style="color:var(--muted);font-size:.82rem;margin:4px 0 2px;"><i class="fas fa-building" style="margin-right:4px;"></i>RAB &bull; MINAGRI Rwanda</p>
+      <p style="color:var(--indigo);font-weight:800;font-size:1.15rem;margin:8px 0;">RWF 600,000<span style="font-size:.8rem;color:var(--muted);font-weight:500;"> /month</span></p>
+      <div class="card-footer"><span>19 openings</span><i class="fas fa-chevron-right"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- MORPHING BLOB PHOTO SECTION -->
+<section class="morph-photo-section">
+  <div class="container">
+    <div class="morph-photo-inner">
+      <div class="morph-photo-wrap reveal-on-scroll">
+        <div class="morph-photo-blob">
+          <img src="https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=700" alt="Professionals negotiating">
+        </div>
+        <div class="morph-photo-ring"></div>
+        <div class="morph-photo-accent">
+          <img src="https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=300" alt="Tech worker">
+        </div>
+      </div>
+      <div class="morph-photo-text reveal-on-scroll" data-delay="2">
+        <span class="badge badge-emerald" style="background:var(--emerald-light);color:#065f46;margin-bottom:16px;">Salary Intelligence</span>
+        <h2>Negotiate with<br>confidence</h2>
+        <p>Real salary data collected from hundreds of companies across Rwanda means you'll never leave money on the table again.</p>
+        <ul class="morph-photo-list">
+          <li><i class="fas fa-check"></i> Updated monthly from verified employers</li>
+          <li><i class="fas fa-check"></i> Broken down by industry, location & experience</li>
+          <li><i class="fas fa-check"></i> Covers 50+ job roles across all sectors</li>
+          <li><i class="fas fa-check"></i> Compare your offer before you accept</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PARALLAX BANNER -->
+<div class="parallax-banner">
+  <img class="parallax-banner-img" src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Rwanda professionals">
+  <div class="parallax-banner-overlay">
+    <div class="parallax-banner-text">
+      <h2>Rwanda's #1 job & salary platform</h2>
+      <p>Join thousands of professionals who found their dream roles and negotiated better offers using smartJobs data.</p>
+      <div class="parallax-banner-stats">
+        <div class="parallax-banner-stat"><span class="n" data-count-to="500" data-suffix="+">500+</span><span class="l">Companies tracked</span></div>
+        <div class="parallax-banner-stat"><span class="n" data-count-to="50" data-suffix="+">50+</span><span class="l">Job roles covered</span></div>
+        <div class="parallax-banner-stat"><span class="n" data-count-to="2400" data-suffix="">2.4K</span><span class="l">Hired this month</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="main-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>smartJobs</h4>
+        <ul>
+          <li><a href="home.html">Browse Jobs</a></li>
+          <li><a href="market.html">Salaries</a></li>
+          <li><a href="employer-hub.html">Company Reviews</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>For Employers</h4>
+        <ul>
+          <li><a href="post-job.html">Post a Job</a></li>
+          <li><a href="#">Hiring Solutions</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="#">Help Center</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Use</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 smartJobs Rwanda. All rights reserved.</p>
+      <div class="social-icons">
+        <i class="fab fa-facebook"></i>
+        <i class="fab fa-twitter"></i>
+        <i class="fab fa-linkedin"></i>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script>
+function goToJobs(industry, title) {
+  window.location.href = `home.html?industry=${encodeURIComponent(industry)}&q=${encodeURIComponent(title)}`;
+}
+function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeMobileNav() { document.getElementById('mobile-nav').classList.remove('open'); document.body.style.overflow=''; }
+</script>
