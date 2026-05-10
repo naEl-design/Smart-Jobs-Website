@@ -169,7 +169,38 @@
       .dash-hero-strip { height:120px; }
       .dash-hero-strip-badges { display:none; }
     }
-  </style>
+  
+    /* ── smartJobs Pill Logo ── */
+    .sj-logo-pill {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #3b2fc9, #5a44e8);
+      border-radius: 40px;
+      padding: 7px 18px 7px 8px;
+      text-decoration: none;
+      font-family: 'Sora', 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+      letter-spacing: -.01em;
+      box-shadow: 0 4px 18px rgba(59,47,201,.35);
+      transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s;
+    }
+    .sj-logo-pill:hover {
+      transform: translateY(-2px) scale(1.04);
+      box-shadow: 0 8px 28px rgba(59,47,201,.5);
+    }
+    .sj-icon {
+      width: 32px; height: 32px;
+      background: rgba(255,255,255,.18);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      flex-shrink: 0;
+    }
+    .sj-green { color: #10b981; }
+    .sj-text { display: inline-flex; align-items: center; gap: 3px; }
+
+    </style>
 </head>
 <body>
 <div class="admin-layout">
@@ -177,7 +208,10 @@
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
     <div class="sidebar-brand">
-      <a href="home.html" class="logo logo-glitch" data-text="smartJobs">smart<span style="color:#10b981">Jobs</span></a>
+      <a href="home.html" class="sj-logo-pill">
+  <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
+  <span class="sj-text">smart<span class="sj-green">Jobs</span></span>
+</a>
       <small>Employer Dashboard</small>
     </div>
 

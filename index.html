@@ -8,10 +8,20 @@
     .logo { font-size:2.8rem; font-weight:900; color:white; letter-spacing:-1px; }
     .logo span { color:#10b981; }
     p { color:rgba(255,255,255,.7); font-size:1rem; }
+
+     
+    .sj-logo-pill{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#3b2fc9,#5a44e8);border-radius:40px;padding:5px 14px 5px 6px;text-decoration:none;font-family:'Sora','Plus Jakarta Sans',sans-serif;font-weight:800;font-size:1rem;color:white;letter-spacing:-.01em;box-shadow:0 3px 14px rgba(59,47,201,.32);transition:transform .22s cubic-bezier(.34,1.56,.64,1),box-shadow .22s;white-space:nowrap;flex-shrink:0;}
+    .sj-logo-pill:hover{transform:translateY(-2px) scale(1.04);box-shadow:0 8px 24px rgba(59,47,201,.48);color:white;}
+    .sj-icon{width:28px;height:28px;background:rgba(255,255,255,.18);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;}
+    .sj-text{display:inline-flex;align-items:center;gap:2px;}
+    .sj-green{color:#10b981;}
+    .sj-logo-pill.sj-lg{font-size:1.25rem;padding:8px 20px 8px 9px;gap:10px;}
+    .sj-logo-pill.sj-lg .sj-icon{width:36px;height:36px;border-radius:11px;font-size:1rem;}
   </style>
+</style>
 </head>
 <body>
-  <div class="logo">smart<span>Jobs</span></div>
+  <div class="sj-logo-pill sj-lg" style="cursor:default;"><span class="sj-icon"><i class="fas fa-arrow-up"></i></span><span class="sj-text">smart<span class="sj-green">Jobs</span></span></div>
   <p>Redirecting you…</p>
   <script>
     const user = JSON.parse(localStorage.getItem('currentUser'));
