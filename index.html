@@ -16,7 +16,9 @@
   <script>
     const user = JSON.parse(localStorage.getItem('currentUser'));
     if (user) {
-      window.location.href = user.role === 'Job Seeker' ? 'home.html' : 'admin.html';
+      if (user.role === 'Job Seeker') window.location.href = 'home.html';
+      else if (user.role === 'Employer') window.location.href = 'employer-dashboard.html';
+      else window.location.href = 'admin.html';
     } else {
       window.location.href = 'home.html';
     }

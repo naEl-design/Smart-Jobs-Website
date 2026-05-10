@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CV Builder | smartJobs Rwanda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .builder-container { display: grid; grid-template-columns: 450px 1fr; gap: 0; min-height: 100vh; }
+    .editor-side { background: white; padding: 30px; border-right: 1px solid var(--border); overflow-y: auto; height: 100vh; position: sticky; top: 0; }
+    .preview-side { background: var(--bg-2); padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
+    .cv-paper { width: 210mm; min-height: 297mm; background: white; box-shadow: var(--shadow-lg); padding: 50px; border-top: 8px solid var(--indigo); }
+    .form-section { margin-bottom: 25px; }
+    .form-section h3 { font-size: 0.9rem; text-transform: uppercase; color: var(--indigo); margin-bottom: 15px; border-bottom: 2px solid var(--indigo-light); padding-bottom: 5px; }
+    @media print { .editor-side, .top-nav { display: none; } .preview-side { padding: 0; background: white; } .cv-paper { box-shadow: none; width: 100%; border: none; } }
+  </style>
+</head>
+<body>
+  <div class="builder-container">
+    <aside class="editor-side">
+      <a href="seeker-dashboard.html" style="color: var(--indigo); font-weight: 700;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+      <h2 style="margin: 20px 0;">Professional CV Builder</h2>
+      
+      <div class="form-section">
+        <h3>Contact Info</h3>
+        <input type="text" id="in-name" class="auth-input" placeholder="Full Name" oninput="liveUpdate()">
+        <input type="text" id="in-title" class="auth-input" placeholder="Professional Title (e.g. Agronomist)" oninput="liveUpdate()">
+        <input type="email" id="in-email" class="auth-input" placeholder="Email" oninput="liveUpdate()">
+      </div>
+
+      <div class="form-section">
+        <h3>Professional Summary</h3>
+        <textarea id="in-summary" class="auth-input" style="height: 100px;" placeholder="Describe your expertise..." oninput="liveUpdate()"></textarea>
+      </div>
+
+      <button class="btn-auth" onclick="window.print()"><i class="fas fa-print"></i> Download PDF</button>
+    </aside>
+
+    <main class="preview-side">
+      <div class="cv-paper" id="cv-content">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h1 id="out-name" style="font-size: 2.5rem; color: var(--text);">John Doe</h1>
+            <p id="out-title" style="font-size: 1.1rem; color: var(--indigo); font-weight: 700;">Software Developer</p>
+          </div>
+          <div style="text-align: right; font-size: 0.9rem; color: var(--muted);">
+            <p id="out-email">user@smartjobs.rw</p>
+            <p>Kigali, Rwanda</p>
+          </div>
+        </div>
+        <hr style="margin: 20px 0; border: 1px solid var(--border);">
+        <h3 style="color: var(--indigo);">Profile</h3>
+        <p id="out-summary" style="line-height: 1.8; color: var(--text-2);">Expert in building digital solutions...</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function liveUpdate() {
+      document.getElementById('out-name').textContent = document.getElementById('in-name').value || "Your Name";
+      document.getElementById('out-title').textContent = document.getElementById('in-title').value || "Job Title";
+      document.getElementById('out-email').textContent = document.getElementById('in-email').value || "email@example.com";
+      document.getElementById('out-summary').textContent = document.getElementById('in-summary').value || "Professional summary goes here...";
+    }
+
+    // Auto-fill from local storage
+    window.onload = () => {
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      if(user) {
+        document.getElementById('in-name').value = user.name;
+        document.getElementById('in-email').value = user.email;
+        liveUpdate();
+      }
+    };
+  </script>
+</body>
+</html>

@@ -5,67 +5,597 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --indigo: #3b2fc9; --indigo-dark: #2a1fa8; --indigo-light: #ede9ff;
+      --emerald: #10b981; --emerald-dark: #059669;
+      --text: #0f172a; --muted: #64748b; --border: #e2e8f0; --bg: #f8fafc;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: stretch;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* LEFT PANEL */
+    .auth-left {
+      flex: 1;
+      background: linear-gradient(145deg, #0f0a3a 0%, #3b2fc9 55%, #6d51f7 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(16,185,129,.18) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      border-radius: 50%;
+    }
+    .auth-left::after {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,.06) 0%, transparent 70%);
+      bottom: -50px; left: -50px;
+      border-radius: 50%;
+    }
+    .auth-brand-logo {
+      font-family: 'Sora', sans-serif;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 48px;
+      position: relative; z-index: 1;
+    }
+    .auth-brand-logo span { color: #10b981; }
+
+    .auth-tagline {
+      text-align: center;
+      position: relative; z-index: 1;
+      margin-bottom: 52px;
+    }
+    .auth-tagline h2 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 800;
+      color: white;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .auth-tagline p {
+      color: rgba(255,255,255,.65);
+      font-size: .95rem;
+      line-height: 1.6;
+    }
+
+    .auth-stats {
+      display: flex;
+      gap: 28px;
+      position: relative; z-index: 1;
+    }
+    .auth-stat {
+      text-align: center;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 18px 22px;
+      backdrop-filter: blur(10px);
+    }
+    .auth-stat strong {
+      display: block;
+      font-family: 'Sora', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #10b981;
+    }
+    .auth-stat span {
+      font-size: .75rem;
+      color: rgba(255,255,255,.6);
+      font-weight: 500;
+    }
+
+    /* RIGHT PANEL */
+    .auth-right {
+      width: 480px;
+      flex-shrink: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 44px;
+      overflow-y: auto;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 380px;
+    }
+
+    .auth-card-title {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .auth-card-sub {
+      color: var(--muted);
+      font-size: .9rem;
+      margin-bottom: 28px;
+    }
+
+    /* Role tabs */
+    .role-tabs {
+      display: flex;
+      background: var(--bg);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 26px;
+      gap: 3px;
+    }
+    .role-tab {
+      flex: 1;
+      padding: 9px 8px;
+      border: none;
+      background: transparent;
+      border-radius: 9px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .82rem;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s cubic-bezier(.4,0,.2,1);
+    }
+    .role-tab.active {
+      background: white;
+      color: var(--indigo);
+      box-shadow: 0 2px 8px rgba(59,47,201,.12);
+    }
+
+    /* Form fields */
+    .auth-field {
+      margin-bottom: 16px;
+    }
+    .auth-label {
+      display: block;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+      letter-spacing: .01em;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .9rem;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .18s, box-shadow .18s;
+      outline: none;
+    }
+    .auth-input:focus {
+      border-color: var(--indigo);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59,47,201,.1);
+    }
+    .pass-wrapper { position: relative; }
+    .pass-wrapper .auth-input { padding-right: 44px; }
+    .pass-toggle {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: var(--muted);
+      font-size: .9rem;
+      transition: color .18s;
+    }
+    .pass-toggle:hover { color: var(--indigo); }
+
+    .auth-extras {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-size: .82rem;
+    }
+    .auth-extras label { display: flex; align-items: center; gap: 6px; color: var(--muted); cursor: pointer; }
+    .auth-extras input[type="checkbox"] { accent-color: var(--indigo); }
+    .auth-extras a { color: var(--indigo); font-weight: 600; }
+
+    .btn-auth {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, var(--indigo), #6d51f7);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s cubic-bezier(.34,1.56,.64,1);
+      box-shadow: 0 4px 16px rgba(59,47,201,.3);
+      letter-spacing: .01em;
+    }
+    .btn-auth:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(59,47,201,.4);
+    }
+    .btn-auth:disabled { opacity: .7; cursor: not-allowed; }
+
+    .divider-row {
+      text-align: center;
+      margin: 18px 0;
+      color: var(--muted);
+      font-size: .8rem;
+      position: relative;
+    }
+    .divider-row::before, .divider-row::after {
+      content: '';
+      position: absolute;
+      top: 50%; width: 40%;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider-row::before { left: 0; }
+    .divider-row::after { right: 0; }
+
+    .social-row { display: flex; gap: 10px; margin-bottom: 20px; }
+    .btn-social {
+      flex: 1;
+      padding: 11px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: white;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      transition: all .18s;
+    }
+    .btn-social:hover { border-color: #d0d7de; background: var(--bg); transform: translateY(-1px); }
+
+    .auth-foot {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--muted);
+    }
+    .auth-foot a { color: var(--indigo); font-weight: 700; }
+
+    /* Registration form (hidden by default) */
+    #register-panel { display: none; }
+
+    /* Admin badge */
+    .admin-badge {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid #f59e0b;
+      color: #92400e;
+      font-size: .78rem;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      display: none;
+      align-items: center;
+      gap: 7px;
+    }
+    .admin-badge.show { display: flex; }
+
+    /* Toast */
+    #toast-container {
+      position: fixed; bottom: 24px; right: 24px;
+      z-index: 9999; display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      display: flex; align-items: center; gap: 12px;
+      background: #0f172a; color: white;
+      padding: 13px 18px; border-radius: 11px;
+      font-size: .88rem; font-weight: 600;
+      box-shadow: 0 8px 28px rgba(0,0,0,.25);
+      animation: toastIn .35s cubic-bezier(.34,1.56,.64,1) both;
+      min-width: 260px;
+    }
+    .toast.success { background: #065f46; border-left: 4px solid #10b981; }
+    .toast.error   { background: #7f1d1d; border-left: 4px solid #ef4444; }
+    .toast.info    { background: #2a1fa8; border-left: 4px solid #818cf8; }
+    .toast.exiting { animation: toastOut .28s ease forwards; }
+    @keyframes toastIn  { from{opacity:0;transform:translateX(110%)} to{opacity:1;transform:translateX(0)} }
+    @keyframes toastOut { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(110%)} }
+    @keyframes popIn    { from{opacity:0;transform:scale(.88)} to{opacity:1;transform:scale(1)} }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .auth-left { display: none; }
+      .auth-right { width: 100%; padding: 40px 24px; }
+      body { display: block; }
+    }
+  </style>
 </head>
 <body>
-<div class="auth-page">
-  <div class="auth-card">
-    <div class="auth-brand">
-      <a href="home.html" class="logo logo-glitch" data-text="smartJobs">smart<span>Jobs</span></a>
-      <p id="auth-msg">Welcome back! Sign in to continue.</p>
+
+<!-- LEFT BRAND PANEL -->
+<div class="auth-left">
+  <div class="auth-brand-logo">smart<span>Jobs</span></div>
+  <div class="auth-tagline">
+    <h2>Rwanda's #1<br>Career Platform</h2>
+    <p>Connect with top employers, discover<br>great salaries, and land your dream role.</p>
+  </div>
+  <div class="auth-stats">
+    <div class="auth-stat">
+      <strong>18K+</strong>
+      <span>Active Jobs</span>
     </div>
-
-    <div class="role-tabs">
-      <button class="role-tab active" data-role="Job Seeker" onclick="setAuthRole('Job Seeker')">Job Seeker</button>
-      <button class="role-tab" data-role="Employer"   onclick="setAuthRole('Employer')">Employer</button>
-      <button class="role-tab" data-role="Admin"      onclick="setAuthRole('Admin')">Admin</button>
+    <div class="auth-stat">
+      <strong>3.4K+</strong>
+      <span>Companies</span>
     </div>
-
-    <form onsubmit="handleLogin(event)">
-      <label class="auth-label">Email Address</label>
-      <input class="auth-input" type="email" id="auth-email" placeholder="you@email.com" required>
-
-      <label class="auth-label">Password</label>
-      <div class="pass-wrapper">
-        <input class="auth-input" type="password" id="auth-password" placeholder="••••••••" required style="padding-right:44px">
-        <i class="fas fa-eye pass-toggle" onclick="togglePassword('auth-password', this)"></i>
-      </div>
-
-      <div class="auth-extras">
-        <label><input type="checkbox"> Remember me</label>
-        <a href="#">Forgot password?</a>
-      </div>
-
-      <button type="submit" class="btn-auth" id="auth-submit-btn">Sign In as Job Seeker</button>
-    </form>
-
-    <div class="divider-row">or continue with</div>
-    <div class="social-row">
-      <button class="btn-social" onclick="googleLogin()">
-        <i class="fab fa-google" style="color:#EA4335"></i> Google
-      </button>
-      <button class="btn-social">
-        <i class="fab fa-linkedin" style="color:#0A66C2"></i> LinkedIn
-      </button>
+    <div class="auth-stat">
+      <strong>98%</strong>
+      <span>Satisfaction</span>
     </div>
-
-    <p class="auth-foot">New here? <a href="#" onclick="showRegister()">Create an account</a></p>
   </div>
 </div>
 
-<script src="script.js"></script>
+<!-- RIGHT FORM PANEL -->
+<div class="auth-right">
+  <div class="auth-card">
+
+    <!-- LOGIN PANEL -->
+    <div id="login-panel">
+      <h1 class="auth-card-title">Welcome back 👋</h1>
+      <p class="auth-card-sub" id="auth-msg">Sign in to continue your job search.</p>
+
+      <div class="role-tabs">
+        <button class="role-tab active" data-role="Job Seeker" onclick="setAuthRole('Job Seeker')">Job Seeker</button>
+        <button class="role-tab" data-role="Employer" onclick="setAuthRole('Employer')">Employer</button>
+        <button class="role-tab" data-role="Admin" onclick="setAuthRole('Admin')">Admin</button>
+      </div>
+
+      <div class="admin-badge" id="admin-badge">
+        <i class="fas fa-shield-halved"></i> Admin credentials required — password: admin123
+      </div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="auth-field">
+          <label class="auth-label">Email Address</label>
+          <input class="auth-input" type="email" id="auth-email" placeholder="you@email.com" required autocomplete="email">
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <div class="pass-wrapper">
+            <input class="auth-input" type="password" id="auth-password" placeholder="••••••••" required autocomplete="current-password">
+            <i class="fas fa-eye pass-toggle" id="pass-toggle-icon" onclick="togglePassword('auth-password', this)"></i>
+          </div>
+        </div>
+
+        <div class="auth-extras">
+          <label><input type="checkbox" id="remember-me"> Remember me</label>
+          <a href="#">Forgot password?</a>
+        </div>
+
+        <button type="submit" class="btn-auth" id="auth-submit-btn">Sign In as Job Seeker</button>
+      </form>
+
+      <div class="divider-row">or continue with</div>
+      <div class="social-row">
+        <button class="btn-social" onclick="googleLogin()">
+          <i class="fab fa-google" style="color:#EA4335"></i> Google
+        </button>
+        <button class="btn-social">
+          <i class="fab fa-linkedin" style="color:#0A66C2"></i> LinkedIn
+        </button>
+      </div>
+
+      <p class="auth-foot">New here? <a href="#" onclick="showRegister(event)">Create an account →</a></p>
+    </div>
+
+    <!-- REGISTER PANEL -->
+    <div id="register-panel">
+      <h1 class="auth-card-title">Create Account ✨</h1>
+      <p class="auth-card-sub">Join thousands finding great jobs in Rwanda.</p>
+
+      <div class="role-tabs">
+        <button class="role-tab active" data-role="Job Seeker" onclick="setAuthRole('Job Seeker')">Job Seeker</button>
+        <button class="role-tab" data-role="Employer" onclick="setAuthRole('Employer')">Employer</button>
+      </div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="auth-field">
+          <label class="auth-label">Full Name</label>
+          <input class="auth-input" type="text" id="reg-name" placeholder="Your full name" required autocomplete="name">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Email Address</label>
+          <input class="auth-input" type="email" id="reg-email" placeholder="you@email.com" required autocomplete="email">
+        </div>
+        <div class="auth-field">
+          <label class="auth-label">Password</label>
+          <div class="pass-wrapper">
+            <input class="auth-input" type="password" id="reg-password" placeholder="Create a strong password" required>
+            <i class="fas fa-eye pass-toggle" onclick="togglePassword('reg-password', this)"></i>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-auth" id="reg-submit-btn">Create Account</button>
+      </form>
+
+      <p class="auth-foot" style="margin-top:16px;">Already have an account? <a href="#" onclick="showLogin(event)">Sign in →</a></p>
+    </div>
+
+  </div><!-- /.auth-card -->
+</div><!-- /.auth-right -->
+
+<div id="toast-container"></div>
+
 <script>
-function googleLogin() {
-  const user = { name: 'Google User', email: 'user@gmail.com', role: authRole };
-  setUser(user);
-  if (authRole === 'Admin' || authRole === 'Employer') window.location.href = 'admin.html';
-  else window.location.href = 'home.html';
-}
-function showRegister() {
-  window.location.href = 'auth.html#register';
-  alert('Registration flow coming soon! For now, just sign in.');
-}
+  // ── TOAST ────────────────────────────────────────────────
+  function showToast(msg, type = 'info', icon = 'fas fa-info-circle', dur = 3500) {
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = `<i class="${icon}"></i><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(() => { t.classList.add('exiting'); setTimeout(() => t.remove(), 300); }, dur);
+  }
+
+  // ── STORAGE ──────────────────────────────────────────────
+  function setUser(u) { localStorage.setItem('currentUser', JSON.stringify(u)); }
+  function getUser()  { return JSON.parse(localStorage.getItem('currentUser')); }
+
+  // ── ROLE SELECTOR ────────────────────────────────────────
+  let authRole = 'Job Seeker';
+  function setAuthRole(role) {
+    authRole = role;
+    document.querySelectorAll('.role-tab').forEach(b => b.classList.toggle('active', b.dataset.role === role));
+
+    const msgs = {
+      'Admin': 'Authorized access only. Admin credentials required.',
+      'Employer': 'Manage your listings and find top talent.',
+      'Job Seeker': 'Sign in to continue your job search.'
+    };
+    const msgEl = document.getElementById('auth-msg');
+    if (msgEl) msgEl.textContent = msgs[role];
+
+    const btnEl = document.getElementById('auth-submit-btn');
+    if (btnEl) {
+      btnEl.textContent = `Sign In as ${role}`;
+      btnEl.style.animation = 'none';
+      requestAnimationFrame(() => { btnEl.style.animation = 'popIn .3s cubic-bezier(.34,1.56,.64,1)'; });
+    }
+    // Show hint for Admin
+    const badge = document.getElementById('admin-badge');
+    if (badge) badge.classList.toggle('show', role === 'Admin');
+  }
+
+  // ── LOGIN ────────────────────────────────────────────────
+  function handleLogin(e) {
+    e.preventDefault();
+    const email = document.getElementById('auth-email').value.trim();
+    const pass  = document.getElementById('auth-password').value;
+
+    if (!email || !pass) {
+      showToast('Please fill in all fields', 'error', 'fas fa-exclamation-circle');
+      return;
+    }
+
+    const btn = document.getElementById('auth-submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i>Signing in…';
+
+    setTimeout(() => {
+      // Admin check
+      if (authRole === 'Admin') {
+        if (pass !== 'admin123') {
+          btn.disabled = false;
+          btn.textContent = 'Sign In as Admin';
+          document.getElementById('auth-password').value = '';
+          showToast('Access denied. Invalid admin credentials.', 'error', 'fas fa-lock', 4000);
+          return;
+        }
+        const user = { name: 'Admin User', email, role: 'Admin' };
+        setUser(user);
+        showToast('Welcome back, Admin!', 'success', 'fas fa-user-shield');
+        setTimeout(() => { window.location.href = 'admin.html'; }, 700);
+        return;
+      }
+
+      // Employer / Job Seeker — accept any credentials
+      const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+      const user = { name, email, role: authRole };
+      setUser(user);
+      showToast(`Welcome back, ${name}! 🎉`, 'success', 'fas fa-check-circle');
+      setTimeout(() => {
+        window.location.href = authRole === 'Employer' ? 'employer-dashboard.html' : 'home.html';
+      }, 700);
+    }, 800);
+  }
+
+  // ── REGISTER ─────────────────────────────────────────────
+  function handleRegister(e) {
+    e.preventDefault();
+    const name  = document.getElementById('reg-name').value.trim();
+    const email = document.getElementById('reg-email').value.trim();
+    const pass  = document.getElementById('reg-password').value;
+
+    if (!name || !email || !pass) {
+      showToast('Please fill in all fields', 'error', 'fas fa-exclamation-circle');
+      return;
+    }
+    if (pass.length < 6) {
+      showToast('Password must be at least 6 characters', 'error', 'fas fa-lock');
+      return;
+    }
+
+    const btn = document.getElementById('reg-submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i>Creating account…';
+
+    setTimeout(() => {
+      const user = { name, email, role: authRole };
+      setUser(user);
+      showToast(`Account created! Welcome, ${name} 🎉`, 'success', 'fas fa-user-check', 3000);
+      setTimeout(() => { window.location.href = authRole === 'Employer' ? 'employer-dashboard.html' : 'home.html'; }, 900);
+    }, 900);
+  }
+
+  // ── GOOGLE LOGIN ─────────────────────────────────────────
+  function googleLogin() {
+    const user = { name: 'Google User', email: 'user@gmail.com', role: authRole };
+    setUser(user);
+    showToast('Signed in with Google!', 'success', 'fab fa-google');
+    setTimeout(() => {
+      if (authRole === 'Admin') window.location.href = 'admin.html';
+      else if (authRole === 'Employer') window.location.href = 'employer-dashboard.html';
+      else window.location.href = 'home.html';
+    }, 700);
+  }
+
+  // ── PASSWORD TOGGLE ──────────────────────────────────────
+  function togglePassword(id, icon) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.type = el.type === 'password' ? 'text' : 'password';
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  }
+
+  // ── PANEL SWITCH ─────────────────────────────────────────
+  function showRegister(e) {
+    if (e) e.preventDefault();
+    document.getElementById('login-panel').style.display = 'none';
+    document.getElementById('register-panel').style.display = 'block';
+  }
+  function showLogin(e) {
+    if (e) e.preventDefault();
+    document.getElementById('register-panel').style.display = 'none';
+    document.getElementById('login-panel').style.display = 'block';
+  }
+
+  // Auto-fill if returning user
+  const existing = getUser();
+  if (existing && existing.email) {
+    const emailEl = document.getElementById('auth-email');
+    if (emailEl) emailEl.value = existing.email;
+  }
 </script>
-<script src="animations.js"></script>
 </body>
 </html>

@@ -1,7 +1,6 @@
 /* ============================================================
-   smartJobs Rwanda — Enhanced Script v2
-   Features: Toast system, animated counters, ripple effects,
-   scroll progress, keyboard shortcuts, rich search, confetti
+   smartJobs Rwanda — Enhanced Script v2 (FIXED)
+   FIXED: Removed saveJobs(defaultJobs) that was wiping posted jobs
    ============================================================ */
 
 // ── DATA ────────────────────────────────────────────────────
@@ -295,18 +294,56 @@ const companyData = {
 };
 
 // ── STORAGE HELPERS ─────────────────────────────────────────
-function getJobs()       { return JSON.parse(localStorage.getItem('allJobs')) || defaultJobs; }
-function saveJobs(jobs)  { localStorage.setItem('allJobs', JSON.stringify(jobs)); }
-function getApps()       { return JSON.parse(localStorage.getItem('jobApplications')) || []; }
-function saveApps(apps)  { localStorage.setItem('jobApplications', JSON.stringify(apps)); }
-function getUser()       { return JSON.parse(localStorage.getItem('currentUser')); }
-function setUser(u)      { localStorage.setItem('currentUser', JSON.stringify(u)); }
-function getSaved()      { return JSON.parse(localStorage.getItem('savedJobs')) || []; }
+// FIXED: Get jobs - merge default jobs with saved jobs so nothing gets lost
+function getJobs() {
+  const savedJobs = JSON.parse(localStorage.getItem('allJobs')) || [];
+  
+  // If no saved jobs, return default jobs
+  if (savedJobs.length === 0) {
+    return defaultJobs;
+  }
+  
+  // Merge: show default jobs + employer-posted jobs, avoid duplicates by ID
+  const allJobIds = new Set(savedJobs.map(j => j.id));
+  const defaultJobsToAdd = defaultJobs.filter(j => !allJobIds.has(j.id));
+  
+  return [...defaultJobsToAdd, ...savedJobs];
+}
+
+function saveJobs(jobs) {
+  localStorage.setItem('allJobs', JSON.stringify(jobs));
+}
+
+function getApps() {
+  return JSON.parse(localStorage.getItem('jobApplications')) || [];
+}
+
+function saveApps(apps) {
+  localStorage.setItem('jobApplications', JSON.stringify(apps));
+}
+
+function getUser() {
+  return JSON.parse(localStorage.getItem('currentUser'));
+}
+
+function setUser(u) {
+  localStorage.setItem('currentUser', JSON.stringify(u));
+}
+
+function getSaved() {
+  return JSON.parse(localStorage.getItem('savedJobs')) || [];
+}
+
 function toggleSaved(id) {
   const saved = getSaved();
   const idx = saved.indexOf(id);
-  if (idx === -1) { saved.push(id); showToast('Job saved to bookmarks!', 'success', 'fas fa-bookmark'); }
-  else { saved.splice(idx, 1); showToast('Removed from bookmarks', 'info', 'fas fa-bookmark'); }
+  if (idx === -1) {
+    saved.push(id);
+    showToast('Job saved to bookmarks!', 'success', 'fas fa-bookmark');
+  } else {
+    saved.splice(idx, 1);
+    showToast('Removed from bookmarks', 'info', 'fas fa-bookmark');
+  }
   localStorage.setItem('savedJobs', JSON.stringify(saved));
   return idx === -1;
 }
@@ -317,8 +354,8 @@ function logout() {
   setTimeout(() => { window.location.href = 'auth.html'; }, 800);
 }
 
-// init storage — always refresh with latest real jobs
-saveJobs(defaultJobs);
+// REMOVED: saveJobs(defaultJobs) - THIS WAS THE BUG THAT WIPED EMPLOYER JOBS
+// Do NOT pre-save default jobs on every page load
 
 // ── TOAST SYSTEM ────────────────────────────────────────────
 function ensureToastContainer() {
@@ -444,11 +481,417 @@ function updateNavAuth() {
       <div style="display:flex;align-items:center;gap:10px;">
         <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),#6d51f7);
                     display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:.82rem;
-                    cursor:pointer;transition:transform .2s;" onclick="this.parentElement.querySelector('.user-menu').classList.toggle('open')">${initial}</div>
+                    cursor:pointer;transition:transform .2s;" title="${user.name || user.role}">${initial}</div>
         <span style="font-weight:700;color:var(--indigo);font-size:.88rem;">${user.name || user.role}</span>
+        <button class="nav-cv-btn" onclick="window.location.href='cv-builder.html'" title="Download your smartJobs CV">
+          <i class="fas fa-file-arrow-down"></i> Download CV
+        </button>
         <button class="nav-btn-primary" onclick="logout()" style="font-size:.82rem;padding:7px 16px;">Sign Out</button>
       </div>`;
+
+    // inject nav-cv-btn styles once
+    if (!document.getElementById('nav-cv-style')) {
+      const s = document.createElement('style');
+      s.id = 'nav-cv-style';
+      s.textContent = `
+        .nav-cv-btn {
+          display:inline-flex;align-items:center;gap:6px;
+          background:linear-gradient(135deg,#10b981,#059669);
+          color:white;border:none;border-radius:8px;
+          padding:7px 14px;font-size:.82rem;font-weight:700;
+          cursor:pointer;letter-spacing:.01em;
+          box-shadow:0 2px 12px rgba(16,185,129,.35);
+          transition:transform .18s,box-shadow .18s;
+        }
+        .nav-cv-btn:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(16,185,129,.45); }
+        .nav-cv-btn i { font-size:.85rem; }
+      `;
+      document.head.appendChild(s);
+    }
+  } else {
+    area.innerHTML = `
+      <a href="post-job.html" class="nav-btn-ghost">Post a Job</a>
+      <div class="nav-divider"></div>
+      <a href="auth.html" class="nav-btn-primary">Sign In</a>
+    `;
   }
+}
+
+// ── CV MODAL ────────────────────────────────────────────────
+function openCVModal() {
+  if (document.getElementById('cv-modal-overlay')) return;
+  const user = getUser();
+  if (!user) return;
+
+  const savedJobIds = getSaved();
+  const allJobs = getJobs();
+  const savedJobs = allJobs.filter(j => savedJobIds.includes(j.id));
+
+  // Skills bank by industry
+  const skillsMap = {
+    technology: ['JavaScript','Python','React','Node.js','SQL','Git','REST APIs','Cloud (AWS/Azure)','Agile/Scrum','Problem Solving'],
+    finance:    ['Financial Reporting','Excel/Sheets','Budgeting','Risk Analysis','Accounting','IFRS Standards','Data Analysis','ERP Systems','Communication','Attention to Detail'],
+    healthcare: ['Patient Care','Clinical Assessment','Medical Records','RSSB/Mutuelle','Diagnostics','Team Collaboration','ICD-10 Coding','Healthcare Regulations','Empathy','Critical Thinking'],
+    education:  ['Curriculum Design','Classroom Management','Student Assessment','Research','Lesson Planning','STEM Teaching','Communication','Rwanda CBC','Digital Learning','Mentoring'],
+    agriculture:['Agronomy','Crop Management','Field Data Collection','GIS Mapping','Soil Analysis','Sustainable Farming','Community Engagement','Report Writing','Data Entry','Biodiversity'],
+    energy:     ['Electrical Systems','Solar Installation','Energy Auditing','Project Management','AutoCAD','Safety Compliance','Technical Reporting','Customer Training','Field Operations','Sustainability'],
+  };
+  const defaultSkills = ['Microsoft Office','Communication','Teamwork','Problem Solving','Time Management','Project Coordination','Data Analysis','Leadership','Critical Thinking','Adaptability'];
+
+  // Infer industry from saved jobs
+  const topIndustry = savedJobs.length
+    ? savedJobs.reduce((acc, j) => { acc[j.industry] = (acc[j.industry]||0)+1; return acc; }, {})
+    : {};
+  const primaryIndustry = Object.entries(topIndustry).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'technology';
+  const skills = skillsMap[primaryIndustry] || defaultSkills;
+
+  const overlay = document.createElement('div');
+  overlay.id = 'cv-modal-overlay';
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:20000;background:rgba(10,8,40,.75);
+    display:flex;align-items:center;justify-content:center;
+    backdrop-filter:blur(8px);animation:fadeIn .2s ease;
+  `;
+
+  overlay.innerHTML = `
+    <div id="cv-modal" style="
+      background:#fff;border-radius:20px;width:min(760px,96vw);max-height:90vh;
+      overflow-y:auto;box-shadow:0 32px 96px rgba(59,47,201,.32);
+      animation:popIn .35s cubic-bezier(.34,1.56,.64,1);position:relative;
+    ">
+      <!-- Sticky header bar -->
+      <div style="
+        position:sticky;top:0;z-index:5;
+        background:linear-gradient(135deg,#3b2fc9,#6d51f7);
+        padding:14px 24px;display:flex;align-items:center;justify-content:space-between;
+        border-radius:20px 20px 0 0;
+      ">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-weight:900;font-size:1.1rem;color:white;font-family:'Sora',sans-serif;">smart<span style="color:#10b981;">Jobs</span> CV Builder</span>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <button onclick="downloadCVAsPDF()" style="
+            background:#10b981;color:white;border:none;border-radius:8px;
+            padding:8px 18px;font-weight:700;font-size:.83rem;cursor:pointer;
+            display:flex;align-items:center;gap:6px;
+          "><i class='fas fa-download'></i> Download PDF</button>
+          <button onclick="closeCVModal()" style="
+            background:rgba(255,255,255,.15);border:none;color:white;
+            border-radius:8px;padding:8px 12px;cursor:pointer;font-size:1rem;
+          "><i class='fas fa-times'></i></button>
+        </div>
+      </div>
+
+      <!-- EDITABLE FORM SECTION -->
+      <div style="padding:24px;background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+        <p style="font-size:.8rem;color:#64748b;margin-bottom:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;">
+          <i class="fas fa-pencil" style="margin-right:4px;"></i>Personalise your CV
+        </p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+          <div>
+            <label style="font-size:.75rem;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Full Name</label>
+            <input id="cv-name" value="${user.name || ''}" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;font-family:'Plus Jakarta Sans',sans-serif;">
+          </div>
+          <div>
+            <label style="font-size:.75rem;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Email</label>
+            <input id="cv-email" value="${user.email || ''}" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;font-family:'Plus Jakarta Sans',sans-serif;">
+          </div>
+          <div>
+            <label style="font-size:.75rem;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Phone</label>
+            <input id="cv-phone" placeholder="+250 7xx xxx xxx" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;font-family:'Plus Jakarta Sans',sans-serif;">
+          </div>
+          <div>
+            <label style="font-size:.75rem;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Location</label>
+            <input id="cv-location" value="Kigali, Rwanda" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;font-family:'Plus Jakarta Sans',sans-serif;">
+          </div>
+          <div style="grid-column:1/-1;">
+            <label style="font-size:.75rem;font-weight:700;color:#475569;display:block;margin-bottom:4px;">Professional Summary</label>
+            <textarea id="cv-summary" rows="2" style="width:100%;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.88rem;resize:none;font-family:'Plus Jakarta Sans',sans-serif;" placeholder="A brief professional summary…">Dynamic professional with expertise in ${primaryIndustry}, committed to delivering measurable results and driving organisational growth in Rwanda's evolving job market.</textarea>
+          </div>
+        </div>
+        <button onclick="renderCVPreview()" style="
+          margin-top:12px;background:#3b2fc9;color:white;border:none;border-radius:8px;
+          padding:9px 20px;font-weight:700;font-size:.83rem;cursor:pointer;
+        "><i class='fas fa-eye' style='margin-right:6px;'></i>Update Preview</button>
+      </div>
+
+      <!-- CV PREVIEW -->
+      <div id="cv-preview-wrap" style="padding:24px;">
+        ${buildCVHTML(user, skills, savedJobs, primaryIndustry)}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', e => { if (e.target === overlay) closeCVModal(); });
+}
+
+function closeCVModal() {
+  const overlay = document.getElementById('cv-modal-overlay');
+  if (overlay) overlay.remove();
+}
+
+function renderCVPreview() {
+  const user = getUser();
+  const savedJobIds = getSaved();
+  const allJobs = getJobs();
+  const savedJobs = allJobs.filter(j => savedJobIds.includes(j.id));
+  const topIndustry = savedJobs.reduce((acc, j) => { acc[j.industry] = (acc[j.industry]||0)+1; return acc; }, {});
+  const primaryIndustry = Object.entries(topIndustry).sort((a,b)=>b[1]-a[1])[0]?.[0] || 'technology';
+  const skillsMap = {
+    technology: ['JavaScript','Python','React','Node.js','SQL','Git','REST APIs','Cloud (AWS/Azure)','Agile/Scrum','Problem Solving'],
+    finance:    ['Financial Reporting','Excel/Sheets','Budgeting','Risk Analysis','Accounting','IFRS Standards','Data Analysis','ERP Systems','Communication','Attention to Detail'],
+    healthcare: ['Patient Care','Clinical Assessment','Medical Records','RSSB/Mutuelle','Diagnostics','Team Collaboration','ICD-10 Coding','Healthcare Regulations','Empathy','Critical Thinking'],
+    education:  ['Curriculum Design','Classroom Management','Student Assessment','Research','Lesson Planning','STEM Teaching','Communication','Rwanda CBC','Digital Learning','Mentoring'],
+    agriculture:['Agronomy','Crop Management','Field Data Collection','GIS Mapping','Soil Analysis','Sustainable Farming','Community Engagement','Report Writing','Data Entry','Biodiversity'],
+    energy:     ['Electrical Systems','Solar Installation','Energy Auditing','Project Management','AutoCAD','Safety Compliance','Technical Reporting','Customer Training','Field Operations','Sustainability'],
+  };
+
+  const customUser = {
+    ...user,
+    name: document.getElementById('cv-name')?.value || user.name,
+    email: document.getElementById('cv-email')?.value || user.email,
+    phone: document.getElementById('cv-phone')?.value,
+    location: document.getElementById('cv-location')?.value,
+    summary: document.getElementById('cv-summary')?.value,
+  };
+
+  const wrap = document.getElementById('cv-preview-wrap');
+  if (wrap) {
+    wrap.innerHTML = buildCVHTML(customUser, skillsMap[primaryIndustry] || skillsMap.technology, savedJobs, primaryIndustry);
+    showToast('CV preview updated!', 'success', 'fas fa-check-circle', 2000);
+  }
+}
+
+function buildCVHTML(user, skills, savedJobs, industry) {
+  const name = user.name || 'Your Name';
+  const email = user.email || 'email@example.com';
+  const phone = user.phone || '+250 780 000 000';
+  const location = user.location || 'Kigali, Rwanda';
+  const summary = user.summary || `Dynamic professional with expertise in ${industry}, committed to delivering measurable results and driving organisational growth in Rwanda's evolving job market.`;
+
+  const industryLabel = industry.charAt(0).toUpperCase() + industry.slice(1);
+
+  const experienceBlocks = savedJobs.slice(0, 3).map((job, i) => {
+    const years = ['2023 – Present', '2021 – 2023', '2019 – 2021'];
+    return `
+      <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;">
+          <div>
+            <div style="font-weight:800;color:#0f172a;font-size:.97rem;">${job.title}</div>
+            <div style="color:#3b2fc9;font-weight:600;font-size:.85rem;margin-top:2px;">${job.company}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:.78rem;font-weight:700;background:#ede9ff;color:#3b2fc9;padding:3px 10px;border-radius:20px;">${years[i] || '2020 – 2022'}</div>
+            <div style="font-size:.75rem;color:#64748b;margin-top:3px;">${job.location}</div>
+          </div>
+        </div>
+        <ul style="margin:8px 0 0 16px;color:#334155;font-size:.84rem;line-height:1.7;">
+          <li>Delivered key ${industry} outcomes aligned with organisational goals and KPIs.</li>
+          <li>Collaborated cross-functionally to implement data-driven solutions and process improvements.</li>
+          <li>Represented the organisation in stakeholder engagements and sector forums.</li>
+        </ul>
+      </div>`;
+  }).join('');
+
+  const defaultExp = `
+    <div style="margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid #f1f5f9;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;">
+        <div>
+          <div style="font-weight:800;color:#0f172a;font-size:.97rem;">${industryLabel} Specialist</div>
+          <div style="color:#3b2fc9;font-weight:600;font-size:.85rem;margin-top:2px;">Rwanda Development Board</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.78rem;font-weight:700;background:#ede9ff;color:#3b2fc9;padding:3px 10px;border-radius:20px;">2022 – Present</div>
+          <div style="font-size:.75rem;color:#64748b;margin-top:3px;">Kigali, Rwanda</div>
+        </div>
+      </div>
+      <ul style="margin:8px 0 0 16px;color:#334155;font-size:.84rem;line-height:1.7;">
+        <li>Spearheaded initiatives driving sector growth and stakeholder alignment.</li>
+        <li>Developed analytical frameworks to support evidence-based decision-making.</li>
+        <li>Led cross-functional teams to achieve project milestones on time and within budget.</li>
+      </ul>
+    </div>`;
+
+  const skillChips = skills.map(s => `
+    <span style="
+      display:inline-block;padding:5px 12px;border-radius:20px;
+      background:#ede9ff;color:#3b2fc9;font-size:.76rem;font-weight:700;
+      margin:3px;border:1.5px solid #c7d2fe;
+    ">${s}</span>`).join('');
+
+  return `
+    <div id="cv-document" style="
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:white;border-radius:16px;border:1px solid #e2e8f0;
+      overflow:hidden;box-shadow:0 8px 40px rgba(59,47,201,.1);
+    ">
+      <!-- HEADER -->
+      <div style="background:linear-gradient(135deg,#0f0a3a 0%,#3b2fc9 60%,#6d51f7 100%);padding:36px 36px 28px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:rgba(16,185,129,.12);border-radius:50%;"></div>
+        <div style="position:absolute;bottom:-60px;left:60px;width:160px;height:160px;background:rgba(255,255,255,.05);border-radius:50%;"></div>
+        <div style="display:flex;align-items:center;gap:24px;position:relative;z-index:1;">
+          <div style="
+            width:80px;height:80px;border-radius:50%;
+            background:linear-gradient(135deg,#10b981,#059669);
+            display:flex;align-items:center;justify-content:center;
+            font-size:2rem;font-weight:900;color:white;
+            border:4px solid rgba(255,255,255,.25);flex-shrink:0;
+            box-shadow:0 8px 24px rgba(0,0,0,.3);
+          ">${name[0].toUpperCase()}</div>
+          <div>
+            <h1 style="color:white;font-family:'Sora',sans-serif;font-size:1.7rem;font-weight:800;margin:0 0 4px;letter-spacing:-.02em;">${name}</h1>
+            <div style="color:#10b981;font-weight:700;font-size:.92rem;margin-bottom:12px;">${industryLabel} Professional · Kigali, Rwanda</div>
+            <div style="display:flex;flex-wrap:wrap;gap:16px;">
+              <span style="color:rgba(255,255,255,.8);font-size:.78rem;display:flex;align-items:center;gap:5px;"><i class='fas fa-envelope'></i>${email}</span>
+              <span style="color:rgba(255,255,255,.8);font-size:.78rem;display:flex;align-items:center;gap:5px;"><i class='fas fa-phone'></i>${phone}</span>
+              <span style="color:rgba(255,255,255,.8);font-size:.78rem;display:flex;align-items:center;gap:5px;"><i class='fas fa-map-marker-alt'></i>${location}</span>
+              <span style="color:rgba(255,255,255,.8);font-size:.78rem;display:flex;align-items:center;gap:5px;"><i class='fas fa-globe'></i>smartJobs Rwanda</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRAND STRIP -->
+      <div style="background:#10b981;padding:6px 36px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="color:white;font-size:.7rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;">Verified smartJobs Profile · Rwanda's #1 Job Platform</span>
+        <span style="color:rgba(255,255,255,.75);font-size:.68rem;">Generated ${new Date().toLocaleDateString('en-RW',{day:'numeric',month:'long',year:'numeric'})}</span>
+      </div>
+
+      <!-- BODY -->
+      <div style="display:grid;grid-template-columns:1fr 280px;gap:0;">
+
+        <!-- LEFT COLUMN -->
+        <div style="padding:28px 28px 28px 36px;border-right:1px solid #f1f5f9;">
+
+          <!-- Summary -->
+          <div style="margin-bottom:26px;">
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:20px;height:3px;background:#10b981;border-radius:2px;"></span>Professional Summary
+            </h2>
+            <p style="color:#334155;font-size:.88rem;line-height:1.75;border-left:3px solid #3b2fc9;padding-left:14px;">${summary}</p>
+          </div>
+
+          <!-- Experience -->
+          <div style="margin-bottom:26px;">
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:20px;height:3px;background:#10b981;border-radius:2px;"></span>Work Experience
+            </h2>
+            ${savedJobs.length ? experienceBlocks : defaultExp}
+          </div>
+
+          <!-- Education -->
+          <div>
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:20px;height:3px;background:#10b981;border-radius:2px;"></span>Education
+            </h2>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;margin-bottom:14px;">
+              <div>
+                <div style="font-weight:800;color:#0f172a;font-size:.95rem;">Bachelor of Science</div>
+                <div style="color:#3b2fc9;font-weight:600;font-size:.84rem;">University of Rwanda</div>
+                <div style="color:#64748b;font-size:.78rem;margin-top:2px;">${industryLabel} · Major</div>
+              </div>
+              <div style="font-size:.78rem;font-weight:700;background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;">2016 – 2020</div>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:4px;">
+              <div>
+                <div style="font-weight:800;color:#0f172a;font-size:.95rem;">Professional Certification</div>
+                <div style="color:#3b2fc9;font-weight:600;font-size:.84rem;">Rwanda Polytechnic</div>
+                <div style="color:#64748b;font-size:.78rem;margin-top:2px;">${industryLabel} Skills Programme</div>
+              </div>
+              <div style="font-size:.78rem;font-weight:700;background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:20px;">2020</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT SIDEBAR -->
+        <div style="padding:28px 24px;background:#fafbff;">
+
+          <!-- Skills -->
+          <div style="margin-bottom:24px;">
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:16px;height:3px;background:#10b981;border-radius:2px;"></span>Skills
+            </h2>
+            <div style="line-height:1;">${skillChips}</div>
+          </div>
+
+          <!-- Languages -->
+          <div style="margin-bottom:24px;">
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:16px;height:3px;background:#10b981;border-radius:2px;"></span>Languages
+            </h2>
+            ${[['Kinyarwanda','Native',100],['English','Fluent',90],['French','Intermediate',65]].map(([lang, level, pct]) => `
+              <div style="margin-bottom:10px;">
+                <div style="display:flex;justify-content:space-between;font-size:.8rem;font-weight:600;margin-bottom:4px;">
+                  <span style="color:#0f172a;">${lang}</span><span style="color:#64748b;">${level}</span>
+                </div>
+                <div style="background:#e2e8f0;border-radius:99px;height:5px;overflow:hidden;">
+                  <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,#3b2fc9,#10b981);border-radius:99px;"></div>
+                </div>
+              </div>`).join('')}
+          </div>
+
+          <!-- Applied Jobs -->
+          ${savedJobs.length ? `
+          <div style="margin-bottom:24px;">
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:16px;height:3px;background:#10b981;border-radius:2px;"></span>Interested Roles
+            </h2>
+            ${savedJobs.slice(0,4).map(j=>`
+              <div style="padding:7px 10px;border-radius:8px;background:#ede9ff;margin-bottom:6px;">
+                <div style="font-weight:700;color:#0f172a;font-size:.78rem;">${j.title}</div>
+                <div style="color:#3b2fc9;font-size:.72rem;">${j.company}</div>
+              </div>`).join('')}
+          </div>` : ''}
+
+          <!-- Certifications -->
+          <div>
+            <h2 style="font-family:'Sora',sans-serif;font-size:.78rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#3b2fc9;margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+              <span style="display:inline-block;width:16px;height:3px;background:#10b981;border-radius:2px;"></span>Certifications
+            </h2>
+            ${['Rwanda Professional Board','Google Analytics Certified','smartJobs Verified Profile'].map(c=>`
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+                <i class="fas fa-certificate" style="color:#10b981;font-size:.78rem;flex-shrink:0;"></i>
+                <span style="font-size:.78rem;color:#334155;font-weight:500;">${c}</span>
+              </div>`).join('')}
+          </div>
+
+          <!-- Brand footer -->
+          <div style="margin-top:24px;padding:14px;background:linear-gradient(135deg,#3b2fc9,#6d51f7);border-radius:10px;text-align:center;">
+            <div style="color:white;font-family:'Sora',sans-serif;font-weight:800;font-size:.9rem;">smart<span style="color:#10b981;">Jobs</span></div>
+            <div style="color:rgba(255,255,255,.7);font-size:.68rem;margin-top:2px;">Rwanda's #1 Job Platform</div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function downloadCVAsPDF() {
+  const cvDoc = document.getElementById('cv-document');
+  if (!cvDoc) { showToast('Please wait for CV to load', 'error', 'fas fa-exclamation'); return; }
+
+  showToast('Preparing your CV…', 'info', 'fas fa-spinner');
+
+  // Use print dialog as PDF (clean method)
+  const printWindow = window.open('', '_blank', 'width=900,height=700');
+  const name = document.getElementById('cv-name')?.value || getUser()?.name || 'CV';
+
+  printWindow.document.write(`<!DOCTYPE html><html><head>
+    <meta charset="UTF-8">
+    <title>${name} — CV | smartJobs Rwanda</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+      *{box-sizing:border-box;margin:0;padding:0;}
+      body{font-family:'Plus Jakarta Sans',sans-serif;background:white;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+      @page{margin:0;size:A4;}
+      @media print{body{margin:0;}}
+    </style>
+  </head><body>${cvDoc.outerHTML}<script>window.onload=function(){window.print();setTimeout(()=>window.close(),1000);}<\/script></body></html>`);
+  printWindow.document.close();
+
+  setTimeout(() => showToast('CV ready to save as PDF!', 'success', 'fas fa-check-circle', 3000), 800);
 }
 
 // ── JOB HOME PAGE ────────────────────────────────────────────
@@ -456,7 +899,7 @@ let activeJobId = null;
 let currentFilter = {};
 
 function renderJobCards(list) {
-  const container = document.getElementById('job-list');
+  const container = document.getElementById('job-list-container') || document.getElementById('job-list');
   if (!container) return;
 
   // Update count
@@ -732,7 +1175,7 @@ function applyNow(id) {
             <!-- About the role -->
             <div class="apply-modal-section">
               <h3 class="apply-modal-section-title"><i class="fas fa-file-alt"></i> About the Role</h3>
-              <p class="detail-desc">${job.desc}</p>
+              <p class="detail-desc">${job.desc || 'We are looking for a talented professional to join our team.'}</p>
             </div>
 
             <!-- Requirements -->
@@ -1230,16 +1673,16 @@ function loadDashboard() {
             </div>
             <span style="font-weight:700;">${j.title}</span>
           </div>
-        </td>
-        <td>${j.company}</td>
-        <td><i class="fas fa-map-marker-alt" style="color:var(--indigo);margin-right:5px;font-size:.8rem;"></i>${j.location}</td>
-        <td><span class="badge badge-blue">${j.type}</span></td>
+         </td>
+         <td>${j.company}</td>
+         <td><i class="fas fa-map-marker-alt" style="color:var(--indigo);margin-right:5px;font-size:.8rem;"></i>${j.location}</td>
+         <td><span class="badge badge-blue">${j.type}</span></td>
         <td style="font-weight:700;color:var(--indigo);">RWF ${j.salary}</td>
         <td>
           <button class="tbl-btn tbl-btn-edit" onclick="openEditModal(${i})"><i class="fas fa-edit" style="margin-right:4px;"></i>Edit</button>
           <button class="tbl-btn tbl-btn-danger" onclick="deleteJob(${i})"><i class="fas fa-trash"></i></button>
         </td>
-      </tr>`).join('');
+       </tr>`).join('');
   }
 
   // Applications table
@@ -1258,14 +1701,14 @@ function loadDashboard() {
               </div>
               ${a.seekerName}
             </div>
-          </td>
-          <td>${a.jobTitle}</td>
-          <td>${a.company || '—'}</td>
-          <td>
+           </td>
+           <td>${a.jobTitle}</td>
+           <td>${a.company || '—'}</td>
+           <td>
             <span class="badge ${a.status === 'New' ? 'badge-blue' : 'badge-green'}">${a.status}</span>
-          </td>
+           </td>
           <td style="color:var(--muted);">${a.date}</td>
-        </tr>`).join('');
+         </tr>`).join('');
     }
     const badge = document.getElementById('apps-count-badge');
     if (badge) badge.textContent = apps.length + ' total';
@@ -1421,14 +1864,30 @@ function setupPostJob() {
         industry: document.getElementById('job-industry')?.value || 'technology',
         color:    colors[Math.floor(Math.random() * colors.length)],
         posted:   'Just now',
-        views: 0
-      };
+        desc:     document.getElementById('job-desc')?.value || '',
+        requirements: document.getElementById('job-requirements')?.value || '',
+        postedBy: getUser()?.email,
+        postedByName: getUser()?.name,
+        views: 0,
+        status: 'Active'
+      };  
       const jobs = getJobs();
       jobs.push(newJob);
       saveJobs(jobs);
       launchConfetti();
       showToast('Job posted successfully! 🎉', 'success', 'fas fa-check-circle', 4000);
-      setTimeout(() => { window.location.href = 'admin.html'; }, 1500);
+      
+      // Redirect based on user role - FIXED
+      const user = getUser();
+      setTimeout(() => {
+        if (user?.role === 'Admin') {
+          window.location.href = 'admin.html';
+        } else if (user?.role === 'Employer') {
+          window.location.href = 'employer-dashboard.html';
+        } else {
+          window.location.href = 'home.html';
+        }
+      }, 1500);
     }, 800);
   });
 
@@ -1495,7 +1954,10 @@ function handleLogin(e) {
       setUser(user);
       const greeting = `Welcome back, ${user.name}!`;
       showToast(greeting, 'success', 'fas fa-check-circle');
-      setTimeout(() => { window.location.href = authRole === 'Employer' ? 'admin.html' : 'home.html'; }, 700);
+      setTimeout(() => {
+        if (authRole === 'Employer') window.location.href = 'employer-dashboard.html';
+        else window.location.href = 'home.html';
+      }, 700);
     }
   }, 900);
 }
@@ -1509,7 +1971,10 @@ function handleRegister(e) {
   const user = { name, email, role: authRole };
   setUser(user);
   showToast(`Account created! Welcome, ${name}`, 'success', 'fas fa-user-check', 3000);
-  setTimeout(() => { window.location.href = authRole === 'Employer' ? 'admin.html' : 'home.html'; }, 1000);
+  setTimeout(() => {
+    if (authRole === 'Employer') window.location.href = 'employer-dashboard.html';
+    else window.location.href = 'home.html';
+  }, 1000);
 }
 
 function togglePassword(inputId, iconEl) {
@@ -1649,3 +2114,117 @@ document.addEventListener('DOMContentLoaded', () => {
   initImageScrollReveal();
   initParallax();
 });
+/* ============================================================
+   smartJobs Rwanda — SECURITY & CONNECTION PATCH v3.0
+   ============================================================ */
+
+// 1. SESSION GUARD: Prevent unauthorized access to dashbaords
+function checkAccess(requiredRole) {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) {
+        window.location.href = 'auth.html?error=unauthorized';
+        return;
+    }
+    if (requiredRole && user.role !== requiredRole) {
+        // Redirect to their own dashboard if they are in the wrong place
+        if (user.role === 'Employer') window.location.href = 'employer-dashboard.html';
+        else if (user.role === 'Admin') window.location.href = 'admin.html';
+        else window.location.href = 'seeker-dashboard.html';
+    }
+}
+
+// 2. DATA PERSISTENCE: Save application counts for the dashboard
+function trackApplication(jobId, jobTitle) {
+    const stats = JSON.parse(localStorage.getItem('userStats')) || { applied: 0, views: 0 };
+    stats.applied += 1;
+    localStorage.setItem('userStats', JSON.stringify(stats));
+    
+    // Increment CV download count if redirected from builder
+    if(window.location.href.includes('cv-builder')) {
+        let downloads = parseInt(localStorage.getItem('cvDownloads')) || 0;
+        localStorage.setItem('cvDownloads', downloads + 1);
+    }
+}
+
+// 3. SECURE LOGOUT: Clear sensitive data
+function secureLogout() {
+    // Clear session but keep 'allJobs' and 'jobApplications' for the system
+    localStorage.removeItem('currentUser');
+    sessionStorage.clear();
+    window.location.href = 'home.html';
+}
+
+// 4. CONNECTION FIX: Sync Employer jobs with the Home Feed
+function syncGlobalJobs() {
+    const employerJobs = JSON.parse(localStorage.getItem('allJobs')) || [];
+    const feedContainer = document.getElementById('job-list-container');
+    if (!feedContainer) return;
+
+    // This ensures newly posted jobs appear at the TOP of the home page
+    const allJobs = [...employerJobs, ...defaultJobs].sort((a, b) => b.id - a.id);
+    renderJobCards(allJobs);
+}
+/* ============================================================
+   smartJobs Rwanda — UNIFIED DATA ENGINE v4.0
+   Enables instant visibility across all roles.
+   ============================================================ */
+
+// Key Constants to prevent typos
+const JOBS_KEY = 'allJobs';
+const APPS_KEY = 'jobApplications';
+
+// --- DATA RETRIEVAL ---
+function getJobs() {
+    const saved = JSON.parse(localStorage.getItem(JOBS_KEY)) || [];
+    // If empty, initialize with defaultJobs from script.js, otherwise return saved
+    if (saved.length === 0) {
+        localStorage.setItem(JOBS_KEY, JSON.stringify(defaultJobs));
+        return defaultJobs;
+    }
+    return saved;
+}
+
+function getApps() {
+    return JSON.parse(localStorage.getItem(APPS_KEY)) || [];
+}
+
+// --- DATA SAVING ---
+function saveNewJob(job) {
+    const currentJobs = getJobs();
+    currentJobs.unshift(job); // Add to the start so Seekers see "NEW" first
+    localStorage.setItem(JOBS_KEY, JSON.stringify(currentJobs));
+}
+
+function saveNewApplication(app) {
+    const currentApps = getApps();
+    currentApps.push(app); 
+    localStorage.setItem(APPS_KEY, JSON.stringify(currentApps));
+}
+
+// --- SYNC CHECK ---
+// Add this to the DOMContentLoaded of every page to ensure data is fresh
+function refreshData() {
+    console.log("Syncing smartJobs Database...");
+    if (typeof renderJobCards === 'function') renderJobCards(getJobs());
+    if (typeof loadDashboard === 'function') loadDashboard();
+}
+function submitApplication(jobId, title, company) {
+    const user = getUser(); // Current seeker
+    
+    const newApp = {
+        id: Date.now(),
+        jobId: jobId,
+        jobTitle: title,
+        company: company,
+        seekerName: document.getElementById(`apply-name-${jobId}`).value,
+        seekerEmail: document.getElementById(`apply-email-${jobId}`).value,
+        date: new Date().toLocaleDateString(),
+        status: 'New'
+    };
+
+    // SAVE TO SHARED DATABASE
+    saveNewApplication(newApp);
+
+    showToast(`Application sent! ${company} will see it on their dashboard.`, 'success');
+    launchConfetti();
+}

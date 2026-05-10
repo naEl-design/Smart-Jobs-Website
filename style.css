@@ -2484,13 +2484,13 @@ a { text-decoration: none; color: inherit; }
   position: relative;
   transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s ease;
 }
-.hub-photo-card:nth-child(odd)  { animation: floatCard  5s ease-in-out infinite; }
-.hub-photo-card:nth-child(even) { animation: floatCard2 6s ease-in-out infinite .8s; }
-.hub-photo-card:nth-child(3)    { animation: floatCard  4.5s ease-in-out infinite 1.2s; }
+.hub-photo-card:nth-child(odd)  { animation: floatCard  2.2s ease-in-out infinite; }
+.hub-photo-card:nth-child(even) { animation: floatCard2 2.8s ease-in-out infinite .4s; }
+.hub-photo-card:nth-child(3)    { animation: floatCard  1.9s ease-in-out infinite .6s; }
 .hub-photo-card img {
   width: 100%; height: 100%;
   object-fit: cover;
-  animation: kenBurns1 16s ease-in-out alternate infinite;
+  animation: kenBurns1 5s ease-in-out alternate infinite;
 }
 .hub-photo-card:hover {
   transform: scale(1.08) translateY(-6px) !important;
@@ -2821,12 +2821,12 @@ a { text-decoration: none; color: inherit; }
   object-fit: cover;
   transition: transform .6s cubic-bezier(.4,0,.2,1);
 }
-.hub-gallery-item:nth-child(1) img { animation: kenBurns1 15s ease-in-out alternate infinite; }
-.hub-gallery-item:nth-child(2) img { animation: kenBurns2 13s ease-in-out alternate infinite .3s; }
-.hub-gallery-item:nth-child(3) img { animation: kenBurns3 17s ease-in-out alternate infinite .7s; }
-.hub-gallery-item:nth-child(4) img { animation: kenBurns1 12s ease-in-out alternate infinite 1s; }
-.hub-gallery-item:nth-child(5) img { animation: kenBurns2 14s ease-in-out alternate infinite .4s; }
-.hub-gallery-item:nth-child(6) img { animation: kenBurns3 16s ease-in-out alternate infinite .8s; }
+.hub-gallery-item:nth-child(1) img { animation: kenBurns1 5s ease-in-out alternate infinite; }
+.hub-gallery-item:nth-child(2) img { animation: kenBurns2 4.5s ease-in-out alternate infinite .3s; }
+.hub-gallery-item:nth-child(3) img { animation: kenBurns3 6s ease-in-out alternate infinite .7s; }
+.hub-gallery-item:nth-child(4) img { animation: kenBurns1 4s ease-in-out alternate infinite 1s; }
+.hub-gallery-item:nth-child(5) img { animation: kenBurns2 5.5s ease-in-out alternate infinite .4s; }
+.hub-gallery-item:nth-child(6) img { animation: kenBurns3 5s ease-in-out alternate infinite .8s; }
 .hub-gallery-item:hover img { transform: scale(1.1); }
 .hub-gallery-overlay {
   position: absolute;

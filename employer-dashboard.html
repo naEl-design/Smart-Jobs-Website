@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employer Dashboard | smartJobs Rwanda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --indigo: #3b2fc9;
+      --indigo-dark: #2a1fa8;
+      --indigo-light: #ede9ff;
+      --emerald: #10b981;
+      --emerald-dark: #059669;
+      --rose: #ef4444;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --shadow: 0 4px 24px rgba(59,47,201,0.09);
+    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); }
+    
+    .top-nav {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      height: 64px;
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .logo { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--indigo); text-decoration: none; }
+    .logo span { color: var(--emerald); }
+    .main-menu { display: flex; list-style: none; gap: 8px; margin-left: 48px; }
+    .main-menu a { padding: 8px 20px; text-decoration: none; color: var(--muted); font-weight: 600; border-radius: 8px; }
+    .main-menu a:hover { background: var(--indigo-light); color: var(--indigo); }
+    .nav-btn-primary {
+      background: var(--indigo);
+      color: white;
+      padding: 9px 20px;
+      border-radius: 9px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.88rem;
+    }
+    
+    .dashboard-wrapper { display: flex; min-height: calc(100vh - 64px); }
+    .sidebar {
+      width: 260px;
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 32px 20px;
+    }
+    .sidebar-nav { list-style: none; }
+    .sidebar-nav li { margin-bottom: 8px; }
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      color: var(--muted);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--indigo-light); color: var(--indigo); }
+    
+    .main-content { flex: 1; padding: 40px; max-width: 1200px; }
+    
+    .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 40px; }
+    .stat-card {
+      background: white;
+      padding: 28px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+    .stat-card h3 { font-size: 2.5rem; font-weight: 800; color: var(--indigo); margin-bottom: 8px; }
+    
+    .section-card {
+      background: white;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-header h2 { font-size: 1.1rem; font-weight: 700; }
+    
+    .jobs-table { width: 100%; border-collapse: collapse; }
+    .jobs-table th, .jobs-table td { padding: 16px 20px; text-align: left; border-bottom: 1px solid var(--border); }
+    .jobs-table tr:hover td { background: var(--bg); }
+    
+    .application-item {
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 15px;
+      margin-bottom: 15px;
+      border-left: 4px solid var(--indigo);
+    }
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-state i { font-size: 3rem; opacity: 0.3; margin-bottom: 16px; display: block; }
+    
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast {
+      background: #065f46;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(100px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { padding: 20px; }
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-content">
+    <div class="nav-left">
+      <a href="home.html" class="logo">smart<span>Jobs</span></a>
+      <ul class="main-menu">
+        <li><a href="home.html">Find Jobs</a></li>
+        <li><a href="employer-hub.html">Employer Hub</a></li>
+        <li><a href="market.html">Salaries</a></li>
+      </ul>
+    </div>
+    <div class="nav-right" id="dynamic-auth"></div>
+  </div>
+</nav>
+
+<div class="dashboard-wrapper">
+  <aside class="sidebar">
+    <ul class="sidebar-nav">
+      <li><a href="#" class="active"><i class="fas fa-chart-line"></i> Overview</a></li>
+      <li><a href="post-job.html"><i class="fas fa-plus-circle"></i> Post a Job</a></li>
+    </ul>
+  </aside>
+
+  <main class="main-content">
+    <div style="margin-bottom: 32px;">
+      <h1 style="font-family:'Sora'; font-weight:800;">Welcome back, <span id="employerName" style="color:var(--indigo);">Employer</span>!</h1>
+      <p style="color:var(--muted);">Here are the latest applications for your job listings</p>
+    </div>
+    
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="totalJobs">0</h3>
+        <p><i class="fas fa-briefcase"></i> My Active Jobs</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="totalApps">0</h3>
+        <p><i class="fas fa-users"></i> Total Applications</p>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-briefcase"></i> My Job Listings</h2>
+        <a href="post-job.html" class="nav-btn-primary" style="font-size:0.75rem;">+ Post New Job</a>
+      </div>
+      <table class="jobs-table">
+        <thead><tr><th>Job Title</th><th>Location</th><th>Status</th></tr></thead>
+        <tbody id="recentJobsList"></tbody>
+      </table>
+    </div>
+
+    <div class="section-card">
+      <div class="section-header">
+        <h2><i class="fas fa-file-alt"></i> Applications Received</h2>
+      </div>
+      <div id="recentAppsList"></div>
+    </div>
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script>
+  function getUser() {
+    return JSON.parse(localStorage.getItem('currentUser'));
+  }
+
+  function showToast(msg) {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<i class="fas fa-check-circle"></i><span>${msg}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  function updateNavAuth() {
+    const user = getUser();
+    const area = document.getElementById('dynamic-auth');
+    if (!area) return;
+    if (user) {
+      area.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),#6d51f7);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;">${(user.name || 'U')[0].toUpperCase()}</div>
+          <span style="font-weight:700;">${user.name || user.role}</span>
+          <button class="nav-btn-primary" onclick="logout()" style="font-size:.82rem;padding:7px 16px;">Sign Out</button>
+        </div>`;
+    } else {
+      window.location.href = 'auth.html';
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'auth.html';
+  }
+
+  function updateApplicationStatus(appId, newStatus) {
+    const apps = JSON.parse(localStorage.getItem('jobApplications')) || [];
+    const appIndex = apps.findIndex(a => a.id === appId);
+    if (appIndex !== -1) {
+      apps[appIndex].status = newStatus;
+      localStorage.setItem('jobApplications', JSON.stringify(apps));
+      showToast(`Application status updated to "${newStatus}"`);
+      loadDashboard();
+    }
+  }
+
+  function loadDashboard() {
+    const user = getUser();
+    if (!user || user.role !== 'Employer') {
+      window.location.href = 'auth.html';
+      return;
+    }
+    
+    document.getElementById('employerName').textContent = user.name || "Employer";
+
+    // ✅ Get jobs filtered by employerEmail
+    const allJobs = JSON.parse(localStorage.getItem('allJobs')) || [];
+    const myJobs = allJobs.filter(job => job.employerEmail === user.email);
+    
+    document.getElementById('totalJobs').textContent = myJobs.length;
+
+    const jobsTbody = document.getElementById('recentJobsList');
+    if (jobsTbody) {
+      jobsTbody.innerHTML = myJobs.map(job => `
+        <tr>
+          <td><strong>${job.title}</strong></td>
+          <td><i class="fas fa-map-marker-alt"></i> ${job.location || 'Kigali'}</td>
+          <td><span class="badge badge-green">● Active</span></td>
+        </tr>
+      `).join('') || '<td><td colspan="3" style="text-align:center; padding:30px;">No jobs posted yet. <a href="post-job.html">Post your first job</a></td></tr>';
+    }
+
+    // ✅ Get applications filtered by employerEmail (from the job poster)
+    const allApps = JSON.parse(localStorage.getItem('jobApplications')) || [];
+    const myApps = allApps.filter(app => app.employerEmail === user.email);
+    
+    document.getElementById('totalApps').textContent = myApps.length;
+
+    const appsContainer = document.getElementById('recentAppsList');
+    if (appsContainer) {
+      if (myApps.length === 0) {
+        appsContainer.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No applications received yet. When job seekers apply, they will appear here.</p></div>';
+      } else {
+        appsContainer.innerHTML = myApps.slice().reverse().map(app => `
+          <div class="application-item">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;">
+              <div style="flex:1;">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+                  <div style="width:45px; height:45px; border-radius:50%; background:linear-gradient(135deg,var(--indigo),#6d51f7); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:1.1rem;">
+                    ${(app.seekerName || '?')[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <strong style="font-size:1.05rem;">${app.seekerName}</strong>
+                    <p style="font-size:0.75rem; color:var(--muted);">${app.seekerEmail}</p>
+                  </div>
+                </div>
+                <p><strong>Applied for:</strong> <span style="color:var(--indigo); font-weight:700;">${app.jobTitle}</span></p>
+                <p style="font-size:0.8rem; color:var(--muted); margin-top:8px;">
+                  <i class="fas fa-calendar"></i> ${app.date} &nbsp;|&nbsp;
+                  <i class="fas fa-phone"></i> ${app.seekerPhone} &nbsp;|&nbsp;
+                  <i class="fas fa-map-marker-alt"></i> ${app.seekerPlace}
+                </p>
+                ${app.message && app.message !== 'No cover message provided.' ? `<p style="font-size:0.85rem; background:#f1f5f9; padding:12px; border-radius:10px; margin-top:12px;"><strong>📝 Cover Message:</strong><br>${app.message}</p>` : ''}
+              </div>
+              <div>
+                <select onchange="updateApplicationStatus(${app.id}, this.value)" style="padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); background:white; font-size:0.8rem; font-weight:600;">
+                  <option value="New" ${app.status === 'New' ? 'selected' : ''}>📩 New</option>
+                  <option value="Reviewed" ${app.status === 'Reviewed' ? 'selected' : ''}>👁️ Reviewed</option>
+                  <option value="Shortlisted" ${app.status === 'Shortlisted' ? 'selected' : ''}>⭐ Shortlisted</option>
+                  <option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>❌ Rejected</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNavAuth();
+    loadDashboard();
+  });
+</script>
+</body>
+</html>

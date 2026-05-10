@@ -5,49 +5,147 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Post a Job | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .post-job-container {
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 24px;
+      animation: fadeSlideUp 0.5s ease both;
+    }
+
+    .post-job-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+    }
+
+    .form-field { margin-bottom: 22px; }
+
+    .form-field label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      color: var(--text-2);
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: all var(--transition);
+      background: white;
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: var(--indigo);
+      box-shadow: 0 0 0 3px rgba(59,47,201,0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .btn-post {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, var(--indigo), #6d51f7);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Sora', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all var(--transition);
+      margin-top: 16px;
+    }
+
+    .btn-post:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(59,47,201,0.3);
+    }
+
+    .char-counter {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-align: right;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .post-job-card { padding: 24px; }
+    }
+
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #0f172a;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 11px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.25);
+      animation: toastIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+
+    .toast.success { background: #065f46; border-left: 4px solid #10b981; }
+    .toast.error { background: #7f1d1d; border-left: 4px solid #ef4444; }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(110%); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+  </style>
 </head>
-<body style="background:var(--bg);">
+<body>
 
 <nav class="top-nav">
   <div class="nav-content">
     <div class="nav-left">
-      <a href="home.html" class="logo logo-glitch" data-text="smartJobs">smart<span>Jobs</span></a>
+      <a href="home.html" class="logo">smart<span>Jobs</span></a>
       <ul class="main-menu">
         <li><a href="home.html">Find Jobs</a></li>
-        <li><a href="#" class="active">Post Job</a></li>
+        <li><a href="employer-hub.html">Employer Hub</a></li>
+        <li><a href="market.html">Salaries</a></li>
       </ul>
     </div>
-    <div class="nav-right" id="dynamic-auth">
-      <a href="auth.html" class="nav-btn-primary">Sign In</a>
-      <button class="nav-hamburger" onclick="openMobileNav()" aria-label="Open menu">
-        <i class="fas fa-bars"></i>
-      </button>
-    </div>
+    <div class="nav-right" id="dynamic-auth"></div>
   </div>
 </nav>
 
-<!-- Mobile Nav Drawer -->
-<div class="mobile-nav-drawer" id="mobile-nav">
-  <div class="mobile-nav-backdrop" onclick="closeMobileNav()"></div>
-  <div class="mobile-nav-panel">
-    <div class="mobile-nav-close"><button onclick="closeMobileNav()"><i class="fas fa-times"></i></button></div>
-    <ul class="mobile-nav-links">
-      <li><a href="home.html"><i class="fas fa-briefcase"></i> Find Jobs</a></li>
-      <li><a href="employer-hub.html"><i class="fas fa-building"></i> Employer Hub</a></li>
-      <li><a href="market.html"><i class="fas fa-chart-bar"></i> Salaries</a></li>
-    </ul>
-    <div class="mobile-nav-divider"></div>
-    <div class="mobile-nav-actions">
-      <a href="auth.html" class="primary">Sign In</a>
-    </div>
-  </div>
-</div>
-
 <div class="post-job-container">
-  <div style="margin-bottom:28px;">
-    <h1 style="font-family:'Sora',sans-serif;font-size:1.8rem;font-weight:800;">Post a New Job</h1>
-    <p style="color:var(--muted);margin-top:6px;">Reach thousands of qualified candidates in Rwanda</p>
+  <div style="margin-bottom: 28px;">
+    <h1 style="font-family:'Sora',sans-serif; font-size:1.8rem; font-weight:800;">Post a New Job</h1>
+    <p style="color:var(--muted); margin-top:6px;">Reach qualified candidates across Rwanda</p>
   </div>
 
   <div class="post-job-card">
@@ -74,7 +172,7 @@
             <option>Full-time</option>
             <option>Part-time</option>
             <option>Contract</option>
-            <option>Internship</option>
+            <option>Remote</option>
           </select>
         </div>
       </div>
@@ -84,10 +182,10 @@
           <label>Industry</label>
           <select id="job-industry">
             <option value="technology">Technology</option>
+            <option value="agriculture">Agriculture</option>
             <option value="finance">Finance</option>
             <option value="healthcare">Healthcare</option>
             <option value="education">Education</option>
-            <option value="agriculture">Agriculture</option>
             <option value="energy">Energy</option>
           </select>
         </div>
@@ -99,7 +197,8 @@
 
       <div class="form-field">
         <label>Job Description</label>
-        <textarea id="job-desc" rows="4" placeholder="Describe the role, requirements, and benefits..."></textarea>
+        <textarea id="job-desc" rows="5" placeholder="Describe the role and responsibilities..."></textarea>
+        <div class="char-counter" id="desc-counter">0 / 2000</div>
       </div>
 
       <button type="submit" class="btn-post">
@@ -109,48 +208,128 @@
   </div>
 </div>
 
-<footer class="main-footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-col">
-        <h4>smartJobs</h4>
-        <ul>
-          <li><a href="home.html">Browse Jobs</a></li>
-          <li><a href="market.html">Salaries</a></li>
-          <li><a href="employer-hub.html">Company Reviews</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>For Employers</h4>
-        <ul>
-          <li><a href="post-job.html">Post a Job</a></li>
-          <li><a href="#">Hiring Solutions</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>About</h4>
-        <ul>
-          <li><a href="#">Help Center</a></li>
-          <li><a href="#">Privacy Policy</a></li>
-          <li><a href="#">Terms of Use</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 smartJobs Rwanda. All rights reserved.</p>
-      <div class="social-icons">
-        <i class="fab fa-facebook"></i>
-        <i class="fab fa-twitter"></i>
-        <i class="fab fa-linkedin"></i>
-      </div>
-    </div>
-  </div>
-</footer>
+<div id="toast-container"></div>
 
-<script src="script.js"></script>
 <script>
-function openMobileNav() { document.getElementById('mobile-nav').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeMobileNav() { document.getElementById('mobile-nav').classList.remove('open'); document.body.style.overflow=''; }
+  // Toast notification
+  function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i><span>${message}</span>`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Character counter
+  function updateCharCount(textarea, counterId, max) {
+    const counter = document.getElementById(counterId);
+    if (!counter) return;
+    const len = textarea.value.length;
+    counter.textContent = `${len} / ${max}`;
+    if (len > max * 0.9) counter.style.color = '#f59e0b';
+    if (len > max) { counter.style.color = '#ef4444'; textarea.value = textarea.value.slice(0, max); }
+  }
+
+  // Get current user
+  function getUser() {
+    return JSON.parse(localStorage.getItem('currentUser'));
+  }
+
+  // Update navigation
+  function updateNavAuth() {
+    const user = getUser();
+    const area = document.getElementById('dynamic-auth');
+    if (!area) return;
+    if (user) {
+      const initial = (user.name || user.role || 'U')[0].toUpperCase();
+      area.innerHTML = `
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--indigo),#6d51f7);
+                      display:flex;align-items:center;justify-content:center;color:white;font-weight:800;cursor:pointer;">
+            ${initial}
+          </div>
+          <span style="font-weight:700;color:var(--indigo);">${user.name || user.role}</span>
+          <button class="nav-btn-primary" onclick="logout()" style="font-size:.82rem;padding:7px 16px;">Sign Out</button>
+        </div>`;
+    } else {
+      area.innerHTML = `
+        <a href="post-job.html" class="nav-btn-ghost">Post a Job</a>
+        <div class="nav-divider"></div>
+        <a href="auth.html" class="nav-btn-primary">Sign In</a>
+      `;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'auth.html';
+  }
+
+  // Handle job submission
+  document.getElementById('job-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const user = getUser();
+    
+    if (!user || user.role !== 'Employer') {
+      alert("Please login as an Employer first.");
+      window.location.href = 'auth.html';
+      return;
+    }
+
+    const submitBtn = this.querySelector('.btn-post');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    submitBtn.disabled = true;
+
+    // Create new job object with employer email
+    const newJob = {
+      id: Date.now(),
+      title: document.getElementById('job-title').value,
+      company: document.getElementById('job-company').value,
+      location: document.getElementById('job-location').value,
+      salary: document.getElementById('job-salary').value,
+      industry: document.getElementById('job-industry').value,
+      desc: document.getElementById('job-desc').value,
+      type: document.getElementById('job-type').value,
+      employerEmail: user.email,  // ✅ CRITICAL: Links job to employer
+      employerName: user.name,
+      posted: 'Just now',
+      status: 'Active',
+      color: ['#3b2fc9','#10b981','#f59e0b','#ef4444','#8b5cf6','#ec4899','#059669'][Math.floor(Math.random() * 7)],
+      views: 0
+    };
+
+    // Save to localStorage
+    const jobs = JSON.parse(localStorage.getItem('allJobs')) || [];
+    jobs.unshift(newJob);
+    localStorage.setItem('allJobs', JSON.stringify(jobs));
+
+    showToast('Job posted successfully! Employers will see applications here.', 'success');
+    
+    setTimeout(() => {
+      window.location.href = 'employer-dashboard.html';
+    }, 1500);
+  });
+
+  // Character counter for description
+  const descEl = document.getElementById('job-desc');
+  if (descEl) {
+    descEl.addEventListener('input', () => updateCharCount(descEl, 'desc-counter', 2000));
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNavAuth();
+    
+    // Check if user is employer
+    const user = getUser();
+    if (!user || user.role !== 'Employer') {
+      alert('Only employers can post jobs. Please login as an employer.');
+      window.location.href = 'auth.html';
+    }
+  });
 </script>
 <script src="animations.js"></script>
 </body>
