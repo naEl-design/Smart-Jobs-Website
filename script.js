@@ -354,9 +354,6 @@ function logout() {
   setTimeout(() => { window.location.href = 'auth.html'; }, 800);
 }
 
-// REMOVED: saveJobs(defaultJobs) - THIS WAS THE BUG THAT WIPED EMPLOYER JOBS
-// Do NOT pre-save default jobs on every page load
-
 // ── TOAST SYSTEM ────────────────────────────────────────────
 function ensureToastContainer() {
   if (!document.getElementById('toast-container')) {
@@ -483,7 +480,7 @@ function updateNavAuth() {
                     display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:.82rem;
                     cursor:pointer;transition:transform .2s;" title="${user.name || user.role}">${initial}</div>
         <span style="font-weight:700;color:var(--indigo);font-size:.88rem;">${user.name || user.role}</span>
-        <button class="nav-cv-btn" onclick="window.location.href='cv-builder.html'" title="Download your smartJobs CV">
+        <button class="nav-cv-btn" onclick="openCVModal()" title="Download your smartJobs CV">
           <i class="fas fa-file-arrow-down"></i> Download CV
         </button>
         <button class="nav-btn-primary" onclick="logout()" style="font-size:.82rem;padding:7px 16px;">Sign Out</button>
@@ -1626,10 +1623,8 @@ function hideResults() {
 
 // ── ADMIN DASHBOARD ──────────────────────────────────────────
 let editIdx = null;
-let activeSection = 'overview';
 
 function switchSection(section) {
-  activeSection = section;
   document.querySelectorAll('.sidebar-nav a').forEach(a => {
     a.classList.toggle('active', a.dataset.section === section);
   });
@@ -1650,6 +1645,12 @@ function loadDashboard() {
   const users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
 
   // Animate stat counters
+  function setElAnimated(id, val) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = val;
+    setTimeout(() => animateCounter(el, val), 300);
+  }
   setElAnimated('stat-jobs',      jobs.length);
   setElAnimated('stat-apps',      apps.length);
   setElAnimated('stat-seekers',   users.filter(u => u.role === 'Job Seeker').length || 148);
@@ -1673,16 +1674,16 @@ function loadDashboard() {
             </div>
             <span style="font-weight:700;">${j.title}</span>
           </div>
-         </td>
-         <td>${j.company}</td>
-         <td><i class="fas fa-map-marker-alt" style="color:var(--indigo);margin-right:5px;font-size:.8rem;"></i>${j.location}</td>
-         <td><span class="badge badge-blue">${j.type}</span></td>
+          </td>
+          <td>${j.company}</td>
+          <td><i class="fas fa-map-marker-alt" style="color:var(--indigo);margin-right:5px;font-size:.8rem;"></i>${j.location}</td>
+          <td><span class="badge badge-blue">${j.type}</span></td>
         <td style="font-weight:700;color:var(--indigo);">RWF ${j.salary}</td>
         <td>
           <button class="tbl-btn tbl-btn-edit" onclick="openEditModal(${i})"><i class="fas fa-edit" style="margin-right:4px;"></i>Edit</button>
           <button class="tbl-btn tbl-btn-danger" onclick="deleteJob(${i})"><i class="fas fa-trash"></i></button>
         </td>
-       </tr>`).join('');
+        </tr>`).join('');
   }
 
   // Applications table
@@ -1701,14 +1702,14 @@ function loadDashboard() {
               </div>
               ${a.seekerName}
             </div>
-           </td>
-           <td>${a.jobTitle}</td>
-           <td>${a.company || '—'}</td>
-           <td>
+            </td>
+            <td>${a.jobTitle}</td>
+            <td>${a.company || '—'}</td>
+            <td>
             <span class="badge ${a.status === 'New' ? 'badge-blue' : 'badge-green'}">${a.status}</span>
-           </td>
+            </td>
           <td style="color:var(--muted);">${a.date}</td>
-         </tr>`).join('');
+          </tr>`).join('');
     }
     const badge = document.getElementById('apps-count-badge');
     if (badge) badge.textContent = apps.length + ' total';
@@ -1735,16 +1736,6 @@ function loadDashboard() {
   renderGrowthChart();
   setTimeout(initCounterAnimations, 200);
 }
-
-function setElAnimated(id, val) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = val;
-  // trigger counter
-  setTimeout(() => animateCounter(el, val), 300);
-}
-
-function setEl(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 
 function renderGrowthChart() {
   const canvas = document.getElementById('growthChart');
@@ -1792,7 +1783,6 @@ function renderGrowthChart() {
 }
 
 function deleteJob(index) {
-  // Custom confirm via toast-style modal
   const jobs = getJobs();
   const job = jobs[index];
   if (!confirm(`Delete "${job.title}" at ${job.company}?`)) return;
@@ -1811,7 +1801,6 @@ function openEditModal(index) {
   document.getElementById('edit-location').value = j.location;
   const modal = document.getElementById('edit-modal');
   modal.style.display = 'flex';
-  // Add overlay close on click
   modal.onclick = (e) => { if (e.target === modal) closeEditModal(); };
 }
 function saveJobEdit() {
@@ -2042,48 +2031,6 @@ function initLazyAnimations() {
   });
 }
 
-// ── INIT ──────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  // Progress bar
-  initProgressBar();
-  // Nav scroll
-  initNavScroll();
-  // Auth nav
-  updateNavAuth();
-  // Job page
-  renderJobCards(getJobs());
-  setupJobSearch();
-  // Post job
-  setupPostJob();
-  // Dashboard
-  loadDashboard();
-  // Scroll reveal
-  initScrollReveal();
-  // Lazy animations
-  initLazyAnimations();
-  // Hero typing
-  initHeroTyping();
-  // Counter animations
-  setTimeout(initCounterAnimations, 600);
-
-  // Add ripple to all primary buttons
-  document.querySelectorAll('.btn-auth, .btn-post, .nav-btn-primary, .btn-save-settings, .hero-search-btn').forEach(btn => {
-    btn.addEventListener('click', (e) => addRipple(btn, e));
-  });
-
-  // Keyboard: Escape closes modals
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closeEditModal();
-  });
-
-  // Animate hero orb
-  const heroSection = document.querySelector('.search-hero');
-  if (heroSection) {
-    const orb = document.createElement('div');
-    orb.className = 'hero-orb-2';
-    heroSection.appendChild(orb);
-  }
-});
 // ── SCROLL REVEAL FOR IMAGES ────────────────────────────────
 function initImageScrollReveal() {
   const els = document.querySelectorAll('.reveal-on-scroll');
@@ -2109,122 +2056,49 @@ function initParallax() {
   }, { passive: true });
 }
 
-// Add to init
+// ── INIT ──────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
+  // Progress bar
+  initProgressBar();
+  // Nav scroll
+  initNavScroll();
+  // Auth nav
+  updateNavAuth();
+  // Job page
+  renderJobCards(getJobs());
+  setupJobSearch();
+  // Post job
+  setupPostJob();
+  // Dashboard
+  loadDashboard();
+  // Scroll reveal
+  initScrollReveal();
+  // Lazy animations
+  initLazyAnimations();
+  // Hero typing
+  initHeroTyping();
+  // Counter animations
+  setTimeout(initCounterAnimations, 600);
+  // Image scroll reveal
   initImageScrollReveal();
+  // Parallax
   initParallax();
+
+  // Add ripple to all primary buttons
+  document.querySelectorAll('.btn-auth, .btn-post, .nav-btn-primary, .btn-save-settings, .hero-search-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => addRipple(btn, e));
+  });
+
+  // Keyboard: Escape closes modals
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeEditModal();
+  });
+
+  // Animate hero orb
+  const heroSection = document.querySelector('.search-hero');
+  if (heroSection) {
+    const orb = document.createElement('div');
+    orb.className = 'hero-orb-2';
+    heroSection.appendChild(orb);
+  }
 });
-/* ============================================================
-   smartJobs Rwanda — SECURITY & CONNECTION PATCH v3.0
-   ============================================================ */
-
-// 1. SESSION GUARD: Prevent unauthorized access to dashbaords
-function checkAccess(requiredRole) {
-    const user = JSON.parse(localStorage.getItem('currentUser'));
-    if (!user) {
-        window.location.href = 'auth.html?error=unauthorized';
-        return;
-    }
-    if (requiredRole && user.role !== requiredRole) {
-        // Redirect to their own dashboard if they are in the wrong place
-        if (user.role === 'Employer') window.location.href = 'employer-dashboard.html';
-        else if (user.role === 'Admin') window.location.href = 'admin.html';
-        else window.location.href = 'seeker-dashboard.html';
-    }
-}
-
-// 2. DATA PERSISTENCE: Save application counts for the dashboard
-function trackApplication(jobId, jobTitle) {
-    const stats = JSON.parse(localStorage.getItem('userStats')) || { applied: 0, views: 0 };
-    stats.applied += 1;
-    localStorage.setItem('userStats', JSON.stringify(stats));
-    
-    // Increment CV download count if redirected from builder
-    if(window.location.href.includes('cv-builder')) {
-        let downloads = parseInt(localStorage.getItem('cvDownloads')) || 0;
-        localStorage.setItem('cvDownloads', downloads + 1);
-    }
-}
-
-// 3. SECURE LOGOUT: Clear sensitive data
-function secureLogout() {
-    // Clear session but keep 'allJobs' and 'jobApplications' for the system
-    localStorage.removeItem('currentUser');
-    sessionStorage.clear();
-    window.location.href = 'home.html';
-}
-
-// 4. CONNECTION FIX: Sync Employer jobs with the Home Feed
-function syncGlobalJobs() {
-    const employerJobs = JSON.parse(localStorage.getItem('allJobs')) || [];
-    const feedContainer = document.getElementById('job-list-container');
-    if (!feedContainer) return;
-
-    // This ensures newly posted jobs appear at the TOP of the home page
-    const allJobs = [...employerJobs, ...defaultJobs].sort((a, b) => b.id - a.id);
-    renderJobCards(allJobs);
-}
-/* ============================================================
-   smartJobs Rwanda — UNIFIED DATA ENGINE v4.0
-   Enables instant visibility across all roles.
-   ============================================================ */
-
-// Key Constants to prevent typos
-const JOBS_KEY = 'allJobs';
-const APPS_KEY = 'jobApplications';
-
-// --- DATA RETRIEVAL ---
-function getJobs() {
-    const saved = JSON.parse(localStorage.getItem(JOBS_KEY)) || [];
-    // If empty, initialize with defaultJobs from script.js, otherwise return saved
-    if (saved.length === 0) {
-        localStorage.setItem(JOBS_KEY, JSON.stringify(defaultJobs));
-        return defaultJobs;
-    }
-    return saved;
-}
-
-function getApps() {
-    return JSON.parse(localStorage.getItem(APPS_KEY)) || [];
-}
-
-// --- DATA SAVING ---
-function saveNewJob(job) {
-    const currentJobs = getJobs();
-    currentJobs.unshift(job); // Add to the start so Seekers see "NEW" first
-    localStorage.setItem(JOBS_KEY, JSON.stringify(currentJobs));
-}
-
-function saveNewApplication(app) {
-    const currentApps = getApps();
-    currentApps.push(app); 
-    localStorage.setItem(APPS_KEY, JSON.stringify(currentApps));
-}
-
-// --- SYNC CHECK ---
-// Add this to the DOMContentLoaded of every page to ensure data is fresh
-function refreshData() {
-    console.log("Syncing smartJobs Database...");
-    if (typeof renderJobCards === 'function') renderJobCards(getJobs());
-    if (typeof loadDashboard === 'function') loadDashboard();
-}
-function submitApplication(jobId, title, company) {
-    const user = getUser(); // Current seeker
-    
-    const newApp = {
-        id: Date.now(),
-        jobId: jobId,
-        jobTitle: title,
-        company: company,
-        seekerName: document.getElementById(`apply-name-${jobId}`).value,
-        seekerEmail: document.getElementById(`apply-email-${jobId}`).value,
-        date: new Date().toLocaleDateString(),
-        status: 'New'
-    };
-
-    // SAVE TO SHARED DATABASE
-    saveNewApplication(newApp);
-
-    showToast(`Application sent! ${company} will see it on their dashboard.`, 'success');
-    launchConfetti();
-}

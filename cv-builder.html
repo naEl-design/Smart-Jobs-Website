@@ -3,80 +3,156 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CV Builder | smartJobs Rwanda</title>
+  <title>AI CV Designer | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
-    .builder-container { display: grid; grid-template-columns: 450px 1fr; gap: 0; min-height: 100vh; }
-    .editor-side { background: white; padding: 30px; border-right: 1px solid var(--border); overflow-y: auto; height: 100vh; position: sticky; top: 0; }
-    .preview-side { background: var(--bg-2); padding: 40px; overflow-y: auto; display: flex; justify-content: center; }
-    .cv-paper { width: 210mm; min-height: 297mm; background: white; box-shadow: var(--shadow-lg); padding: 50px; border-top: 8px solid var(--indigo); }
-    .form-section { margin-bottom: 25px; }
-    .form-section h3 { font-size: 0.9rem; text-transform: uppercase; color: var(--indigo); margin-bottom: 15px; border-bottom: 2px solid var(--indigo-light); padding-bottom: 5px; }
-    @media print { .editor-side, .top-nav { display: none; } .preview-side { padding: 0; background: white; } .cv-paper { box-shadow: none; width: 100%; border: none; } }
+    :root { --cv-primary: #3b2fc9; }
+    .builder-layout { display: grid; grid-template-columns: 480px 1fr; height: 100vh; background: #f1f5f9; }
+    
+    /* Sidebar Editor */
+    .editor-pane { 
+      background: white; border-right: 1px solid var(--border); 
+      overflow-y: auto; padding: 32px; display: flex; flex-direction: column; gap: 24px;
+      box-shadow: 10px 0 30px rgba(0,0,0,0.02); z-index: 10;
+    }
+    .input-group { display: flex; flex-direction: column; gap: 8px; }
+    .input-group label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); }
+    .cv-input { 
+      padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; 
+      font-family: inherit; transition: all 0.2s; 
+    }
+    .cv-input:focus { border-color: var(--cv-primary); outline: none; box-shadow: 0 0 0 4px rgba(59,47,201,0.1); }
 
-    </style>
+    /* Preview Pane */
+    .preview-pane { 
+      padding: 60px; overflow-y: auto; display: flex; justify-content: center; 
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    }
+    .cv-paper { 
+      width: 210mm; min-height: 297mm; background: white; padding: 60px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-radius: 2px;
+      display: grid; grid-template-columns: 1fr 2fr; gap: 40px; position: relative;
+    }
+    .cv-paper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: var(--cv-primary); }
+    
+    /* CV Elements */
+    .cv-side { display: flex; flex-direction: column; gap: 30px; }
+    .cv-main { display: flex; flex-direction: column; gap: 30px; border-left: 1px solid #eee; padding-left: 40px; }
+    .cv-section-title { font-size: 1rem; font-weight: 800; border-bottom: 2px solid var(--cv-primary); padding-bottom: 5px; margin-bottom: 15px; color: var(--cv-primary); }
+    .skill-tag { display: inline-block; background: #f1f0ff; color: var(--cv-primary); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; margin: 2px; }
+
+    @media print { .editor-pane { display: none; } .preview-pane { padding: 0; background: white; } .cv-paper { box-shadow: none; width: 100%; } }
+  </style>
 </head>
 <body>
-  <div class="builder-container">
-    <aside class="editor-side">
-      <a href="home.html" class="sj-logo-pill">
-  <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
-  <span class="sj-text">smart<span class="sj-green">Jobs</span></span>
-</a>
-      <a href="seeker-dashboard.html" style="color: var(--indigo); font-weight: 700; display:block; margin-top:20px;"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
-      <h2 style="margin: 20px 0;">Professional CV Builder</h2>
+  <div class="builder-layout">
+    <aside class="editor-pane">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="home.html" class="sj-logo-pill"><span class="sj-icon"><i class="fas fa-arrow-left"></i></span><span class="sj-text">smart<span class="sj-green">Jobs</span></span></a>
+        <button class="nav-btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Export PDF</button>
+      </div>
+
+      <div class="input-group">
+        <label>Full Name</label>
+        <input type="text" id="in-name" class="cv-input" placeholder="e.g. Jean-Paul Niyomugabo" oninput="sync()">
+      </div>
+
+      <div class="input-group">
+        <label>Headline</label>
+        <input type="text" id="in-title" class="cv-input" placeholder="e.g. Senior Agronomist" oninput="sync()">
+      </div>
+
+      <div class="input-group">
+        <label>Personal Summary</label>
+        <textarea id="in-summary" class="cv-input" style="height: 120px;" oninput="sync()" placeholder="Highlight your best achievements..."></textarea>
+      </div>
+
+      <div class="input-group">
+        <label>Skills (Comma separated)</label>
+        <input type="text" id="in-skills" class="cv-input" placeholder="React, Python, Data Analysis" oninput="sync()">
+      </div>
       
-      <div class="form-section">
-        <h3>Contact Info</h3>
-        <input type="text" id="in-name" class="auth-input" placeholder="Full Name" oninput="liveUpdate()">
-        <input type="text" id="in-title" class="auth-input" placeholder="Professional Title (e.g. Agronomist)" oninput="liveUpdate()">
-        <input type="email" id="in-email" class="auth-input" placeholder="Email" oninput="liveUpdate()">
+      <div style="background: var(--indigo-light); padding: 15px; border-radius: 12px;">
+         <p style="font-size: 0.8rem; color: var(--indigo); font-weight: 700;"><i class="fas fa-magic"></i> AI Tip</p>
+         <p style="font-size: 0.75rem; color: var(--text-2);">Employers in Rwanda value bilingual skills (Kinyarwanda + English/French). Ensure these are listed!</p>
       </div>
-
-      <div class="form-section">
-        <h3>Professional Summary</h3>
-        <textarea id="in-summary" class="auth-input" style="height: 100px;" placeholder="Describe your expertise..." oninput="liveUpdate()"></textarea>
-      </div>
-
-      <button class="btn-auth" onclick="window.print()"><i class="fas fa-print"></i> Download PDF</button>
     </aside>
 
-    <main class="preview-side">
-      <div class="cv-paper" id="cv-content">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-          <div>
-            <h1 id="out-name" style="font-size: 2.5rem; color: var(--text);">John Doe</h1>
-            <p id="out-title" style="font-size: 1.1rem; color: var(--indigo); font-weight: 700;">Software Developer</p>
+    <main class="preview-pane">
+      <div class="cv-paper" id="printable">
+        <div class="cv-side">
+          <div style="width: 100px; height: 100px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--muted); font-weight: 800;" id="out-initial">A</div>
+          <div style="margin-top: 20px;">
+            <h1 id="out-name" style="font-size: 1.8rem; line-height: 1.1; margin-bottom: 5px;">Your Name</h1>
+            <p id="out-title" style="color: var(--cv-primary); font-weight: 700; font-size: 0.9rem;">Professional Title</p>
           </div>
-          <div style="text-align: right; font-size: 0.9rem; color: var(--muted);">
-            <p id="out-email">user@smartjobs.rw</p>
-            <p>Kigali, Rwanda</p>
-          </div>
+          
+          <section>
+            <h3 class="cv-section-title">Contact</h3>
+            <p style="font-size: 0.8rem; margin-bottom: 5px;"><i class="fas fa-envelope"></i> <span id="out-email">email@example.rw</span></p>
+            <p style="font-size: 0.8rem;"><i class="fas fa-location-dot"></i> Kigali, Rwanda</p>
+          </section>
+
+          <section>
+            <h3 class="cv-section-title">Skills</h3>
+            <div id="out-skills-tags"></div>
+          </section>
         </div>
-        <hr style="margin: 20px 0; border: 1px solid var(--border);">
-        <h3 style="color: var(--indigo);">Profile</h3>
-        <p id="out-summary" style="line-height: 1.8; color: var(--text-2);">Expert in building digital solutions...</p>
+
+        <div class="cv-main">
+          <section>
+            <h3 class="cv-section-title">Professional Profile</h3>
+            <p id="out-summary" style="font-size: 0.9rem; color: var(--text-2); text-align: justify;">Building a better future for Rwanda through excellence and dedication...</p>
+          </section>
+
+          <section>
+            <h3 class="cv-section-title">Experience</h3>
+            <div style="margin-bottom: 20px;">
+              <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 0.9rem;">
+                <span>Sample Experience Role</span>
+                <span style="color: var(--muted);">2024 - Present</span>
+              </div>
+              <p style="font-size: 0.8rem; color: var(--cv-primary); font-weight: 700;">Previous Company Ltd</p>
+              <ul style="font-size: 0.8rem; margin-top: 8px; padding-left: 15px;">
+                <li>Accomplished key tasks and supported team objectives.</li>
+              </ul>
+            </div>
+          </section>
+        </div>
       </div>
     </main>
   </div>
 
   <script>
-    function liveUpdate() {
-      document.getElementById('out-name').textContent = document.getElementById('in-name').value || "Your Name";
-      document.getElementById('out-title').textContent = document.getElementById('in-title').value || "Job Title";
-      document.getElementById('out-email').textContent = document.getElementById('in-email').value || "email@example.com";
-      document.getElementById('out-summary').textContent = document.getElementById('in-summary').value || "Professional summary goes here...";
+    function sync() {
+      const name = document.getElementById('in-name').value || "Your Name";
+      document.getElementById('out-name').innerText = name;
+      document.getElementById('out-initial').innerText = name[0].toUpperCase();
+      document.getElementById('out-title').innerText = document.getElementById('in-title').value || "Professional Title";
+      document.getElementById('out-summary').innerText = document.getElementById('in-summary').value || "Summary details...";
+      
+      const skills = document.getElementById('in-skills').value.split(',');
+      const tagsDiv = document.getElementById('out-skills-tags');
+      tagsDiv.innerHTML = '';
+      skills.forEach(s => {
+        if(s.trim()) {
+          const span = document.createElement('span');
+          span.className = 'skill-tag';
+          span.innerText = s.trim();
+          tagsDiv.appendChild(span);
+        }
+      });
     }
-
-    // Auto-fill from local storage
+    
+    // Prefill from Auth State
     window.onload = () => {
-      const user = JSON.parse(localStorage.getItem('currentUser'));
-      if(user) {
-        document.getElementById('in-name').value = user.name;
-        document.getElementById('in-email').value = user.email;
-        liveUpdate();
+      const u = JSON.parse(localStorage.getItem('currentUser'));
+      if(u) {
+        document.getElementById('in-name').value = u.name || '';
+        document.getElementById('out-email').innerText = u.email || '';
+        sync();
       }
     };
   </script>

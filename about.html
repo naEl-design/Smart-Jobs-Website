@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | smartJobs Rwanda</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --indigo: #3b2fc9;
+      --indigo-light: #ede9ff;
+      --emerald: #10b981;
+      --text: #0f172a;
+      --text-2: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --shadow: 0 4px 24px rgba(59,47,201,0.09);
+      --shadow-lg: 0 16px 48px rgba(59,47,201,0.16);
+    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+    .top-nav {
+      background: rgba(255,255,255,0.98);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      height: 70px;
+      display: flex;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+    }
+    .nav-left { display: flex; align-items: center; gap: 48px; }
+    .main-menu { display: flex; list-style: none; gap: 8px; }
+    .main-menu a { padding: 8px 20px; text-decoration: none; color: var(--muted); font-weight: 600; border-radius: 8px; transition: all 0.2s; }
+    .main-menu a:hover, .main-menu a.active { background: var(--indigo-light); color: var(--indigo); }
+    .sj-logo-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #3b2fc9, #5a44e8);
+      border-radius: 40px; padding: 6px 18px 6px 8px;
+      text-decoration: none; font-family: 'Sora', sans-serif;
+      font-weight: 800; font-size: 1rem; color: white;
+    }
+    .sj-icon { width: 28px; height: 28px; background: rgba(255,255,255,.18); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .sj-green { color: #10b981; }
+    .nav-btn-primary {
+      background: var(--indigo);
+      color: white;
+      padding: 9px 20px;
+      border-radius: 9px;
+      text-decoration: none;
+      font-weight: 700;
+      transition: all 0.2s;
+    }
+    .nav-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 14px rgba(59,47,201,0.3); }
+
+    /* Hero Section */
+    .about-hero {
+      background: linear-gradient(135deg, #0f0a3a 0%, var(--indigo) 50%, #6d51f7 100%);
+      padding: 100px 0 80px;
+      color: white;
+      text-align: center;
+    }
+    .about-hero h1 { font-size: 3rem; font-weight: 800; margin-bottom: 20px; font-family: 'Sora', sans-serif; }
+    .about-hero p { font-size: 1.1rem; max-width: 700px; margin: 0 auto; opacity: 0.9; }
+
+    /* Mission Section */
+    .mission-section { padding: 80px 0; background: white; }
+    .mission-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    .mission-text h2 { font-size: 2rem; font-weight: 800; margin-bottom: 20px; color: var(--indigo); }
+    .mission-text p { color: var(--text-2); margin-bottom: 20px; font-size: 1rem; }
+    .mission-stats { display: flex; gap: 40px; margin-top: 30px; }
+    .stat { text-align: center; }
+    .stat .number { font-size: 2.5rem; font-weight: 800; color: var(--emerald); }
+    .stat .label { color: var(--muted); font-size: 0.85rem; }
+    .mission-image img { width: 100%; border-radius: 20px; box-shadow: var(--shadow-lg); }
+
+    /* Values Section */
+    .values-section { padding: 80px 0; background: var(--bg); text-align: center; }
+    .values-section h2 { font-size: 2rem; font-weight: 800; margin-bottom: 15px; }
+    .values-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 50px; }
+    .value-card { background: white; padding: 30px; border-radius: 20px; border: 1px solid var(--border); transition: all 0.3s; }
+    .value-card:hover { transform: translateY(-5px); box-shadow: var(--shadow); }
+    .value-icon { width: 70px; height: 70px; background: var(--indigo-light); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+    .value-icon i { font-size: 2rem; color: var(--indigo); }
+    .value-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
+    .value-card p { color: var(--muted); font-size: 0.85rem; }
+
+    /* Team Section */
+    .team-section { padding: 80px 0; background: white; text-align: center; }
+    .team-section h2 { font-size: 2rem; font-weight: 800; margin-bottom: 15px; }
+    .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px; margin-top: 50px; }
+    .team-card { text-align: center; }
+    .team-avatar { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 15px; background: linear-gradient(135deg, var(--indigo), #6d51f7); display: flex; align-items: center; justify-content: center; color: white; font-size: 2.5rem; font-weight: 800; }
+    .team-card h4 { font-size: 1.1rem; font-weight: 700; }
+    .team-card p { color: var(--muted); font-size: 0.8rem; }
+
+    /* CTA Section */
+    .cta-section { padding: 80px 0; background: linear-gradient(135deg, var(--indigo), #6d51f7); color: white; text-align: center; }
+    .cta-section h2 { font-size: 2rem; margin-bottom: 15px; }
+    .cta-section p { margin-bottom: 30px; opacity: 0.9; }
+    .btn-white { background: white; color: var(--indigo); padding: 14px 32px; border-radius: 40px; text-decoration: none; font-weight: 700; transition: all 0.3s; display: inline-block; }
+    .btn-white:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+    /* Footer */
+    .main-footer {
+      background: white;
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px;
+    }
+    .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px; margin-bottom: 44px; }
+    .footer-col h4 { font-weight: 800; margin-bottom: 20px; font-size: .92rem; }
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 11px; }
+    .footer-col ul li a { color: var(--muted); text-decoration: none; font-size: .86rem; transition: color 0.2s; }
+    .footer-col ul li a:hover { color: var(--indigo); }
+    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; text-align: center; color: var(--muted); font-size: .82rem; }
+    .social-icons { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
+    .social-icons i { font-size: 1.15rem; cursor: pointer; color: var(--muted); transition: all 0.2s; }
+    .social-icons i:hover { color: var(--indigo); transform: translateY(-2px); }
+
+    @media (max-width: 1024px) {
+      .values-grid, .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .main-menu { display: none; }
+      .mission-grid { grid-template-columns: 1fr; }
+      .values-grid, .team-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .about-hero h1 { font-size: 2rem; }
+    }
+    @media (max-width: 480px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .mission-stats { flex-direction: column; gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-content">
+    <div class="nav-left">
+      <a href="home.html" class="sj-logo-pill">
+        <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
+        <span class="sj-text">smart<span class="sj-green">Jobs</span></span>
+      </a>
+      <ul class="main-menu">
+        <li><a href="home.html">Find Jobs</a></li>
+        <li><a href="employer-hub.html">Employer Hub</a></li>
+        <li><a href="market.html">Salaries</a></li>
+        <li><a href="about.html" class="active">About</a></li>
+        <li><a href="blog.html">Blog</a></li>
+      </ul>
+    </div>
+    <div class="nav-right" id="dynamic-auth">
+      <a href="auth.html" class="nav-btn-primary">Sign In</a>
+    </div>
+  </div>
+</nav>
+
+<section class="about-hero">
+  <div class="container">
+    <h1>Connecting Rwanda's Talent <br>with Opportunity</h1>
+    <p>smartJobs Rwanda is the country's fastest-growing job platform, dedicated to bridging the gap between job seekers and employers.</p>
+  </div>
+</section>
+
+<section class="mission-section">
+  <div class="container">
+    <div class="mission-grid">
+      <div class="mission-text">
+        <h2>Our Mission</h2>
+        <p>To empower every Rwandan professional to find meaningful work and help every employer discover exceptional talent. We believe that when people find the right jobs, communities thrive and economies grow.</p>
+        <p>Since our launch, we've helped thousands of job seekers connect with top employers across technology, finance, healthcare, education, and agriculture sectors.</p>
+        <div class="mission-stats">
+          <div class="stat"><div class="number">18K+</div><div class="label">Active Jobs</div></div>
+          <div class="stat"><div class="number">3.4K+</div><div class="label">Companies</div></div>
+          <div class="stat"><div class="number">98%</div><div class="label">Satisfaction</div></div>
+        </div>
+      </div>
+      <div class="mission-image">
+        <img src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Team working">
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="values-section">
+  <div class="container">
+    <h2>Our Core Values</h2>
+    <p>What drives us every day</p>
+    <div class="values-grid">
+      <div class="value-card"><div class="value-icon"><i class="fas fa-handshake"></i></div><h3>Integrity</h3><p>We act with honesty and transparency in everything we do.</p></div>
+      <div class="value-card"><div class="value-icon"><i class="fas fa-lightbulb"></i></div><h3>Innovation</h3><p>We continuously improve our platform for better user experience.</p></div>
+      <div class="value-card"><div class="value-icon"><i class="fas fa-users"></i></div><h3>Community</h3><p>We build meaningful connections between people and opportunities.</p></div>
+      <div class="value-card"><div class="value-icon"><i class="fas fa-chart-line"></i></div><h3>Excellence</h3><p>We strive for the highest quality in every feature we build.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="team-section">
+  <div class="container">
+    <h2>Meet Our Leadership</h2>
+    <p>Passionate about transforming Rwanda's job market</p>
+    <div class="team-grid">
+      <div class="team-card"><div class="team-avatar">JD</div><h4>John Doe</h4><p>Founder & CEO</p></div>
+      <div class="team-card"><div class="team-avatar">JM</div><h4>Jane Mugisha</h4><p>Head of Operations</p></div>
+      <div class="team-card"><div class="team-avatar">PN</div><h4>Paul Niyomugabo</h4><p>CTO</p></div>
+      <div class="team-card"><div class="team-avatar">AU</div><h4>Alice Uwase</h4><p>Customer Success Lead</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="container">
+    <h2>Ready to Start Your Journey?</h2>
+    <p>Join thousands of professionals who found their dream jobs through smartJobs</p>
+    <a href="auth.html" class="btn-white">Get Started <i class="fas fa-arrow-right"></i></a>
+  </div>
+</section>
+
+<footer class="main-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-col"><h4>smartJobs</h4><ul><li><a href="home.html">Browse Jobs</a></li><li><a href="market.html">Salaries</a></li><li><a href="employer-hub.html">Company Reviews</a></li></ul></div>
+      <div class="footer-col"><h4>For Employers</h4><ul><li><a href="post-job.html">Post a Job</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
+      <div class="footer-col"><h4>Resources</h4><ul><li><a href="help.html">Help Center</a></li><li><a href="blog.html">Blog</a></li><li><a href="faq.html">FAQ</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="about.html">About Us</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><p>&copy; 2026 smartJobs Rwanda. All rights reserved.</p><div class="social-icons"><i class="fab fa-facebook-f"></i><i class="fab fa-twitter"></i><i class="fab fa-linkedin-in"></i><i class="fab fa-instagram"></i></div></div>
+  </div>
+</footer>
+
+<script>
+  function getUser() { return JSON.parse(localStorage.getItem('currentUser')); }
+  const user = getUser();
+  if (user) {
+    const navRight = document.getElementById('dynamic-auth');
+    if (navRight) navRight.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:600;">${user.name}</span><button onclick="localStorage.removeItem('currentUser');window.location.href='auth.html'" style="background:var(--indigo);color:white;padding:9px 20px;border-radius:9px;border:none;cursor:pointer;">Sign Out</button></div>`;
+  }
+</script>
+</body>
+</html>

@@ -3697,3 +3697,97 @@ body.cursor-click .cursor-ring { transform: translate(-50%,-50%) scale(1.5); opa
   border-radius: 14px;
   font-size: 1.1rem;
 }
+/* ============================================================
+   smartJobs Rwanda — v2.1 Additions
+   Footer enhancements, dark mode polish, language UI
+   ============================================================ */
+
+/* ── FOOTER LINK HOVER UNDERLINE ANIMATION ──────────────── */
+.footer-col ul li a {
+  position: relative;
+}
+.footer-col ul li a::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1.5px;
+  background: var(--indigo);
+  border-radius: 2px;
+  transition: width var(--transition);
+}
+.footer-col ul li a:hover::after { width: 100%; }
+.footer-col ul li a:hover { color: var(--indigo) !important; transform: translateX(3px); }
+
+/* ── DARK MODE FOOTER ────────────────────────────────────── */
+body.dark-mode .main-footer {
+  background: #020617 !important;
+  border-top-color: #1e293b !important;
+}
+body.dark-mode .footer-col h4 { color: #f1f5f9 !important; }
+body.dark-mode .footer-col ul li a { color: #64748b !important; }
+body.dark-mode .footer-col ul li a:hover { color: #10b981 !important; }
+body.dark-mode .footer-col ul li a::after { background: #10b981 !important; }
+body.dark-mode .footer-bottom { color: #475569 !important; border-color: #1e293b !important; }
+body.dark-mode .social-icons i { color: #475569 !important; }
+body.dark-mode .social-icons i:hover { color: #7c6ff7 !important; background: #1e1a4a !important; }
+
+/* ── DARK MODE TOGGLE BUTTON (Light mode state) ─────────── */
+body:not(.dark-mode) #dark-mode-toggle {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9) !important;
+  border-color: #e2e8f0 !important;
+  color: #334155 !important;
+}
+
+/* ── GOOGLE TRANSLATE SUPPRESSION ───────────────────────── */
+.goog-te-banner-frame.skiptranslate,
+.goog-te-ftab-float,
+#goog-gt-tt,
+.goog-tooltip,
+.goog-tooltip:hover {
+  display: none !important;
+  visibility: hidden !important;
+}
+body { top: 0 !important; }
+.skiptranslate { display: none !important; }
+
+/* ── LANGUAGE BUTTON IN NAV ─────────────────────────────── */
+#sj-lang-btn {
+  vertical-align: middle;
+}
+
+/* ── LEGAL PAGE STYLES (help, privacy, terms) ───────────── */
+.legal-hero {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1a4a 100%);
+  padding: 72px 0 56px;
+  color: white;
+}
+.legal-hero h1 {
+  font-family: 'Sora', sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.legal-body {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 24px 80px;
+}
+.legal-section h2 {
+  font-family: 'Sora', sans-serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--indigo-light);
+}
+.legal-section p {
+  color: var(--text-2);
+  line-height: 1.8;
+  margin-bottom: 14px;
+  font-size: 0.93rem;
+}
+body.dark-mode .legal-section h2 { color: #f1f5f9 !important; border-color: #1e1a4a !important; }
+body.dark-mode .legal-section p { color: #94a3b8 !important; }
