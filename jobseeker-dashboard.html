@@ -288,7 +288,9 @@
   <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar-logo">
-      <div class="logo">smart<span>Jobs</span></div>
+      <a href="home.html" style="text-decoration:none;">
+        <div class="logo">smart<span>Jobs</span></div>
+      </a>
       <div class="role-badge">Job Seeker</div>
     </div>
 
@@ -303,6 +305,7 @@
     <nav class="sidebar-nav">
       <div class="nav-section-label">Main</div>
       <button class="nav-item active" onclick="showPage('overview', this)"><i class="fas fa-th-large"></i> Overview</button>
+      <a href="home.html" class="nav-item" style="color:rgba(255,255,255,.75);"><i class="fas fa-search"></i> Browse Jobs</a>
       <button class="nav-item" onclick="showPage('applications', this)"><i class="fas fa-paper-plane"></i> My Applications <span class="badge" id="apps-count">4</span></button>
       <button class="nav-item" onclick="showPage('saved', this)"><i class="fas fa-bookmark"></i> Saved Jobs</button>
       <button class="nav-item" onclick="showPage('recommended', this)"><i class="fas fa-bolt"></i> Recommended</button>
