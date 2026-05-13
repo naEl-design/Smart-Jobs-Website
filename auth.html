@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
       --indigo: #3b2fc9;
       --indigo-dark: #2a1fa8;
@@ -18,52 +18,157 @@
       --border: #e2e8f0;
       --bg: #f8fafc;
     }
+    
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
       min-height: 100vh;
       display: flex;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ========== BACKGROUND IMAGE WITH ANIMATIONS ========== */
+    .bg-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -2;
+      overflow: hidden;
+    }
+
+    .bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080');
+      background-size: cover;
+      background-position: center;
+      animation: slowZoom 25s ease-in-out infinite alternate;
+    }
+
+    .bg-image::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: linear-gradient(135deg, #0f0a3a 0%, #3b2fc9 55%, #6d51f7 100%);
+      z-index: -1;
     }
-    
-    /* Logo Styles */
-    .sj-logo-pill {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: linear-gradient(135deg, #3b2fc9, #5a44e8);
-      border-radius: 60px;
-      padding: 6px 18px 6px 8px;
-      text-decoration: none;
-      font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
-      font-weight: 800;
-      font-size: 1.1rem;
-      color: white;
-      letter-spacing: -0.01em;
-      box-shadow: 0 3px 14px rgba(59,47,201, 0.3);
-      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s;
-      white-space: nowrap;
-      flex-shrink: 0;
+
+    .bg-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, 
+        rgba(0, 0, 0, 0.4) 0%, 
+        rgba(59, 47, 201, 0.3) 50%, 
+        rgba(0, 0, 0, 0.4) 100%);
+      z-index: -1;
+      animation: overlayPulse 6s ease-in-out infinite;
     }
-    .sj-logo-pill:hover {
-      transform: translateY(-2px) scale(1.03);
-      box-shadow: 0 8px 24px rgba(59,47,201, 0.45);
-      color: white;
+
+    @keyframes slowZoom {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
     }
-    .sj-icon {
-      width: 30px;
-      height: 30px;
-      background: rgba(255, 255, 255, 0.2);
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.85rem;
-      flex-shrink: 0;
+
+    @keyframes overlayPulse {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0.8; }
     }
-    .sj-green { color: #10b981; }
-    .sj-logo-pill.sj-lg { font-size: 1.4rem; padding: 10px 24px 10px 12px; gap: 12px; }
-    .sj-logo-pill.sj-lg .sj-icon { width: 40px; height: 40px; border-radius: 14px; font-size: 1.1rem; }
-    
+
+    .particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: floatParticle linear infinite;
+    }
+
+    @keyframes floatParticle {
+      0% {
+        transform: translateY(100vh) translateX(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% { opacity: 0.6; }
+      90% { opacity: 0.6; }
+      100% {
+        transform: translateY(-20vh) translateX(100px) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .floating-shape {
+      position: fixed;
+      z-index: -1;
+      pointer-events: none;
+      animation: floatShape 12s ease-in-out infinite;
+    }
+
+    .floating-shape-1 {
+      top: 10%;
+      left: 5%;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, transparent 70%);
+      border-radius: 50%;
+      animation-delay: 0s;
+    }
+
+    .floating-shape-2 {
+      bottom: 15%;
+      right: 3%;
+      width: 350px;
+      height: 350px;
+      background: radial-gradient(circle, rgba(59, 47, 201, 0.12) 0%, transparent 70%);
+      border-radius: 50%;
+      animation-delay: 2s;
+    }
+
+    .floating-shape-3 {
+      top: 40%;
+      right: 15%;
+      width: 180px;
+      height: 180px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+      border-radius: 50%;
+      animation-delay: 4s;
+    }
+
+    .floating-shape-4 {
+      bottom: 20%;
+      left: 10%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.08) 0%, transparent 70%);
+      border-radius: 50%;
+      animation-delay: 6s;
+    }
+
+    @keyframes floatShape {
+      0%, 100% { transform: translateY(0) translateX(0); }
+      33% { transform: translateY(-40px) translateX(25px); }
+      66% { transform: translateY(30px) translateX(-20px); }
+    }
+
     .auth-left {
       flex: 1;
       display: flex;
@@ -72,60 +177,186 @@
       justify-content: center;
       padding: 60px;
       color: white;
+      animation: slideInLeft 0.8s ease-out;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(2px);
     }
-    .auth-left h1 { font-size: 2.5rem; font-family: 'Sora', sans-serif; margin-bottom: 20px; }
-    .auth-left p { font-size: 1rem; opacity: 0.85; margin-bottom: 40px; text-align: center; max-width: 300px; }
-    .auth-stats { display: flex; gap: 24px; flex-wrap: wrap; justify-content: center; }
-    .stat { text-align: center; background: rgba(255,255,255,.1); padding: 16px 24px; border-radius: 16px; backdrop-filter: blur(10px); min-width: 100px; }
-    .stat .num { font-size: 1.8rem; font-weight: 800; color: var(--emerald); }
-    .stat .label { font-size: 0.75rem; opacity: 0.8; }
+
+    @keyframes slideInLeft {
+      from { opacity: 0; transform: translateX(-80px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .auth-left h1 { 
+      font-size: 2.8rem; 
+      font-family: 'Sora', sans-serif; 
+      margin-bottom: 20px;
+      animation: fadeInUp 0.6s ease-out 0.2s both;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+    }
+
+    .auth-left p { 
+      font-size: 1.1rem; 
+      opacity: 0.9; 
+      margin-bottom: 40px; 
+      text-align: center; 
+      max-width: 320px;
+      animation: fadeInUp 0.6s ease-out 0.3s both;
+    }
+
+    .auth-stats { 
+      display: flex; 
+      gap: 24px; 
+      flex-wrap: wrap; 
+      justify-content: center;
+      animation: fadeInUp 0.6s ease-out 0.4s both;
+    }
+
+    .stat { 
+      text-align: center; 
+      background: rgba(255,255,255,.15); 
+      padding: 20px 28px; 
+      border-radius: 20px; 
+      backdrop-filter: blur(10px); 
+      min-width: 110px;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .stat:hover {
+      transform: translateY(-8px) scale(1.05);
+      background: rgba(255,255,255,.25);
+      border-color: rgba(255,255,255,0.4);
+    }
+
+    .stat .num { 
+      font-size: 2rem; 
+      font-weight: 800; 
+      color: var(--emerald);
+    }
+
+    .stat .label { 
+      font-size: 0.8rem; 
+      opacity: 0.9; 
+    }
     
     .auth-right {
-      width: 480px;
-      background: white;
+      width: 500px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: center;
       padding: 48px;
       border-radius: 32px 0 0 32px;
+      animation: slideInRight 0.8s ease-out;
+      box-shadow: -10px 0 50px rgba(0,0,0,0.15);
     }
-    .auth-card { width: 100%; max-width: 380px; }
-    .auth-card h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; }
-    .auth-card p { color: var(--muted); margin-bottom: 28px; }
-    
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(80px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .auth-card { 
+      width: 100%; 
+      max-width: 380px; 
+    }
+
+    .auth-card h2 { 
+      font-size: 1.8rem; 
+      font-weight: 800; 
+      margin-bottom: 8px;
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .auth-card p { 
+      color: var(--muted); 
+      margin-bottom: 28px;
+      animation: fadeInUp 0.5s ease-out 0.05s both;
+    }
+
+    .sj-logo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #3b2fc9, #5a44e8);
+      border-radius: 60px;
+      padding: 8px 24px 8px 12px;
+      text-decoration: none;
+      font-family: 'Sora', 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: white;
+      letter-spacing: -0.01em;
+      box-shadow: 0 4px 20px rgba(59,47,201, 0.4);
+      transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.22s;
+      white-space: nowrap;
+      flex-shrink: 0;
+      margin-bottom: 30px;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .sj-logo-pill:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 10px 30px rgba(59,47,201, 0.5);
+      color: white;
+    }
+
+    .sj-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      flex-shrink: 0;
+    }
+
+    .sj-green { color: #10b981; }
+
     .role-tabs {
       display: flex;
       background: var(--bg);
-      border-radius: 12px;
+      border-radius: 14px;
       padding: 4px;
       margin-bottom: 24px;
       gap: 4px;
     }
+
     .role-tab {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       border: none;
       background: transparent;
-      border-radius: 8px;
+      border-radius: 10px;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
+
     .role-tab.active {
       background: white;
       color: var(--indigo);
-      box-shadow: 0 2px 8px rgba(0,0,0,.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,.1);
     }
     
-    .input-field { margin-bottom: 16px; }
-    .input-field label { display: block; font-weight: 600; font-size: 0.8rem; margin-bottom: 5px; color: var(--text); }
+    .input-field { margin-bottom: 18px; }
+    .input-field label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--text); }
     .input-field input {
       width: 100%;
-      padding: 12px 14px;
+      padding: 12px 16px;
       border: 1.5px solid var(--border);
-      border-radius: 10px;
-      font-size: 0.9rem;
+      border-radius: 12px;
+      font-size: 0.95rem;
       outline: none;
       transition: all 0.2s;
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -135,7 +366,7 @@
     .pass-wrapper { position: relative; }
     .pass-toggle {
       position: absolute;
-      right: 14px;
+      right: 16px;
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
@@ -145,10 +376,11 @@
     .auth-extras {
       display: flex;
       justify-content: space-between;
-      font-size: 0.8rem;
-      margin: 16px 0;
+      font-size: 0.85rem;
+      margin: 18px 0;
     }
     .auth-extras a { color: var(--indigo); text-decoration: none; font-weight: 600; }
+    .auth-extras a:hover { text-decoration: underline; }
     
     .btn-auth {
       width: 100%;
@@ -156,18 +388,18 @@
       background: linear-gradient(135deg, var(--indigo), #6d51f7);
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       font-weight: 700;
       font-size: 1rem;
       cursor: pointer;
       transition: all 0.2s;
       font-family: 'Sora', sans-serif;
     }
-    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 4px 20px rgba(59,47,201,.4); }
+    .btn-auth:hover { transform: translateY(-2px); box-shadow: 0 6px 25px rgba(59,47,201,.4); }
     
     .divider {
       text-align: center;
-      margin: 20px 0;
+      margin: 24px 0;
       color: var(--muted);
       position: relative;
     }
@@ -185,25 +417,167 @@
     .social-row { display: flex; gap: 12px; margin-bottom: 20px; }
     .btn-social {
       flex: 1;
-      padding: 10px;
+      padding: 12px;
       border: 1.5px solid var(--border);
-      border-radius: 10px;
+      border-radius: 12px;
       background: white;
       font-weight: 600;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      gap: 10px;
       transition: all 0.2s;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    .btn-social:hover { background: var(--bg); border-color: var(--indigo); }
+    .btn-social:hover { background: var(--bg); border-color: var(--indigo); transform: translateY(-2px); }
     
-    .auth-foot { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 20px; }
+    .auth-foot { text-align: center; font-size: 0.85rem; color: var(--muted); margin-top: 24px; }
     .auth-foot a { color: var(--indigo); font-weight: 700; text-decoration: none; }
+    .auth-foot a:hover { text-decoration: underline; }
     
     #register-panel { display: none; }
+    
+    /* ========== ADMIN MODAL ========== */
+    .admin-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    .admin-modal.show {
+      display: flex;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .admin-modal-content {
+      background: white;
+      border-radius: 24px;
+      width: 380px;
+      max-width: 90%;
+      padding: 32px;
+      text-align: center;
+      animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9) translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+    
+    .admin-modal-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+    
+    .admin-modal-icon i {
+      font-size: 2rem;
+      color: white;
+    }
+    
+    .admin-modal h3 {
+      font-family: 'Sora', sans-serif;
+      font-size: 1.4rem;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    
+    .admin-modal p {
+      color: #64748b;
+      font-size: 0.85rem;
+      margin-bottom: 24px;
+    }
+    
+    .admin-modal .warning {
+      background: #fef3c7;
+      color: #92400e;
+      padding: 10px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+    
+    .admin-modal input {
+      width: 100%;
+      padding: 12px 16px;
+      margin: 12px 0;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    
+    .admin-modal input:focus {
+      border-color: #3b2fc9;
+      box-shadow: 0 0 0 3px rgba(59,47,201,0.1);
+    }
+    
+    .admin-modal .btn-admin {
+      background: linear-gradient(135deg, #3b2fc9, #6d51f7);
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      width: 100%;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+    
+    .admin-modal .btn-admin:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59,47,201,0.4);
+    }
+    
+    .admin-modal .btn-close {
+      background: none;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      margin-top: 16px;
+      font-size: 0.85rem;
+    }
+    
+    .admin-modal .btn-close:hover {
+      color: #ef4444;
+    }
+    
+    .admin-modal .error-msg {
+      color: #ef4444;
+      font-size: 0.75rem;
+      margin-top: 8px;
+      display: none;
+    }
     
     .toast-container {
       position: fixed;
@@ -214,10 +588,11 @@
     .toast {
       background: #0f172a;
       color: white;
-      padding: 12px 20px;
-      border-radius: 10px;
+      padding: 14px 24px;
+      border-radius: 12px;
       margin-top: 8px;
       animation: slideIn 0.3s ease;
+      font-weight: 600;
     }
     .toast.success { background: #065f46; }
     .toast.error { background: #7f1d1d; }
@@ -226,13 +601,43 @@
       to { opacity: 1; transform: translateX(0); }
     }
     
+    @media (max-width: 1000px) {
+      .auth-left { padding: 40px; }
+      .auth-left h1 { font-size: 2rem; }
+      .auth-right { width: 450px; padding: 40px; }
+    }
+
     @media (max-width: 900px) {
       .auth-left { display: none; }
-      .auth-right { width: 100%; border-radius: 0; }
+      .auth-right { width: 100%; border-radius: 0; min-height: 100vh; }
+      body { background: linear-gradient(135deg, #0f0a3a 0%, #3b2fc9 55%, #6d51f7 100%); }
+      .auth-right { background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); }
+    }
+
+    @media (max-width: 480px) {
+      .auth-right { padding: 32px 20px; }
+      .auth-card h2 { font-size: 1.5rem; }
+      .social-row { flex-direction: column; }
+      .stat { padding: 12px 16px; min-width: 80px; }
+      .stat .num { font-size: 1.4rem; }
     }
   </style>
 </head>
 <body>
+
+  <!-- BACKGROUND -->
+  <div class="bg-container">
+    <div class="bg-image"></div>
+  </div>
+  <div class="bg-overlay"></div>
+
+  <!-- Floating Particles -->
+  <div class="particles" id="particles"></div>
+  <div class="floating-shape floating-shape-1"></div>
+  <div class="floating-shape floating-shape-2"></div>
+  <div class="floating-shape floating-shape-3"></div>
+  <div class="floating-shape floating-shape-4"></div>
+
   <div class="auth-left">
     <div class="sj-logo-pill sj-lg" style="cursor: default; margin-bottom: 30px;">
       <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
@@ -253,9 +658,9 @@
         <h2>Welcome back 👋</h2>
         <p>Sign in to continue your job search.</p>
         <div class="role-tabs">
-          <button class="role-tab active" data-role="Job Seeker" onclick="setRole('Job Seeker')">Job Seeker</button>
-          <button class="role-tab" data-role="Employer" onclick="setRole('Employer')">Employer</button>
-          <button class="role-tab" data-role="Admin" onclick="setRole('Admin')">Admin</button>
+          <button class="role-tab active" data-role="Job Seeker" onclick="setRole('Job Seeker')">👤 Job Seeker</button>
+          <button class="role-tab" data-role="Employer" onclick="setRole('Employer')">🏢 Employer</button>
+          <button class="role-tab" data-role="Admin" onclick="openAdminModal()">👑 Admin</button>
         </div>
         <form id="login-form" onsubmit="handleLogin(event)">
           <div class="input-field">
@@ -270,8 +675,8 @@
             </div>
           </div>
           <div class="auth-extras">
-            <label><input type="checkbox"> Remember me</label>
-            <a href="#">Forgot password?</a>
+            <label><input type="checkbox" id="remember-me"> Remember me</label>
+            <a href="forgot-password.html">Forgot password?</a>
           </div>
           <button type="submit" class="btn-auth" id="login-btn">Sign In as Job Seeker</button>
         </form>
@@ -287,8 +692,8 @@
         <h2>Create Account ✨</h2>
         <p>Join thousands finding jobs in Rwanda</p>
         <div class="role-tabs">
-          <button class="role-tab active" data-role="Job Seeker" onclick="setRole('Job Seeker')">Job Seeker</button>
-          <button class="role-tab" data-role="Employer" onclick="setRole('Employer')">Employer</button>
+          <button class="role-tab active" data-role="Job Seeker" onclick="setRole('Job Seeker')">👤 Job Seeker</button>
+          <button class="role-tab" data-role="Employer" onclick="setRole('Employer')">🏢 Employer</button>
         </div>
         <form id="register-form" onsubmit="handleRegister(event)">
           <div class="input-field">
@@ -306,10 +711,41 @@
               <i class="fas fa-eye pass-toggle" onclick="togglePassword('reg-password', this)"></i>
             </div>
           </div>
+          <div class="input-field">
+            <label>Confirm Password</label>
+            <div class="pass-wrapper">
+              <input type="password" id="reg-confirm-password" placeholder="Confirm your password" required>
+            </div>
+          </div>
           <button type="submit" class="btn-auth">Create Account</button>
         </form>
         <p class="auth-foot">Already have an account? <a href="#" onclick="showLogin()">Sign in →</a></p>
       </div>
+    </div>
+  </div>
+
+  <!-- ADMIN MODAL POPUP -->
+  <div class="admin-modal" id="adminModal">
+    <div class="admin-modal-content">
+      <div class="admin-modal-icon">
+        <i class="fas fa-shield-alt"></i>
+      </div>
+      <h3>Admin Access</h3>
+      <p>Secure administrator portal</p>
+      <div class="warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Restricted Area - Authorized Personnel Only</span>
+      </div>
+      <input type="password" id="adminPassword" placeholder="Enter secure admin key">
+      <div class="error-msg" id="adminErrorMsg">
+        <i class="fas fa-times-circle"></i> Invalid credentials. Access denied.
+      </div>
+      <button class="btn-admin" onclick="verifyAdminLogin()">
+        <i class="fas fa-unlock-alt"></i> Access Dashboard
+      </button>
+      <button class="btn-close" onclick="closeAdminModal()">
+        <i class="fas fa-times"></i> Cancel
+      </button>
     </div>
   </div>
   
@@ -318,11 +754,28 @@
   <script>
     let currentRole = 'Job Seeker';
     
+    function createParticles() {
+      const container = document.getElementById('particles');
+      if (!container) return;
+      for (let i = 0; i < 60; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        const size = Math.random() * 8 + 2;
+        particle.style.width = size + 'px';
+        particle.style.height = size + 'px';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.animationDuration = Math.random() * 10 + 5 + 's';
+        particle.style.animationDelay = Math.random() * 15 + 's';
+        particle.style.opacity = Math.random() * 0.4 + 0.1;
+        container.appendChild(particle);
+      }
+    }
+    
     function showToast(msg, type = 'info') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
-      toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${msg}`;
+      toast.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${msg}`;
       container.appendChild(toast);
       setTimeout(() => toast.remove(), 3000);
     }
@@ -347,6 +800,59 @@
       }
     }
     
+    // Admin Modal Functions
+    function openAdminModal() {
+      document.getElementById('adminModal').classList.add('show');
+      document.getElementById('adminPassword').value = '';
+      document.getElementById('adminErrorMsg').style.display = 'none';
+    }
+    
+    function closeAdminModal() {
+      document.getElementById('adminModal').classList.remove('show');
+    }
+    
+    function verifyAdminLogin() {
+      const password = document.getElementById('adminPassword').value;
+      const errorMsg = document.getElementById('adminErrorMsg');
+      
+      if (password === 'admin123') {
+        sessionStorage.setItem('adminAuthenticated', 'true');
+        showToast('Admin access granted! Redirecting...', 'success');
+        setTimeout(() => {
+          window.location.href = 'admin.html';
+        }, 800);
+      } else {
+        errorMsg.style.display = 'block';
+        document.getElementById('adminPassword').value = '';
+        document.getElementById('adminPassword').style.borderColor = '#ef4444';
+        setTimeout(() => {
+          errorMsg.style.display = 'none';
+          document.getElementById('adminPassword').style.borderColor = '#e2e8f0';
+        }, 3000);
+      }
+    }
+    
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        closeAdminModal();
+      }
+    });
+    
+    // Close modal when clicking outside
+    document.getElementById('adminModal').addEventListener('click', function(e) {
+      if (e.target === this) {
+        closeAdminModal();
+      }
+    });
+    
+    // Enter key support in modal
+    document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        verifyAdminLogin();
+      }
+    });
+    
     function handleLogin(e) {
       e.preventDefault();
       const email = document.getElementById('login-email').value.trim();
@@ -357,25 +863,36 @@
         return;
       }
       
+      // Admin is handled by modal only, not here
       if (currentRole === 'Admin') {
-        if (password !== 'admin123') {
-          showToast('Invalid admin credentials', 'error');
-          return;
-        }
-        const user = { name: 'Admin User', email, role: 'Admin' };
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        showToast('Welcome, Admin!', 'success');
-        setTimeout(() => window.location.href = 'admin.html', 800);
+        openAdminModal();
         return;
       }
       
       const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
       const user = { name, email, role: currentRole };
       localStorage.setItem('currentUser', JSON.stringify(user));
+      
+      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const userExists = registeredUsers.some(u => u.email === email);
+      if (!userExists) {
+        registeredUsers.push({
+          id: registeredUsers.length + 1,
+          name: name,
+          email: email,
+          role: currentRole,
+          phone: '+250 7XX XXX XXX',
+          location: 'Kigali',
+          registeredAt: new Date().toISOString(),
+          status: 'Active'
+        });
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      }
+      
       showToast(`Welcome back, ${name}!`, 'success');
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
-        else window.location.href = 'jobseeker-dashboard.html';
+        else window.location.href = 'home.html';
       }, 800);
     }
     
@@ -384,6 +901,7 @@
       const name = document.getElementById('reg-name').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const password = document.getElementById('reg-password').value;
+      const confirmPassword = document.getElementById('reg-confirm-password').value;
       
       if (!name || !email || !password) {
         showToast('Please fill in all fields', 'error');
@@ -393,24 +911,58 @@
         showToast('Password must be at least 6 characters', 'error');
         return;
       }
+      if (password !== confirmPassword) {
+        showToast('Passwords do not match', 'error');
+        return;
+      }
       
       const user = { name, email, role: currentRole };
       localStorage.setItem('currentUser', JSON.stringify(user));
+      
+      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      registeredUsers.push({
+        id: registeredUsers.length + 1,
+        name: name,
+        email: email,
+        role: currentRole,
+        phone: '+250 7XX XXX XXX',
+        location: 'Kigali',
+        registeredAt: new Date().toISOString(),
+        status: 'Active'
+      });
+      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      
       showToast(`Account created! Welcome, ${name}!`, 'success');
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
-        else window.location.href = 'jobseeker-dashboard.html';
+        else window.location.href = 'home.html';
       }, 800);
     }
     
     function socialLogin(provider) {
       const user = { name: `${provider} User`, email: `user@${provider.toLowerCase()}.com`, role: currentRole };
       localStorage.setItem('currentUser', JSON.stringify(user));
+      
+      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const userExists = registeredUsers.some(u => u.email === user.email);
+      if (!userExists) {
+        registeredUsers.push({
+          id: registeredUsers.length + 1,
+          name: user.name,
+          email: user.email,
+          role: currentRole,
+          phone: '+250 7XX XXX XXX',
+          location: 'Kigali',
+          registeredAt: new Date().toISOString(),
+          status: 'Active'
+        });
+        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+      }
+      
       showToast(`Signed in with ${provider}!`, 'success');
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
-        else if (currentRole === 'Admin') window.location.href = 'admin.html';
-        else window.location.href = 'jobseeker-dashboard.html';
+        else window.location.href = 'home.html';
       }, 800);
     }
     
@@ -424,7 +976,26 @@
       document.getElementById('login-panel').style.display = 'block';
     }
     
-    // Job listings are managed by home.html
+    document.addEventListener('DOMContentLoaded', () => {
+      createParticles();
+      const savedEmail = localStorage.getItem('savedEmail');
+      if (savedEmail) {
+        document.getElementById('login-email').value = savedEmail;
+        document.getElementById('remember-me').checked = true;
+      }
+    });
+    
+    const rememberCheckbox = document.getElementById('remember-me');
+    if (rememberCheckbox) {
+      rememberCheckbox.addEventListener('change', function() {
+        const email = document.getElementById('login-email').value;
+        if (this.checked && email) {
+          localStorage.setItem('savedEmail', email);
+        } else {
+          localStorage.removeItem('savedEmail');
+        }
+      });
+    }
   </script>
 </body>
 </html>

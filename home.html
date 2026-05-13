@@ -8,6 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
   <style>
+    /* Keep all your existing styles here - they remain unchanged */
     * {
       margin: 0;
       padding: 0;
@@ -1049,7 +1050,7 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
-    /* ========== FOOTER ========== */
+    /* ========== FOOTER - UPDATED (removed Employer Dashboard and Post a Job) ========== */
     .main-footer {
       background: var(--dark);
       color: white;
@@ -1424,6 +1425,7 @@
   </div>
 </section>
 
+<!-- ========== UPDATED FOOTER - Removed Employer Dashboard and Post a Job ========== -->
 <footer class="main-footer">
   <div class="footer-grid">
     <div class="footer-col">
@@ -1435,11 +1437,11 @@
       </ul>
     </div>
     <div class="footer-col">
-      <h4>For Employers</h4>
+      <h4>For Job Seekers</h4>
       <ul>
-        <li><a href="post-job.html">Post a Job</a></li>
-        <li><a href="employer-dashboard.html">Employer Dashboard</a></li>
-        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="auth.html">Create Account</a></li>
+        <li><a href="cv-builder.html">CV Builder</a></li>
+        <li><a href="blog.html">Career Advice</a></li>
       </ul>
     </div>
     <div class="footer-col">
@@ -1655,87 +1657,86 @@
     }
   }
 
-  function submitApplication(jobId, title, company) {
-    const currentUser = getUser();
-    if (!currentUser) {
-      showToast('Please sign in to apply', 'error');
-      setTimeout(() => window.location.href = 'auth.html', 1500);
-      return;
-    }
-    
-    const name = document.getElementById('apply-name')?.value.trim();
-    const email = document.getElementById('apply-email')?.value.trim();
-    const phone = document.getElementById('apply-phone')?.value.trim();
-    const location = document.getElementById('apply-location')?.value.trim();
-    const msg = document.getElementById('apply-msg')?.value.trim();
-    
-    if (!name || !email || !phone || !location) {
-      showToast('Please fill in all fields', 'error');
-      return;
-    }
-    
-    if (!email.includes('@')) {
-      showToast('Please enter a valid email', 'error');
-      return;
-    }
-    
-    const apps = JSON.parse(localStorage.getItem('jobApplications')) || [];
-    
-    if (apps.find(a => a.jobId === jobId && a.seekerEmail === email)) {
-      showToast('You already applied for this job!', 'error');
-      return;
-    }
-    
-    const newApp = {
-      id: Date.now(),
-      jobId: jobId,
-      jobTitle: title,
-      company: company,
-      seekerName: name,
-      seekerEmail: email,
-      seekerPhone: phone,
-      seekerPlace: location,
-      message: msg || 'No cover message provided.',
-      status: 'New',
-      date: new Date().toLocaleDateString()
-    };
-    
-    apps.push(newApp);
-    localStorage.setItem('jobApplications', JSON.stringify(apps));
-    
-    // Clear form
-    ['apply-name', 'apply-email', 'apply-phone', 'apply-location', 'apply-msg'].forEach(field => {
-      const el = document.getElementById(field);
-      if (el) el.value = '';
-    });
-    
-    showToast(`✅ Application sent to ${company}! We'll notify you soon.`);
-    
-    // Confetti effect
-    for(let i = 0; i < 50; i++) {
-      const confetti = document.createElement('div');
-      confetti.style.cssText = `
-        position: fixed;
-        width: 10px;
-        height: 10px;
-        background: ${['#3b2fc9', '#10b981', '#f59e0b', '#ef4444'][Math.floor(Math.random()*4)]};
-        left: ${Math.random() * 100}%;
-        top: -10px;
-        border-radius: 2px;
-        pointer-events: none;
-        z-index: 9999;
-        animation: confettiFall ${Math.random() * 2 + 1}s linear forwards;
-      `;
-      document.body.appendChild(confetti);
-      setTimeout(() => confetti.remove(), 2000);
-    }
+function submitApplication(jobId, title, company) {
+  const currentUser = getUser();
+  if (!currentUser) {
+    showToast('Please sign in to apply', 'error');
+    setTimeout(() => window.location.href = 'auth.html', 1500);
+    return;
   }
-
-  function logout() {
-    localStorage.removeItem('currentUser');
-    showToast('Signed out successfully');
-    setTimeout(() => window.location.href = 'auth.html', 800);
+  
+  // Get the job to get employer email
+  const allJobs = JSON.parse(localStorage.getItem('allJobs')) || [];
+  const job = allJobs.find(j => j.id === jobId);
+  
+  const name = document.getElementById('apply-name')?.value.trim();
+  const email = document.getElementById('apply-email')?.value.trim();
+  const phone = document.getElementById('apply-phone')?.value.trim();
+  const location = document.getElementById('apply-location')?.value.trim();
+  const msg = document.getElementById('apply-msg')?.value.trim();
+  
+  if (!name || !email || !phone || !location) {
+    showToast('Please fill in all fields', 'error');
+    return;
   }
+  
+  if (!email.includes('@')) {
+    showToast('Please enter a valid email', 'error');
+    return;
+  }
+  
+  const apps = JSON.parse(localStorage.getItem('jobApplications')) || [];
+  
+  if (apps.find(a => a.jobId === jobId && a.seekerEmail === email)) {
+    showToast('You already applied for this job!', 'error');
+    return;
+  }
+  
+  const newApp = {
+    id: Date.now(),
+    jobId: jobId,
+    jobTitle: title,
+    company: company,
+    employerEmail: job ? job.employerEmail : null,  // ← IMPORTANT: Save employer email
+    seekerName: name,
+    seekerEmail: email,
+    seekerPhone: phone,
+    seekerPlace: location,
+    message: msg || 'No cover message provided.',
+    status: 'New',
+    date: new Date().toLocaleDateString()
+  };
+  
+  apps.push(newApp);
+  localStorage.setItem('jobApplications', JSON.stringify(apps));
+  
+  // Clear form
+  ['apply-name', 'apply-email', 'apply-phone', 'apply-location', 'apply-msg'].forEach(field => {
+    const el = document.getElementById(field);
+    if (el) el.value = '';
+  });
+  
+  showToast(`✅ Application sent to ${company}! We'll notify you soon.`);
+  
+  // Confetti effect
+  for(let i = 0; i < 50; i++) {
+    const confetti = document.createElement('div');
+    confetti.style.cssText = `
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: ${['#3b2fc9', '#10b981', '#f59e0b', '#ef4444'][Math.floor(Math.random()*4)]};
+      left: ${Math.random() * 100}%;
+      top: -10px;
+      border-radius: 2px;
+      pointer-events: none;
+      z-index: 9999;
+      animation: confettiFall ${Math.random() * 2 + 1}s linear forwards;
+    `;
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 2000);
+  }
+}
 
   function updateNavAuth() {
     const user = getUser();
