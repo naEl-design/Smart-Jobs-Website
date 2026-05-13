@@ -6,6 +6,7 @@
   <title>Sign In | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -380,7 +381,7 @@
       showToast(`Welcome back, ${name}!`, 'success');
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
-        else window.location.href = 'seeker-dashboard.html';
+        else window.location.href = 'jobseeker-dashboard.html';
       }, 800);
     }
     
@@ -404,7 +405,7 @@
       showToast(`Account created! Welcome, ${name}!`, 'success');
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
-        else window.location.href = 'seeker-dashboard.html';
+        else window.location.href = 'jobseeker-dashboard.html';
       }, 800);
     }
     
@@ -415,7 +416,7 @@
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
         else if (currentRole === 'Admin') window.location.href = 'admin.html';
-        else window.location.href = 'seeker-dashboard.html';
+        else window.location.href = 'jobseeker-dashboard.html';
       }, 800);
     }
     

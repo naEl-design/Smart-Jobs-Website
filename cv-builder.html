@@ -3,158 +3,1116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI CV Designer | smartJobs Rwanda</title>
+  <title>CV Builder | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;700;800&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    :root { --cv-primary: #3b2fc9; }
-    .builder-layout { display: grid; grid-template-columns: 480px 1fr; height: 100vh; background: #f1f5f9; }
-    
-    /* Sidebar Editor */
-    .editor-pane { 
-      background: white; border-right: 1px solid var(--border); 
-      overflow-y: auto; padding: 32px; display: flex; flex-direction: column; gap: 24px;
-      box-shadow: 10px 0 30px rgba(0,0,0,0.02); z-index: 10;
-    }
-    .input-group { display: flex; flex-direction: column; gap: 8px; }
-    .input-group label { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: var(--muted); }
-    .cv-input { 
-      padding: 12px; border: 1.5px solid var(--border); border-radius: 10px; 
-      font-family: inherit; transition: all 0.2s; 
-    }
-    .cv-input:focus { border-color: var(--cv-primary); outline: none; box-shadow: 0 0 0 4px rgba(59,47,201,0.1); }
+    /* ============================================================
+       smartJobs Rwanda — CV Builder
+       Plain HTML + CSS + JavaScript (no framework required)
+    ============================================================ */
 
-    /* Preview Pane */
-    .preview-pane { 
-      padding: 60px; overflow-y: auto; display: flex; justify-content: center; 
-      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    :root {
+      --indigo:        #3b2fc9;
+      --indigo-dark:   #2a1fa8;
+      --indigo-light:  #ede9ff;
+      --emerald:       #10b981;
+      --emerald-dark:  #059669;
+      --emerald-light: #d1fae5;
+      --text:          #0f172a;
+      --muted:         #64748b;
+      --border:        #e2e8f0;
+      --bg:            #f8fafc;
+      --white:         #ffffff;
+      --shadow:        0 4px 24px rgba(59,47,201,0.09);
+      --radius:        12px;
     }
-    .cv-paper { 
-      width: 210mm; min-height: 297mm; background: white; padding: 60px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.15); border-radius: 2px;
-      display: grid; grid-template-columns: 1fr 2fr; gap: 40px; position: relative;
-    }
-    .cv-paper::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 10px; background: var(--cv-primary); }
-    
-    /* CV Elements */
-    .cv-side { display: flex; flex-direction: column; gap: 30px; }
-    .cv-main { display: flex; flex-direction: column; gap: 30px; border-left: 1px solid #eee; padding-left: 40px; }
-    .cv-section-title { font-size: 1rem; font-weight: 800; border-bottom: 2px solid var(--cv-primary); padding-bottom: 5px; margin-bottom: 15px; color: var(--cv-primary); }
-    .skill-tag { display: inline-block; background: #f1f0ff; color: var(--cv-primary); padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 700; margin: 2px; }
 
-    @media print { .editor-pane { display: none; } .preview-pane { padding: 0; background: white; } .cv-paper { box-shadow: none; width: 100%; } }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+    h1,h2,h3,h4,h5 { font-family: 'Sora', sans-serif; }
+
+    /* ── NAVBAR ───────────────────────────────────────────── */
+    .navbar {
+      background: rgba(255,255,255,.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; height: 64px;
+    }
+    .navbar .logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--indigo); text-decoration: none; }
+    .navbar .logo span { color: var(--emerald); }
+    .navbar-actions { display: flex; gap: 12px; align-items: center; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; border: none; transition: all .2s; text-decoration: none; font-family: inherit; }
+    .btn-primary { background: var(--indigo); color: white; }
+    .btn-primary:hover { background: var(--indigo-dark); transform: translateY(-1px); }
+    .btn-emerald { background: var(--emerald); color: white; }
+    .btn-emerald:hover { background: var(--emerald-dark); transform: translateY(-1px); }
+    .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); }
+    .btn-danger { background: #fee2e2; color: #991b1b; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-sm { padding: 6px 14px; font-size: .8rem; }
+
+    /* ── VIEWS ────────────────────────────────────────────── */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ── HOME VIEW ────────────────────────────────────────── */
+    #view-home { padding: 48px 28px; max-width: 1100px; margin: 0 auto; }
+    .home-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; flex-wrap: wrap; gap: 16px; }
+    .home-header h1 { font-size: 2rem; font-weight: 800; }
+    .home-header p { color: var(--muted); margin-top: 4px; }
+    .cv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+    .cv-card {
+      background: white; border-radius: var(--radius); border: 1px solid var(--border);
+      overflow: hidden; transition: all .2s; cursor: pointer;
+    }
+    .cv-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
+    .cv-card-thumb {
+      height: 130px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, rgba(59,47,201,.08), rgba(16,185,129,.08));
+      position: relative;
+    }
+    .cv-card-thumb i { font-size: 2.5rem; color: rgba(59,47,201,.3); }
+    .cv-card-thumb .template-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,.85); backdrop-filter: blur(6px);
+      padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 700;
+      color: var(--indigo); text-transform: capitalize;
+    }
+    .cv-card-body { padding: 16px 18px 14px; }
+    .cv-card-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cv-card-body p { color: var(--muted); font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cv-card-body .cv-meta { margin-top: 8px; font-size: .73rem; color: #94a3b8; }
+    .cv-card-footer { display: flex; justify-content: space-between; padding: 12px 18px; background: var(--bg); border-top: 1px solid var(--border); }
+    .empty-state {
+      text-align: center; padding: 80px 24px;
+      background: white; border-radius: var(--radius);
+      border: 2px dashed var(--border);
+    }
+    .empty-state .icon { width: 64px; height: 64px; background: var(--emerald-light); color: var(--emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.6rem; }
+    .empty-state h3 { font-size: 1.4rem; margin-bottom: 8px; }
+    .empty-state p { color: var(--muted); max-width: 380px; margin: 0 auto 24px; }
+
+    /* ── BUILDER VIEW ─────────────────────────────────────── */
+    #view-builder {
+      display: none; flex-direction: row;
+      height: calc(100vh - 64px); overflow: hidden;
+    }
+    #view-builder.active { display: flex; }
+
+    /* Editor Panel */
+    .editor-panel {
+      width: 440px; flex-shrink: 0; background: white;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .editor-topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      background: var(--bg); gap: 10px; flex-wrap: wrap; flex-shrink: 0;
+    }
+    .editor-topbar .back-link { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+    .editor-topbar .back-link:hover { color: var(--indigo); }
+    .template-select { padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .84rem; font-family: inherit; color: var(--text); background: white; cursor: pointer; }
+    .template-select:focus { outline: none; border-color: var(--indigo); }
+
+    .editor-sections { flex: 1; overflow-y: auto; padding: 16px; }
+
+    /* Accordion */
+    .accordion-item { background: white; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+    .accordion-trigger {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 16px; cursor: pointer; font-weight: 700; font-size: .9rem;
+      background: none; border: none; width: 100%; text-align: left; color: var(--text); font-family: inherit;
+      transition: background .15s;
+    }
+    .accordion-trigger:hover { background: var(--bg); }
+    .accordion-trigger .chevron { transition: transform .25s; font-size: .8rem; color: var(--muted); }
+    .accordion-trigger.open .chevron { transform: rotate(180deg); }
+    .accordion-body { display: none; padding: 0 16px 16px; }
+    .accordion-body.open { display: block; }
+
+    /* Form fields */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+    .form-row.single { grid-template-columns: 1fr; }
+    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
+    .field label { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .field input, .field textarea, .field select {
+      padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: .88rem; font-family: inherit; color: var(--text); background: white;
+      transition: border-color .2s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--indigo); }
+    .field textarea { resize: vertical; min-height: 80px; }
+
+    /* Entry cards (work/education) */
+    .entry-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+    .entry-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; position: relative; }
+    .entry-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: 2px; }
+    .entry-card p { font-size: .78rem; color: var(--muted); }
+    .entry-card .entry-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
+    .entry-card .entry-actions button { background: none; border: none; cursor: pointer; color: var(--muted); font-size: .8rem; padding: 2px 5px; border-radius: 4px; transition: all .15s; }
+    .entry-card .entry-actions button:hover { background: white; color: var(--indigo); }
+    .entry-card .entry-actions button.del:hover { color: #ef4444; }
+
+    /* Entry edit modal */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 16px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,.22); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
+    .modal-header h3 { font-size: 1.05rem; font-weight: 800; }
+    .modal-close { background: none; border: none; font-size: 1.1rem; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all .15s; }
+    .modal-close:hover { background: var(--bg); color: var(--text); }
+    .modal-body { padding: 20px 24px; }
+    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
+
+    /* Skills/Languages */
+    .tag-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
+    .tag-input-row input { flex: 1; }
+    .tags-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+    .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--indigo-light); color: var(--indigo); padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; }
+    .tag .tag-remove { cursor: pointer; color: var(--muted); font-size: .7rem; }
+    .tag .tag-remove:hover { color: #ef4444; }
+    .lang-tag { background: var(--emerald-light); color: #065f46; }
+
+    /* ── PREVIEW PANEL ────────────────────────────────────── */
+    .preview-panel { flex: 1; background: #e2e8f0; overflow-y: auto; padding: 32px; display: flex; justify-content: center; }
+    .preview-wrap { width: 100%; max-width: 794px; position: relative; }
+    .preview-actions { display: flex; justify-content: flex-end; margin-bottom: 12px; gap: 10px; }
+
+    /* CV paper */
+    .cv-paper {
+      background: white; width: 794px; min-height: 1122px;
+      box-shadow: 0 12px 48px rgba(0,0,0,.15);
+      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
+      font-size: 11px; line-height: 1.5; color: #1e293b;
+    }
+
+    /* ── CV TEMPLATES ─────────────────────────────────────── */
+
+    /* === CLASSIC === */
+    .tpl-classic .cv-header {
+      background: var(--indigo); color: white; padding: 32px 40px 28px;
+    }
+    .tpl-classic .cv-header h1 { font-size: 24px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 4px; font-family: 'Sora', sans-serif; }
+    .tpl-classic .cv-header .role { font-size: 13px; opacity: .85; margin-bottom: 14px; }
+    .tpl-classic .cv-header .contact-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 10.5px; opacity: .9; }
+    .tpl-classic .cv-header .contact-row span { display: flex; align-items: center; gap: 5px; }
+    .tpl-classic .cv-body { display: flex; gap: 0; }
+    .tpl-classic .cv-main { flex: 1; padding: 28px 32px 32px 40px; }
+    .tpl-classic .cv-sidebar { width: 210px; padding: 28px 24px 32px; background: #f8fafc; border-left: 1px solid #e2e8f0; flex-shrink: 0; }
+    .tpl-classic .section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--indigo); border-bottom: 2px solid var(--indigo); padding-bottom: 5px; margin-bottom: 14px; font-family: 'Sora', sans-serif; }
+    .tpl-classic .section { margin-bottom: 24px; }
+    .tpl-classic .entry { margin-bottom: 16px; }
+    .tpl-classic .entry-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
+    .tpl-classic .entry-top h3 { font-size: 12px; font-weight: 700; }
+    .tpl-classic .entry-top .date { font-size: 10px; color: var(--muted); white-space: nowrap; margin-left: 10px; flex-shrink: 0; }
+    .tpl-classic .entry-sub { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+    .tpl-classic .entry-desc { font-size: 10.5px; color: #334155; }
+    .tpl-classic .sidebar-section { margin-bottom: 20px; }
+    .tpl-classic .sidebar-section .section-title { border-color: var(--emerald); color: var(--emerald-dark); }
+    .tpl-classic .skill-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 10.5px; }
+    .tpl-classic .skill-dots { display: flex; gap: 3px; }
+    .tpl-classic .dot { width: 7px; height: 7px; border-radius: 50%; background: #e2e8f0; }
+    .tpl-classic .dot.filled { background: var(--indigo); }
+    .tpl-classic .lang-row { margin-bottom: 7px; }
+    .tpl-classic .lang-row .lang-name { font-size: 10.5px; font-weight: 700; }
+    .tpl-classic .lang-row .lang-level { font-size: 9.5px; color: var(--muted); }
+    .tpl-classic .summary-text { font-size: 10.5px; color: #334155; }
+    .tpl-classic .achievement { font-size: 10.5px; color: #334155; padding-left: 14px; position: relative; margin-bottom: 5px; }
+    .tpl-classic .achievement::before { content: '•'; position: absolute; left: 0; color: var(--indigo); }
+
+    /* === MODERN === */
+    .tpl-modern .cv-header { background: linear-gradient(135deg, #0f0a3a 0%, var(--indigo) 100%); padding: 40px 48px 36px; }
+    .tpl-modern .cv-header h1 { font-size: 30px; font-weight: 800; color: white; letter-spacing: -.5px; margin-bottom: 4px; font-family: 'Sora', sans-serif; }
+    .tpl-modern .cv-header .role { font-size: 14px; color: #a5f3d0; font-weight: 600; margin-bottom: 16px; }
+    .tpl-modern .cv-header .contact-row { display: flex; flex-wrap: wrap; gap: 20px; font-size: 10.5px; color: rgba(255,255,255,.8); }
+    .tpl-modern .cv-header .contact-row span { display: flex; align-items: center; gap: 5px; }
+    .tpl-modern .cv-body { padding: 32px 48px; }
+    .tpl-modern .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--emerald-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-family: 'Sora', sans-serif; }
+    .tpl-modern .section-title::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, var(--emerald-light), transparent); }
+    .tpl-modern .section { margin-bottom: 28px; }
+    .tpl-modern .entry { margin-bottom: 18px; padding-left: 18px; position: relative; }
+    .tpl-modern .entry::before { content: ''; position: absolute; left: 0; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 0 3px var(--emerald-light); }
+    .tpl-modern .entry::after { content: ''; position: absolute; left: 3.5px; top: 16px; bottom: -8px; width: 1px; background: var(--emerald-light); }
+    .tpl-modern .entry:last-child::after { display: none; }
+    .tpl-modern .entry-top { margin-bottom: 3px; }
+    .tpl-modern .entry-top h3 { font-size: 12.5px; font-weight: 800; color: #0f172a; }
+    .tpl-modern .entry-top .entry-meta { font-size: 10px; color: var(--emerald-dark); font-weight: 700; margin-top: 2px; }
+    .tpl-modern .entry-date { font-size: 9.5px; color: var(--muted); margin-top: 2px; }
+    .tpl-modern .entry-desc { font-size: 10.5px; color: #334155; margin-top: 5px; }
+    .tpl-modern .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .tpl-modern .skill-chip { display: inline-block; background: var(--indigo-light); color: var(--indigo); padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 3px; }
+    .tpl-modern .lang-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; font-size: 10.5px; }
+    .tpl-modern .lang-badge { background: var(--emerald-light); color: #065f46; padding: 2px 8px; border-radius: 10px; font-size: 9.5px; font-weight: 700; }
+    .tpl-modern .summary-text { font-size: 10.5px; color: #334155; line-height: 1.7; }
+    .tpl-modern .achievement { font-size: 10.5px; color: #334155; padding-left: 14px; position: relative; margin-bottom: 5px; }
+    .tpl-modern .achievement::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 9px; }
+
+    /* === MINIMAL === */
+    .tpl-minimal .cv-header { padding: 44px 56px 36px; border-bottom: 3px solid var(--text); }
+    .tpl-minimal .cv-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 4px; font-family: 'Sora', sans-serif; }
+    .tpl-minimal .cv-header .role { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 14px; }
+    .tpl-minimal .cv-header .contact-row { display: flex; flex-wrap: wrap; gap: 20px; font-size: 10.5px; color: var(--muted); }
+    .tpl-minimal .cv-header .contact-row span { display: flex; align-items: center; gap: 5px; }
+    .tpl-minimal .cv-body { padding: 36px 56px 48px; }
+    .tpl-minimal .section { margin-bottom: 28px; }
+    .tpl-minimal .section-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: 14px; font-family: 'Sora', sans-serif; }
+    .tpl-minimal .entry { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #f1f5f9; }
+    .tpl-minimal .entry:last-child { border-bottom: none; padding-bottom: 0; }
+    .tpl-minimal .entry-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+    .tpl-minimal .entry-top h3 { font-size: 12px; font-weight: 700; }
+    .tpl-minimal .entry-top .date { font-size: 9.5px; color: var(--muted); }
+    .tpl-minimal .entry-sub { font-size: 10.5px; color: #334155; font-weight: 600; margin-bottom: 5px; }
+    .tpl-minimal .entry-desc { font-size: 10.5px; color: #64748b; }
+    .tpl-minimal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+    .tpl-minimal .skill-row { font-size: 10.5px; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+    .tpl-minimal .skill-row::before { content: '—'; color: var(--muted); }
+    .tpl-minimal .lang-row { font-size: 10.5px; margin-bottom: 5px; display: flex; justify-content: space-between; }
+    .tpl-minimal .lang-level { color: var(--muted); font-size: 9.5px; }
+    .tpl-minimal .summary-text { font-size: 10.5px; color: #334155; line-height: 1.8; }
+    .tpl-minimal .achievement { font-size: 10.5px; color: #334155; padding-left: 14px; position: relative; margin-bottom: 5px; }
+    .tpl-minimal .achievement::before { content: '–'; position: absolute; left: 0; color: var(--muted); }
+
+    /* ── AUTOSAVE INDICATOR ───────────────────────────────── */
+    .autosave { font-size: .75rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+    .autosave.saved { color: var(--emerald-dark); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────── */
+    @media (max-width: 900px) {
+      #view-builder.active { flex-direction: column; height: auto; overflow: visible; }
+      .editor-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 55vh; }
+      .preview-panel { padding: 20px; }
+      .cv-paper { width: 100%; min-width: 0; transform-origin: top left; }
+      .preview-wrap { overflow-x: auto; }
+    }
+
+    /* ── PRINT ────────────────────────────────────────────── */
+    @media print {
+      .navbar, .editor-panel, .preview-actions, .preview-panel > .preview-wrap > .preview-actions { display: none !important; }
+      body { background: white !important; }
+      #view-builder.active { display: block !important; height: auto !important; }
+      .preview-panel { background: white; padding: 0; display: block; }
+      .preview-wrap { max-width: 100%; }
+      .cv-paper { box-shadow: none; width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="builder-layout">
-    <aside class="editor-pane">
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <a href="home.html" class="sj-logo-pill"><span class="sj-icon"><i class="fas fa-arrow-left"></i></span><span class="sj-text">smart<span class="sj-green">Jobs</span></span></a>
-        <button class="nav-btn-primary" onclick="window.print()"><i class="fas fa-print"></i> Export PDF</button>
-      </div>
 
-      <div class="input-group">
-        <label>Full Name</label>
-        <input type="text" id="in-name" class="cv-input" placeholder="e.g. Jean-Paul Niyomugabo" oninput="sync()">
-      </div>
-
-      <div class="input-group">
-        <label>Headline</label>
-        <input type="text" id="in-title" class="cv-input" placeholder="e.g. Senior Agronomist" oninput="sync()">
-      </div>
-
-      <div class="input-group">
-        <label>Personal Summary</label>
-        <textarea id="in-summary" class="cv-input" style="height: 120px;" oninput="sync()" placeholder="Highlight your best achievements..."></textarea>
-      </div>
-
-      <div class="input-group">
-        <label>Skills (Comma separated)</label>
-        <input type="text" id="in-skills" class="cv-input" placeholder="React, Python, Data Analysis" oninput="sync()">
-      </div>
-      
-      <div style="background: var(--indigo-light); padding: 15px; border-radius: 12px;">
-         <p style="font-size: 0.8rem; color: var(--indigo); font-weight: 700;"><i class="fas fa-magic"></i> AI Tip</p>
-         <p style="font-size: 0.75rem; color: var(--text-2);">Employers in Rwanda value bilingual skills (Kinyarwanda + English/French). Ensure these are listed!</p>
-      </div>
-    </aside>
-
-    <main class="preview-pane">
-      <div class="cv-paper" id="printable">
-        <div class="cv-side">
-          <div style="width: 100px; height: 100px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; color: var(--muted); font-weight: 800;" id="out-initial">A</div>
-          <div style="margin-top: 20px;">
-            <h1 id="out-name" style="font-size: 1.8rem; line-height: 1.1; margin-bottom: 5px;">Your Name</h1>
-            <p id="out-title" style="color: var(--cv-primary); font-weight: 700; font-size: 0.9rem;">Professional Title</p>
-          </div>
-          
-          <section>
-            <h3 class="cv-section-title">Contact</h3>
-            <p style="font-size: 0.8rem; margin-bottom: 5px;"><i class="fas fa-envelope"></i> <span id="out-email">email@example.rw</span></p>
-            <p style="font-size: 0.8rem;"><i class="fas fa-location-dot"></i> Kigali, Rwanda</p>
-          </section>
-
-          <section>
-            <h3 class="cv-section-title">Skills</h3>
-            <div id="out-skills-tags"></div>
-          </section>
-        </div>
-
-        <div class="cv-main">
-          <section>
-            <h3 class="cv-section-title">Professional Profile</h3>
-            <p id="out-summary" style="font-size: 0.9rem; color: var(--text-2); text-align: justify;">Building a better future for Rwanda through excellence and dedication...</p>
-          </section>
-
-          <section>
-            <h3 class="cv-section-title">Experience</h3>
-            <div style="margin-bottom: 20px;">
-              <div style="display: flex; justify-content: space-between; font-weight: 800; font-size: 0.9rem;">
-                <span>Sample Experience Role</span>
-                <span style="color: var(--muted);">2024 - Present</span>
-              </div>
-              <p style="font-size: 0.8rem; color: var(--cv-primary); font-weight: 700;">Previous Company Ltd</p>
-              <ul style="font-size: 0.8rem; margin-top: 8px; padding-left: 15px;">
-                <li>Accomplished key tasks and supported team objectives.</li>
-              </ul>
-            </div>
-          </section>
-        </div>
-      </div>
-    </main>
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a class="logo" href="#" onclick="showHome()">smart<span>Jobs</span> <span style="font-size:.85rem;font-weight:500;color:var(--muted);margin-left:4px;">CV Builder</span></a>
+  <div class="navbar-actions" id="navbar-actions">
+    <a href="seeker-dashboard.html" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
+    <button class="btn btn-emerald" onclick="showHome()"><i class="fas fa-th-large"></i> My CVs</button>
+    <button class="btn btn-primary" onclick="createNewCV()"><i class="fas fa-plus"></i> New CV</button>
+    <span id="nav-user-badge" style="display:none;align-items:center;gap:8px;font-weight:700;font-size:.85rem;color:var(--muted);"></span>
   </div>
+</nav>
 
-  <script>
-    function sync() {
-      const name = document.getElementById('in-name').value || "Your Name";
-      document.getElementById('out-name').innerText = name;
-      document.getElementById('out-initial').innerText = name[0].toUpperCase();
-      document.getElementById('out-title').innerText = document.getElementById('in-title').value || "Professional Title";
-      document.getElementById('out-summary').innerText = document.getElementById('in-summary').value || "Summary details...";
-      
-      const skills = document.getElementById('in-skills').value.split(',');
-      const tagsDiv = document.getElementById('out-skills-tags');
-      tagsDiv.innerHTML = '';
-      skills.forEach(s => {
-        if(s.trim()) {
-          const span = document.createElement('span');
-          span.className = 'skill-tag';
-          span.innerText = s.trim();
-          tagsDiv.appendChild(span);
-        }
-      });
+<!-- HOME VIEW -->
+<div id="view-home" class="view active">
+  <div style="max-width:1100px;margin:0 auto;padding:48px 28px;">
+    <div class="home-header">
+      <div>
+        <h1>Your Resumes</h1>
+        <p>Manage and edit your professional CVs</p>
+      </div>
+      <button class="btn btn-emerald" onclick="createNewCV()"><i class="fas fa-plus"></i> Create New CV</button>
+    </div>
+    <div id="cv-list-container"></div>
+  </div>
+</div>
+
+<!-- BUILDER VIEW -->
+<div id="view-builder" class="view">
+  <!-- Editor Panel -->
+  <div class="editor-panel">
+    <div class="editor-topbar">
+      <a class="back-link" onclick="showHome()"><i class="fas fa-chevron-left"></i> My CVs</a>
+      <div style="display:flex;gap:10px;align-items:center;">
+        <span class="autosave" id="autosave-indicator"><i class="fas fa-circle-check"></i> Saved</span>
+        <select class="template-select" id="template-select" onchange="changeTemplate(this.value)">
+          <option value="classic">Classic</option>
+          <option value="modern">Modern</option>
+          <option value="minimal">Minimal</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="editor-sections">
+
+      <!-- Personal Info -->
+      <div class="accordion-item">
+        <button class="accordion-trigger open" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-user" style="margin-right:8px;color:var(--indigo);"></i> Personal Info</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="accordion-body open">
+          <div class="form-row">
+            <div class="field">
+              <label>Full Name *</label>
+              <input type="text" id="f-name" placeholder="e.g. Jean Claude Habimana" oninput="updatePreview()">
+            </div>
+            <div class="field">
+              <label>Job Title *</label>
+              <input type="text" id="f-title" placeholder="e.g. Software Engineer" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Email</label>
+              <input type="email" id="f-email" placeholder="you@email.com" oninput="updatePreview()">
+            </div>
+            <div class="field">
+              <label>Phone</label>
+              <input type="tel" id="f-phone" placeholder="+250 78 000 0000" oninput="updatePreview()">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Location</label>
+              <input type="text" id="f-location" placeholder="Kigali, Rwanda" oninput="updatePreview()">
+            </div>
+            <div class="field">
+              <label>LinkedIn</label>
+              <input type="text" id="f-linkedin" placeholder="linkedin.com/in/yourname" oninput="updatePreview()">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-align-left" style="margin-right:8px;color:var(--indigo);"></i> Professional Summary</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="accordion-body">
+          <div class="field">
+            <label>Summary</label>
+            <textarea id="f-summary" rows="4" placeholder="A brief overview of your experience, skills and goals..." oninput="updatePreview()"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Work Experience -->
+      <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-briefcase" style="margin-right:8px;color:var(--indigo);"></i> Work Experience</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="accordion-body">
+          <div class="entry-list" id="work-list"></div>
+          <button class="btn btn-ghost btn-sm" onclick="openWorkModal(-1)" style="width:100%;justify-content:center;">
+            <i class="fas fa-plus"></i> Add Experience
+          </button>
+        </div>
+      </div>
+
+      <!-- Education -->
+      <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-graduation-cap" style="margin-right:8px;color:var(--indigo);"></i> Education</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="accordion-body">
+          <div class="entry-list" id="edu-list"></div>
+          <button class="btn btn-ghost btn-sm" onclick="openEduModal(-1)" style="width:100%;justify-content:center;">
+            <i class="fas fa-plus"></i> Add Education
+          </button>
+        </div>
+      </div>
+
+      <!-- Skills -->
+      <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-star" style="margin-right:8px;color:var(--indigo);"></i> Skills & Languages</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="accordion-body">
+          <div class="field"><label>Skills</label></div>
+          <div class="tag-input-row">
+            <div class="field" style="flex:1;margin:0;">
+              <input type="text" id="skill-input" placeholder="e.g. JavaScript" onkeydown="if(event.key==='Enter'){addSkill();event.preventDefault();}">
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="addSkill()"><i class="fas fa-plus"></i></button>
+          </div>
+          <div class="tags-list" id="skills-tags"></div>
+
+          <div class="field" style="margin-top:8px;"><label>Languages</label></div>
+          <div class="tag-input-row">
+            <div class="field" style="flex:1;margin:0;">
+              <input type="text" id="lang-input" placeholder="e.g. English — Fluent" onkeydown="if(event.key==='Enter'){addLanguage();event.preventDefault();}">
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="addLanguage()"><i class="fas fa-plus"></i></button>
+          </div>
+          <p style="font-size:.73rem;color:var(--muted);margin-top:-6px;margin-bottom:8px;">Format: "Language — Level" (e.g. Kinyarwanda — Native)</p>
+          <div class="tags-list" id="langs-tags"></div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="accordion-item">
+        <button class="accordion-trigger" onclick="toggleAccordion(this)">
+          <span><i class="fas fa-trophy" style="margin-right:8px;color:var(--indigo);"></i> Achievements</span>
+          <i class="fas fa-chevron-down chevron"></i>
+        </button>
+        <div class="accordion-body">
+          <div class="tag-input-row">
+            <div class="field" style="flex:1;margin:0;">
+              <input type="text" id="ach-input" placeholder="e.g. Won national coding competition 2024" onkeydown="if(event.key==='Enter'){addAchievement();event.preventDefault();}">
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="addAchievement()"><i class="fas fa-plus"></i></button>
+          </div>
+          <div id="ach-list" class="entry-list"></div>
+        </div>
+      </div>
+
+    </div><!-- end editor-sections -->
+  </div><!-- end editor-panel -->
+
+  <!-- Preview Panel -->
+  <div class="preview-panel">
+    <div class="preview-wrap">
+      <div class="preview-actions">
+        <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fas fa-download"></i> Download PDF</button>
+        <button class="btn btn-primary btn-sm" onclick="saveCurrentCV()"><i class="fas fa-save"></i> Save</button>
+      </div>
+      <div id="cv-paper" class="cv-paper tpl-classic"></div>
+    </div>
+  </div>
+</div>
+
+<!-- WORK EXPERIENCE MODAL -->
+<div class="modal-overlay" id="work-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="work-modal-title">Add Work Experience</h3>
+      <button class="modal-close" onclick="closeModal('work-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="field">
+          <label>Job Title *</label>
+          <input type="text" id="w-title" placeholder="e.g. Software Engineer">
+        </div>
+        <div class="field">
+          <label>Company *</label>
+          <input type="text" id="w-company" placeholder="e.g. MTN Rwanda">
+        </div>
+      </div>
+      <div class="field">
+        <label>Location</label>
+        <input type="text" id="w-location" placeholder="e.g. Kigali, Rwanda">
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Start Date</label>
+          <input type="month" id="w-start">
+        </div>
+        <div class="field">
+          <label>End Date</label>
+          <input type="month" id="w-end">
+        </div>
+      </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="w-current" onchange="document.getElementById('w-end').disabled=this.checked;"> Currently working here
+        </label>
+      </div>
+      <div class="field">
+        <label>Description</label>
+        <textarea id="w-desc" rows="3" placeholder="Key responsibilities and achievements..."></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('work-modal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveWorkEntry()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDUCATION MODAL -->
+<div class="modal-overlay" id="edu-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="edu-modal-title">Add Education</h3>
+      <button class="modal-close" onclick="closeModal('edu-modal')"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="field">
+          <label>Degree *</label>
+          <input type="text" id="e-degree" placeholder="e.g. Bachelor of Science">
+        </div>
+        <div class="field">
+          <label>Field of Study</label>
+          <input type="text" id="e-field" placeholder="e.g. Computer Science">
+        </div>
+      </div>
+      <div class="field">
+        <label>Institution *</label>
+        <input type="text" id="e-institution" placeholder="e.g. University of Rwanda">
+      </div>
+      <div class="form-row">
+        <div class="field">
+          <label>Start Date</label>
+          <input type="month" id="e-start">
+        </div>
+        <div class="field">
+          <label>End Date</label>
+          <input type="month" id="e-end">
+        </div>
+      </div>
+      <div class="field">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
+          <input type="checkbox" id="e-current" onchange="document.getElementById('e-end').disabled=this.checked;"> Currently studying here
+        </label>
+      </div>
+      <div class="field">
+        <label>Grade / GPA</label>
+        <input type="text" id="e-grade" placeholder="e.g. First Class / 3.8 GPA">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('edu-modal')">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="saveEduEntry()">Save</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   smartJobs Rwanda — CV Builder Script
+   Pure JavaScript, no frameworks required
+   Data saved to localStorage
+============================================================ */
+
+// ── STATE ──────────────────────────────────────────────────
+let cvs = JSON.parse(localStorage.getItem('smartjobs_cvs') || '[]');
+let currentId = null;
+let workEditIndex = -1;
+let eduEditIndex = -1;
+
+// ── AUTH GUARD + PRE-FILL ─────────────────────────────────
+(function initAuth() {
+  const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (!user) { window.location.href = 'auth.html'; return; }
+  if (user.role === 'Employer') { window.location.href = 'employer-dashboard.html'; return; }
+
+  // Show user's name in navbar
+  const badge = document.getElementById('nav-user-badge');
+  if (badge) {
+    badge.style.display = 'inline-flex';
+    badge.innerHTML = `<span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b2fc9,#6d51f7);color:white;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">${(user.name||'U')[0].toUpperCase()}</span> ${user.name||user.email}`;
+  }
+})();
+
+// Current CV data
+let cv = {
+  name: '', title: '', email: '', phone: '', location: '', linkedIn: '',
+  summary: '', template: 'classic',
+  work: [], education: [], skills: [], languages: [], achievements: []
+};
+
+// ── ID GENERATOR ──────────────────────────────────────────
+function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
+
+// ── VIEWS ─────────────────────────────────────────────────
+function showHome() {
+  document.getElementById('view-home').classList.add('active');
+  document.getElementById('view-builder').classList.remove('active');
+  renderCVList();
+}
+
+function showBuilder() {
+  document.getElementById('view-home').classList.remove('active');
+  document.getElementById('view-builder').classList.add('active');
+  loadIntoForm();
+  updatePreview();
+}
+
+// ── CV LIST ────────────────────────────────────────────────
+function renderCVList() {
+  const container = document.getElementById('cv-list-container');
+  if (!cvs.length) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <div class="icon"><i class="fas fa-file-alt"></i></div>
+        <h3>No CVs yet</h3>
+        <p>Create your first professional resume to stand out in the Rwandan job market.</p>
+        <button class="btn btn-primary" onclick="createNewCV()"><i class="fas fa-plus"></i> Start Building</button>
+      </div>`;
+    return;
+  }
+  container.innerHTML = `<div class="cv-grid">${cvs.map(c => `
+    <div class="cv-card" onclick="editCV('${c.id}')">
+      <div class="cv-card-thumb">
+        <i class="fas fa-file-alt"></i>
+        <span class="template-badge">${c.template || 'classic'}</span>
+      </div>
+      <div class="cv-card-body">
+        <h3>${escHtml(c.name) || 'Untitled CV'}</h3>
+        <p>${escHtml(c.title) || 'No title set'}</p>
+        <div class="cv-meta">Updated ${new Date(c.updatedAt).toLocaleDateString()}</div>
+      </div>
+      <div class="cv-card-footer">
+        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editCV('${c.id}')"><i class="fas fa-edit"></i> Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteCV('${c.id}')"><i class="fas fa-trash"></i></button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+// ── CRUD ──────────────────────────────────────────────────
+function createNewCV() {
+  const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  currentId = genId();
+  cv = {
+    id: currentId,
+    name: (user && user.name) || '',
+    title: '',
+    email: (user && user.email) || '',
+    phone: (user && user.phone) || '',
+    location: (user && user.location) || 'Kigali, Rwanda',
+    linkedIn: '',
+    summary: '', template: 'classic',
+    work: [], education: [], skills: [], languages: [], achievements: [],
+    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
+  };
+  showBuilder();
+}
+
+function editCV(id) {
+  const found = cvs.find(c => c.id === id);
+  if (!found) return;
+  currentId = id;
+  cv = JSON.parse(JSON.stringify(found));
+  showBuilder();
+}
+
+function deleteCV(id) {
+  if (!confirm('Delete this CV? This cannot be undone.')) return;
+  cvs = cvs.filter(c => c.id !== id);
+  saveAllCVs();
+  renderCVList();
+}
+
+function saveCurrentCV() {
+  collectFromForm();
+  cv.updatedAt = new Date().toISOString();
+  const idx = cvs.findIndex(c => c.id === currentId);
+  if (idx >= 0) cvs[idx] = cv;
+  else { cv.createdAt = new Date().toISOString(); cvs.push(cv); }
+  saveAllCVs();
+  showAutosave();
+}
+
+function saveAllCVs() {
+  localStorage.setItem('smartjobs_cvs', JSON.stringify(cvs));
+  // ── Sync latest CV skills → userSkills for seeker-dashboard ──
+  if (cvs.length > 0) {
+    const latest = cvs.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+    const skillNames = (latest.skills || []).map(s => s.name || s).filter(Boolean);
+    if (skillNames.length > 0) {
+      localStorage.setItem('userSkills', JSON.stringify(skillNames));
     }
-    
-    // Prefill from Auth State
-    window.onload = () => {
-      const u = JSON.parse(localStorage.getItem('currentUser'));
-      if(u) {
-        document.getElementById('in-name').value = u.name || '';
-        document.getElementById('out-email').innerText = u.email || '';
-        sync();
-      }
-    };
-  </script>
+  }
+}
+
+function showAutosave() {
+  const el = document.getElementById('autosave-indicator');
+  el.className = 'autosave saved';
+  el.innerHTML = '<i class="fas fa-circle-check"></i> Saved';
+  setTimeout(() => {
+    el.className = 'autosave';
+    el.innerHTML = '<i class="fas fa-circle-check"></i> Saved';
+  }, 2500);
+}
+
+// ── FORM → STATE ──────────────────────────────────────────
+function collectFromForm() {
+  cv.name     = document.getElementById('f-name').value.trim();
+  cv.title    = document.getElementById('f-title').value.trim();
+  cv.email    = document.getElementById('f-email').value.trim();
+  cv.phone    = document.getElementById('f-phone').value.trim();
+  cv.location = document.getElementById('f-location').value.trim();
+  cv.linkedIn = document.getElementById('f-linkedin').value.trim();
+  cv.summary  = document.getElementById('f-summary').value.trim();
+  cv.template = document.getElementById('template-select').value;
+}
+
+function loadIntoForm() {
+  document.getElementById('f-name').value     = cv.name || '';
+  document.getElementById('f-title').value    = cv.title || '';
+  document.getElementById('f-email').value    = cv.email || '';
+  document.getElementById('f-phone').value    = cv.phone || '';
+  document.getElementById('f-location').value = cv.location || '';
+  document.getElementById('f-linkedin').value = cv.linkedIn || '';
+  document.getElementById('f-summary').value  = cv.summary || '';
+  document.getElementById('template-select').value = cv.template || 'classic';
+  renderWorkList();
+  renderEduList();
+  renderSkills();
+  renderLangs();
+  renderAchievements();
+}
+
+// ── ACCORDION ──────────────────────────────────────────────
+function toggleAccordion(btn) {
+  const body = btn.nextElementSibling;
+  btn.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ── TEMPLATE ──────────────────────────────────────────────
+function changeTemplate(tpl) {
+  cv.template = tpl;
+  updatePreview();
+}
+
+// ── WORK EXPERIENCE ───────────────────────────────────────
+function openWorkModal(idx) {
+  workEditIndex = idx;
+  document.getElementById('work-modal-title').textContent = idx < 0 ? 'Add Work Experience' : 'Edit Work Experience';
+  const entry = idx >= 0 ? cv.work[idx] : {};
+  document.getElementById('w-title').value    = entry.title    || '';
+  document.getElementById('w-company').value  = entry.company  || '';
+  document.getElementById('w-location').value = entry.location || '';
+  document.getElementById('w-start').value    = entry.start    || '';
+  document.getElementById('w-end').value      = entry.end      || '';
+  document.getElementById('w-current').checked = !!entry.current;
+  document.getElementById('w-end').disabled   = !!entry.current;
+  document.getElementById('w-desc').value     = entry.description || '';
+  document.getElementById('work-modal').classList.add('open');
+}
+
+function saveWorkEntry() {
+  const title   = document.getElementById('w-title').value.trim();
+  const company = document.getElementById('w-company').value.trim();
+  if (!title || !company) { alert('Job title and company are required.'); return; }
+  const entry = {
+    title, company,
+    location:    document.getElementById('w-location').value.trim(),
+    start:       document.getElementById('w-start').value,
+    end:         document.getElementById('w-current').checked ? 'Present' : document.getElementById('w-end').value,
+    current:     document.getElementById('w-current').checked,
+    description: document.getElementById('w-desc').value.trim()
+  };
+  if (workEditIndex >= 0) cv.work[workEditIndex] = entry;
+  else cv.work.push(entry);
+  closeModal('work-modal');
+  renderWorkList();
+  updatePreview();
+}
+
+function deleteWork(idx) {
+  if (!confirm('Remove this entry?')) return;
+  cv.work.splice(idx, 1);
+  renderWorkList();
+  updatePreview();
+}
+
+function renderWorkList() {
+  const container = document.getElementById('work-list');
+  if (!cv.work.length) { container.innerHTML = ''; return; }
+  container.innerHTML = cv.work.map((w, i) => `
+    <div class="entry-card">
+      <div class="entry-actions">
+        <button onclick="openWorkModal(${i})" title="Edit"><i class="fas fa-pen"></i></button>
+        <button class="del" onclick="deleteWork(${i})" title="Delete"><i class="fas fa-trash"></i></button>
+      </div>
+      <h4>${escHtml(w.title)}</h4>
+      <p>${escHtml(w.company)}${w.location ? ' — ' + escHtml(w.location) : ''}</p>
+      <p>${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</p>
+    </div>`).join('');
+}
+
+// ── EDUCATION ─────────────────────────────────────────────
+function openEduModal(idx) {
+  eduEditIndex = idx;
+  document.getElementById('edu-modal-title').textContent = idx < 0 ? 'Add Education' : 'Edit Education';
+  const entry = idx >= 0 ? cv.education[idx] : {};
+  document.getElementById('e-degree').value      = entry.degree      || '';
+  document.getElementById('e-field').value       = entry.field       || '';
+  document.getElementById('e-institution').value = entry.institution || '';
+  document.getElementById('e-start').value       = entry.start       || '';
+  document.getElementById('e-end').value         = entry.end         || '';
+  document.getElementById('e-current').checked   = !!entry.current;
+  document.getElementById('e-end').disabled      = !!entry.current;
+  document.getElementById('e-grade').value       = entry.grade       || '';
+  document.getElementById('edu-modal').classList.add('open');
+}
+
+function saveEduEntry() {
+  const degree      = document.getElementById('e-degree').value.trim();
+  const institution = document.getElementById('e-institution').value.trim();
+  if (!degree || !institution) { alert('Degree and institution are required.'); return; }
+  const entry = {
+    degree, institution,
+    field:   document.getElementById('e-field').value.trim(),
+    start:   document.getElementById('e-start').value,
+    end:     document.getElementById('e-current').checked ? 'Present' : document.getElementById('e-end').value,
+    current: document.getElementById('e-current').checked,
+    grade:   document.getElementById('e-grade').value.trim()
+  };
+  if (eduEditIndex >= 0) cv.education[eduEditIndex] = entry;
+  else cv.education.push(entry);
+  closeModal('edu-modal');
+  renderEduList();
+  updatePreview();
+}
+
+function deleteEdu(idx) {
+  if (!confirm('Remove this entry?')) return;
+  cv.education.splice(idx, 1);
+  renderEduList();
+  updatePreview();
+}
+
+function renderEduList() {
+  const container = document.getElementById('edu-list');
+  if (!cv.education.length) { container.innerHTML = ''; return; }
+  container.innerHTML = cv.education.map((e, i) => `
+    <div class="entry-card">
+      <div class="entry-actions">
+        <button onclick="openEduModal(${i})" title="Edit"><i class="fas fa-pen"></i></button>
+        <button class="del" onclick="deleteEdu(${i})" title="Delete"><i class="fas fa-trash"></i></button>
+      </div>
+      <h4>${escHtml(e.degree)}${e.field ? ' in ' + escHtml(e.field) : ''}</h4>
+      <p>${escHtml(e.institution)}</p>
+      <p>${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</p>
+    </div>`).join('');
+}
+
+// ── SKILLS ────────────────────────────────────────────────
+function addSkill() {
+  const input = document.getElementById('skill-input');
+  const val = input.value.trim();
+  if (!val) return;
+  cv.skills.push({ name: val });
+  input.value = '';
+  renderSkills();
+  updatePreview();
+}
+
+function removeSkill(i) { cv.skills.splice(i, 1); renderSkills(); updatePreview(); }
+
+function renderSkills() {
+  document.getElementById('skills-tags').innerHTML = cv.skills.map((s, i) =>
+    `<span class="tag">${escHtml(s.name)} <span class="tag-remove" onclick="removeSkill(${i})"><i class="fas fa-times"></i></span></span>`
+  ).join('');
+}
+
+// ── LANGUAGES ─────────────────────────────────────────────
+function addLanguage() {
+  const input = document.getElementById('lang-input');
+  const val = input.value.trim();
+  if (!val) return;
+  const parts = val.split('—').map(p => p.trim());
+  cv.languages.push({ name: parts[0], proficiency: parts[1] || '' });
+  input.value = '';
+  renderLangs();
+  updatePreview();
+}
+
+function removeLang(i) { cv.languages.splice(i, 1); renderLangs(); updatePreview(); }
+
+function renderLangs() {
+  document.getElementById('langs-tags').innerHTML = cv.languages.map((l, i) =>
+    `<span class="tag lang-tag">${escHtml(l.name)}${l.proficiency ? ' — ' + escHtml(l.proficiency) : ''} <span class="tag-remove" onclick="removeLang(${i})"><i class="fas fa-times"></i></span></span>`
+  ).join('');
+}
+
+// ── ACHIEVEMENTS ─────────────────────────────────────────
+function addAchievement() {
+  const input = document.getElementById('ach-input');
+  const val = input.value.trim();
+  if (!val) return;
+  cv.achievements.push(val);
+  input.value = '';
+  renderAchievements();
+  updatePreview();
+}
+
+function removeAchievement(i) { cv.achievements.splice(i, 1); renderAchievements(); updatePreview(); }
+
+function renderAchievements() {
+  document.getElementById('ach-list').innerHTML = cv.achievements.map((a, i) => `
+    <div class="entry-card" style="padding:10px 14px;">
+      <div class="entry-actions">
+        <button class="del" onclick="removeAchievement(${i})"><i class="fas fa-times"></i></button>
+      </div>
+      <p>${escHtml(a)}</p>
+    </div>`).join('');
+}
+
+// ── MODALS ────────────────────────────────────────────────
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ── PREVIEW RENDERER ──────────────────────────────────────
+function updatePreview() {
+  collectFromForm();
+  const paper = document.getElementById('cv-paper');
+  paper.className = 'cv-paper tpl-' + (cv.template || 'classic');
+  paper.innerHTML = renderTemplate(cv);
+}
+
+function renderTemplate(data) {
+  switch (data.template) {
+    case 'modern':  return renderModern(data);
+    case 'minimal': return renderMinimal(data);
+    default:        return renderClassic(data);
+  }
+}
+
+// ── CLASSIC TEMPLATE ──────────────────────────────────────
+function renderClassic(d) {
+  return `
+  <div class="cv-header">
+    <h1>${escHtml(d.name) || '&nbsp;'}</h1>
+    <div class="role">${escHtml(d.title) || '&nbsp;'}</div>
+    <div class="contact-row">
+      ${d.email    ? `<span><i class="fas fa-envelope"></i> ${escHtml(d.email)}</span>` : ''}
+      ${d.phone    ? `<span><i class="fas fa-phone"></i> ${escHtml(d.phone)}</span>` : ''}
+      ${d.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(d.location)}</span>` : ''}
+      ${d.linkedIn ? `<span><i class="fab fa-linkedin"></i> ${escHtml(d.linkedIn)}</span>` : ''}
+    </div>
+  </div>
+  <div class="cv-body">
+    <div class="cv-main">
+      ${d.summary ? `<div class="section"><div class="section-title">Professional Summary</div><p class="summary-text">${escHtml(d.summary)}</p></div>` : ''}
+      ${d.work.length ? `<div class="section"><div class="section-title">Work Experience</div>${d.work.map(w => `
+        <div class="entry">
+          <div class="entry-top"><h3>${escHtml(w.title)}</h3><span class="date">${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</span></div>
+          <div class="entry-sub">${escHtml(w.company)}${w.location ? ', ' + escHtml(w.location) : ''}</div>
+          ${w.description ? `<div class="entry-desc">${escHtml(w.description)}</div>` : ''}
+        </div>`).join('')}</div>` : ''}
+      ${d.education.length ? `<div class="section"><div class="section-title">Education</div>${d.education.map(e => `
+        <div class="entry">
+          <div class="entry-top"><h3>${escHtml(e.degree)}${e.field ? ', ' + escHtml(e.field) : ''}</h3><span class="date">${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</span></div>
+          <div class="entry-sub">${escHtml(e.institution)}</div>
+          ${e.grade ? `<div class="entry-desc">Grade: ${escHtml(e.grade)}</div>` : ''}
+        </div>`).join('')}</div>` : ''}
+      ${d.achievements.length ? `<div class="section"><div class="section-title">Achievements</div>${d.achievements.map(a => `<div class="achievement">${escHtml(a)}</div>`).join('')}</div>` : ''}
+    </div>
+    <div class="cv-sidebar">
+      ${d.skills.length ? `<div class="sidebar-section"><div class="section-title">Skills</div>${d.skills.map(s => `
+        <div class="skill-row"><span>${escHtml(s.name)}</span></div>`).join('')}</div>` : ''}
+      ${d.languages.length ? `<div class="sidebar-section"><div class="section-title">Languages</div>${d.languages.map(l => `
+        <div class="lang-row"><div class="lang-name">${escHtml(l.name)}</div><div class="lang-level">${escHtml(l.proficiency)}</div></div>`).join('')}</div>` : ''}
+    </div>
+  </div>`;
+}
+
+// ── MODERN TEMPLATE ───────────────────────────────────────
+function renderModern(d) {
+  return `
+  <div class="cv-header">
+    <h1>${escHtml(d.name) || '&nbsp;'}</h1>
+    <div class="role">${escHtml(d.title) || '&nbsp;'}</div>
+    <div class="contact-row">
+      ${d.email    ? `<span><i class="fas fa-envelope"></i> ${escHtml(d.email)}</span>` : ''}
+      ${d.phone    ? `<span><i class="fas fa-phone"></i> ${escHtml(d.phone)}</span>` : ''}
+      ${d.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(d.location)}</span>` : ''}
+      ${d.linkedIn ? `<span><i class="fab fa-linkedin"></i> ${escHtml(d.linkedIn)}</span>` : ''}
+    </div>
+  </div>
+  <div class="cv-body">
+    ${d.summary ? `<div class="section"><div class="section-title">About Me</div><p class="summary-text">${escHtml(d.summary)}</p></div>` : ''}
+    ${d.work.length ? `<div class="section"><div class="section-title">Work Experience</div>${d.work.map(w => `
+      <div class="entry">
+        <div class="entry-top"><h3>${escHtml(w.title)}</h3><div class="entry-meta">${escHtml(w.company)}${w.location ? ' · ' + escHtml(w.location) : ''}</div></div>
+        <div class="entry-date">${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</div>
+        ${w.description ? `<div class="entry-desc">${escHtml(w.description)}</div>` : ''}
+      </div>`).join('')}</div>` : ''}
+    <div class="two-col">
+      <div>
+        ${d.education.length ? `<div class="section"><div class="section-title">Education</div>${d.education.map(e => `
+          <div class="entry">
+            <div class="entry-top"><h3>${escHtml(e.degree)}</h3></div>
+            <div class="entry-meta">${escHtml(e.institution)}</div>
+            <div class="entry-date">${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</div>
+            ${e.grade ? `<div class="entry-desc">Grade: ${escHtml(e.grade)}</div>` : ''}
+          </div>`).join('')}</div>` : ''}
+        ${d.achievements.length ? `<div class="section"><div class="section-title">Achievements</div>${d.achievements.map(a => `<div class="achievement">${escHtml(a)}</div>`).join('')}</div>` : ''}
+      </div>
+      <div>
+        ${d.skills.length ? `<div class="section"><div class="section-title">Skills</div><div>${d.skills.map(s => `<span class="skill-chip">${escHtml(s.name)}</span>`).join('')}</div></div>` : ''}
+        ${d.languages.length ? `<div class="section"><div class="section-title">Languages</div>${d.languages.map(l => `
+          <div class="lang-row"><span>${escHtml(l.name)}</span>${l.proficiency ? `<span class="lang-badge">${escHtml(l.proficiency)}</span>` : ''}</div>`).join('')}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── MINIMAL TEMPLATE ──────────────────────────────────────
+function renderMinimal(d) {
+  return `
+  <div class="cv-header">
+    <h1>${escHtml(d.name) || '&nbsp;'}</h1>
+    <div class="role">${escHtml(d.title) || '&nbsp;'}</div>
+    <div class="contact-row">
+      ${d.email    ? `<span><i class="fas fa-envelope"></i> ${escHtml(d.email)}</span>` : ''}
+      ${d.phone    ? `<span><i class="fas fa-phone"></i> ${escHtml(d.phone)}</span>` : ''}
+      ${d.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(d.location)}</span>` : ''}
+      ${d.linkedIn ? `<span><i class="fab fa-linkedin"></i> ${escHtml(d.linkedIn)}</span>` : ''}
+    </div>
+  </div>
+  <div class="cv-body">
+    ${d.summary ? `<div class="section"><div class="section-title">Profile</div><p class="summary-text">${escHtml(d.summary)}</p></div>` : ''}
+    ${d.work.length ? `<div class="section"><div class="section-title">Experience</div>${d.work.map(w => `
+      <div class="entry">
+        <div class="entry-top"><h3>${escHtml(w.title)}</h3><span class="date">${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</span></div>
+        <div class="entry-sub">${escHtml(w.company)}${w.location ? ', ' + escHtml(w.location) : ''}</div>
+        ${w.description ? `<div class="entry-desc">${escHtml(w.description)}</div>` : ''}
+      </div>`).join('')}</div>` : ''}
+    ${d.education.length ? `<div class="section"><div class="section-title">Education</div>${d.education.map(e => `
+      <div class="entry">
+        <div class="entry-top"><h3>${escHtml(e.degree)}${e.field ? ' · ' + escHtml(e.field) : ''}</h3><span class="date">${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</span></div>
+        <div class="entry-sub">${escHtml(e.institution)}</div>
+        ${e.grade ? `<div class="entry-desc">${escHtml(e.grade)}</div>` : ''}
+      </div>`).join('')}</div>` : ''}
+    <div class="two-col">
+      <div>
+        ${d.skills.length ? `<div class="section"><div class="section-title">Skills</div>${d.skills.map(s => `<div class="skill-row">${escHtml(s.name)}</div>`).join('')}</div>` : ''}
+      </div>
+      <div>
+        ${d.languages.length ? `<div class="section"><div class="section-title">Languages</div>${d.languages.map(l => `
+          <div class="lang-row"><span>${escHtml(l.name)}</span><span class="lang-level">${escHtml(l.proficiency)}</span></div>`).join('')}</div>` : ''}
+        ${d.achievements.length ? `<div class="section"><div class="section-title">Achievements</div>${d.achievements.map(a => `<div class="achievement">${escHtml(a)}</div>`).join('')}</div>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function escHtml(str) {
+  if (!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function formatDate(val) {
+  if (!val || val === 'Present') return val || '';
+  try {
+    const [y, m] = val.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return (months[parseInt(m) - 1] || '') + ' ' + y;
+  } catch { return val; }
+}
+
+// ── INIT ──────────────────────────────────────────────────
+renderCVList();
+</script>
 </body>
 </html>

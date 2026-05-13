@@ -1,21 +1,77 @@
 {
-  "name": "smartJobs Rwanda",
+  "name": "smartJobs Rwanda - Find Your Dream Job",
   "short_name": "smartJobs",
-  "description": "Rwanda's #1 Job Platform - Find your dream job",
+  "description": "Rwanda's #1 Job Platform connecting talent with opportunity",
   "start_url": "/home.html",
+  "scope": "/",
   "display": "standalone",
   "theme_color": "#3b2fc9",
   "background_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "lang": "en-RW",
+  "dir": "ltr",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192x192?text=SJ",
-      "sizes": "192x192",
-      "type": "image/png"
+      "src": "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=64",
+      "sizes": "64x64",
+      "type": "image/jpeg",
+      "purpose": "any"
     },
     {
-      "src": "https://via.placeholder.com/512x512?text=SJ",
+      "src": "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=128",
+      "sizes": "128x128",
+      "type": "image/jpeg",
+      "purpose": "any"
+    },
+    {
+      "src": "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=192",
+      "sizes": "192x192",
+      "type": "image/jpeg",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=512",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/jpeg",
+      "purpose": "any maskable"
     }
-  ]
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-home.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide"
+    },
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "720x1280",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["jobs", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Search Jobs",
+      "short_name": "Search",
+      "description": "Find your next opportunity",
+      "url": "/home.html",
+      "icons": [{ "src": "icon-search.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "My Applications",
+      "short_name": "Apps",
+      "description": "Track your applications",
+      "url": "/seeker-dashboard.html?page=applications"
+    },
+    {
+      "name": "Post a Job",
+      "short_name": "Post Job",
+      "description": "Hire talent",
+      "url": "/post-job.html"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }

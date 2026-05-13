@@ -6,6 +6,7 @@
   <title>Candidate Dashboard | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
   <style>
     * {
       margin: 0;
@@ -953,7 +954,7 @@
             <div><strong style="color: var(--muted);">Full Name:</strong><br><span id="resume-name">—</span></div>
             <div><strong style="color: var(--muted);">Email:</strong><br><span id="resume-email">—</span></div>
             <div><strong style="color: var(--muted);">Phone:</strong><br><span id="resume-phone">—</span></div>
-            <div><strong style="color: var(--muted);">Location:</strong><br><span id="resume-location">Kigali, Rwanda</span></div>
+            <div><strong style="color: var(--muted);">Location:</strong><br><span id="resume-location">—</span></div>
           </div>
         </div>
       </div>
@@ -1165,8 +1166,9 @@
     document.getElementById('resume-email').textContent = currentUser.email || '—';
     document.getElementById('resume-phone').textContent = currentUser.phone || '+250 7XX XXX XXX';
     
-    // Load applications from localStorage
-    applications = JSON.parse(localStorage.getItem('jobApplications')) || [];
+    // Load applications — filtered to THIS seeker only
+    const allApps = JSON.parse(localStorage.getItem('jobApplications')) || [];
+    applications = allApps.filter(a => a.seekerEmail === currentUser.email);
     document.getElementById('applications-count').textContent = applications.length;
     document.getElementById('apps-badge').textContent = applications.length;
     
@@ -1186,15 +1188,35 @@
     const shortlisted = applications.filter(a => a.status === 'Shortlisted').length;
     document.getElementById('shortlist-count').textContent = shortlisted;
     
-    const views = parseInt(localStorage.getItem('profileViews')) || 42;
+    const views = parseInt(localStorage.getItem('profileViews')) || 0;
     document.getElementById('profile-views').textContent = views;
     
-    const downloads = parseInt(localStorage.getItem('cvDownloads')) || 18;
-    document.getElementById('cv-downloads').textContent = downloads;
-    
-    // Load skills from localStorage
-    const savedSkills = JSON.parse(localStorage.getItem('userSkills')) || ['Communication', 'Team Collaboration', 'Problem Solving', 'Time Management', 'Microsoft Office', 'Data Analysis'];
-    renderSkills(savedSkills);
+    // CV downloads = number of saved CVs
+    const allCVs = JSON.parse(localStorage.getItem('smartjobs_cvs') || '[]');
+    document.getElementById('cv-downloads').textContent = allCVs.length;
+
+    // ── Pull latest CV data into Resume section ──────────────
+    if (allCVs.length > 0) {
+      // Use the most recently updated CV
+      const latestCV = allCVs.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
+      if (latestCV.name)  document.getElementById('resume-name').textContent  = latestCV.name;
+      if (latestCV.email) document.getElementById('resume-email').textContent = latestCV.email;
+      if (latestCV.phone) document.getElementById('resume-phone').textContent = latestCV.phone;
+      if (latestCV.location) document.getElementById('resume-location').textContent = latestCV.location;
+
+      // Skills from CV builder
+      const cvSkills = (latestCV.skills || []).map(s => s.name || s).filter(Boolean);
+      if (cvSkills.length > 0) {
+        renderSkills(cvSkills);
+      } else {
+        const savedSkills = JSON.parse(localStorage.getItem('userSkills')) || [];
+        renderSkills(savedSkills);
+      }
+    } else {
+      // Fallback: pull from userSkills if no CV built yet
+      const savedSkills = JSON.parse(localStorage.getItem('userSkills')) || [];
+      renderSkills(savedSkills);
+    }
     
     renderApplications();
     renderBookmarks();
@@ -1391,22 +1413,7 @@
   document.addEventListener('DOMContentLoaded', () => {
     loadUserData();
   });
-  document.addEventListener('DOMContentLoaded', () => {
-    // Security Check: Only Job Seekers allowed
-    checkAccess('Job Seeker');
-
-    // Update Stats from our Secure Script
-    const stats = JSON.parse(localStorage.getItem('userStats')) || { applied: 0 };
-    const cvCount = localStorage.getItem('cvDownloads') || 0;
-    
-    document.getElementById('applications-count').textContent = stats.applied;
-    document.getElementById('cv-downloads').textContent = cvCount;
-    
-    // Display the list of jobs the user actually applied for
-    const apps = JSON.parse(localStorage.getItem('jobApplications')) || [];
-    const myApps = apps.filter(a => a.seekerEmail === JSON.parse(localStorage.getItem('currentUser')).email);
-    // ... render myApps to the table
-});
+  // NOTE: Auth check and data loading handled by loadUserData() above.
 </script>
 </body>
 </html>
