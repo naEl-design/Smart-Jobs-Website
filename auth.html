@@ -318,12 +318,6 @@
   <script>
     let currentRole = 'Job Seeker';
     
-    const defaultJobs = [
-      { id: 1, title: "Software Engineer", company: "MTN Rwanda", location: "Kigali", type: "Full-time", salary: "1,500,000", industry: "technology", color: "#3b2fc9", posted: "2 days ago", desc: "We are looking for a skilled Software Engineer to join our team.", employerEmail: "employer@mtn.rw" },
-      { id: 2, title: "Accountant", company: "Bank of Kigali", location: "Kigali", type: "Full-time", salary: "800,000", industry: "finance", color: "#f59e0b", posted: "1 week ago", desc: "Experienced accountant needed for our finance department.", employerEmail: "hr@bk.rw" },
-      { id: 3, title: "Data Analyst", company: "RDB", location: "Kigali", type: "Full-time", salary: "1,100,000", industry: "technology", color: "#8b5cf6", posted: "4 days ago", desc: "Analyze data and provide insights to support business decisions.", employerEmail: "hr@rdb.rw" }
-    ];
-    
     function showToast(msg, type = 'info') {
       const container = document.getElementById('toast-container');
       const toast = document.createElement('div');
@@ -430,10 +424,7 @@
       document.getElementById('login-panel').style.display = 'block';
     }
     
-    // Initialize default data
-    if (!localStorage.getItem('allJobs')) {
-      localStorage.setItem('allJobs', JSON.stringify(defaultJobs));
-    }
+    // Job listings are managed by home.html
   </script>
 </body>
 </html>
