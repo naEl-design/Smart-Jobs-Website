@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
+  <script src="cursor.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
@@ -253,5 +254,6 @@
     if (navRight) navRight.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:600;">${user.name}</span><button onclick="localStorage.removeItem('currentUser');window.location.href='auth.html'" style="background:var(--indigo);color:white;padding:9px 20px;border-radius:9px;border:none;cursor:pointer;">Sign Out</button></div>`;
   }
 </script>
+
 </body>
 </html>

@@ -2102,3 +2102,4 @@ document.addEventListener('DOMContentLoaded', () => {
     heroSection.appendChild(orb);
   }
 });
+
