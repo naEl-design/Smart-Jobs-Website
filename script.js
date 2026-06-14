@@ -1085,12 +1085,12 @@ function updateCharCount(textarea, counterId, max) {
   if (len > max) { counter.classList.add('limit'); textarea.value = textarea.value.slice(0, max); }
 }
 
+
 function applyNow(id) {
   const jobs = getJobs();
   const job = jobs.find(j => j.id === id);
   if (!job) return;
 
-  // Industry cover photos
   const coverPhotos = {
     technology:  'https://images.pexels.com/photos/3861958/pexels-photo-3861958.jpeg?auto=compress&cs=tinysrgb&w=1200',
     finance:     'https://images.pexels.com/photos/210607/pexels-photo-210607.jpeg?auto=compress&cs=tinysrgb&w=1200',
@@ -1100,7 +1100,6 @@ function applyNow(id) {
     energy:      'https://images.pexels.com/photos/414837/pexels-photo-414837.jpeg?auto=compress&cs=tinysrgb&w=1200',
   };
 
-  // Industry team photos (shown in "Life at company" strip)
   const teamPhotos = {
     technology:  ['https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=400','https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=400','https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=400'],
     finance:     ['https://images.pexels.com/photos/3183150/pexels-photo-3183150.jpeg?auto=compress&cs=tinysrgb&w=400','https://images.pexels.com/photos/669610/pexels-photo-669610.jpeg?auto=compress&cs=tinysrgb&w=400','https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=400'],
@@ -1115,7 +1114,6 @@ function applyNow(id) {
   const stars = '★'.repeat(Math.round(3.5 + Math.random() * 1.5));
   const reviewCount = Math.floor(Math.random()*150)+30;
 
-  // Remove existing modal if any
   document.getElementById('apply-modal')?.remove();
 
   const modal = document.createElement('div');
@@ -1123,148 +1121,46 @@ function applyNow(id) {
   modal.className = 'apply-modal-overlay';
   modal.innerHTML = `
     <div class="apply-modal-box">
-
-      <!-- Sticky header -->
       <div class="apply-modal-header">
-        <button class="apply-modal-close" onclick="closeApplyModal()" title="Close">
-          <i class="fas fa-times"></i>
-        </button>
+        <button class="apply-modal-close" onclick="closeApplyModal()" title="Close"><i class="fas fa-times"></i></button>
         <div class="apply-modal-header-info">
           <div class="apply-modal-logo" style="background:${job.color}">${job.company.substring(0,2).toUpperCase()}</div>
-          <div>
-            <div class="apply-modal-header-title">${job.title}</div>
-            <div class="apply-modal-header-company">${job.company} &bull; ${job.location}</div>
-          </div>
+          <div><div class="apply-modal-header-title">${job.title}</div><div class="apply-modal-header-company">${job.company} &bull; ${job.location}</div></div>
         </div>
-        <button class="btn-apply apply-modal-cta" onclick="document.getElementById('apply-form-section').scrollIntoView({behavior:'smooth'})">
-          <i class="fas fa-paper-plane" style="margin-right:7px;"></i>Apply Now
-        </button>
+        <button class="btn-apply apply-modal-cta" onclick="document.getElementById('apply-form-section').scrollIntoView({behavior:'smooth'})"><i class="fas fa-paper-plane"></i> Apply Now</button>
       </div>
-
-      <!-- Scrollable body -->
       <div class="apply-modal-body">
-
-        <!-- Cover image -->
-        <div class="apply-modal-cover">
-          <img src="${cover}" alt="${job.industry} at ${job.company}">
-          <div class="apply-modal-cover-overlay">
-            <span class="badge badge-indigo" style="font-size:.82rem;padding:5px 14px;">${job.industry.charAt(0).toUpperCase()+job.industry.slice(1)}</span>
-            <h2>${job.title}</h2>
-            <p>${job.company} &bull; ${job.location}</p>
-          </div>
-        </div>
-
+        <div class="apply-modal-cover"><img src="${cover}" alt="${job.industry}"><div class="apply-modal-cover-overlay"><span class="badge badge-indigo">${job.industry}</span><h2>${job.title}</h2><p>${job.company} &bull; ${job.location}</p></div></div>
         <div class="apply-modal-content">
-
-          <!-- Left column -->
           <div class="apply-modal-left">
-
-            <!-- Quick chips -->
             <div class="detail-chips" style="margin-bottom:24px;">
               <span class="detail-chip"><i class="fas fa-map-marker-alt"></i>${job.location}</span>
               <span class="detail-chip"><i class="fas fa-briefcase"></i>${job.type}</span>
               <span class="detail-chip"><i class="fas fa-coins"></i>RWF ${job.salary}/mo</span>
               <span class="detail-chip"><i class="fas fa-clock"></i>${job.posted}</span>
-              <span class="detail-chip"><i class="fas fa-eye"></i>${job.views} views</span>
-              ${job.deadline ? `<span class="detail-chip" style="background:#fef3c7;color:#92400e;border-color:#fde68a;"><i class="fas fa-calendar-alt"></i>Deadline: ${job.deadline}</span>` : ''}
+              ${job.deadline ? `<span class="detail-chip"><i class="fas fa-calendar-alt"></i>Due ${job.deadline}</span>` : ''}
             </div>
-
-            <!-- About the role -->
-            <div class="apply-modal-section">
-              <h3 class="apply-modal-section-title"><i class="fas fa-file-alt"></i> About the Role</h3>
-              <p class="detail-desc">${job.desc || 'We are looking for a talented professional to join our team.'}</p>
-            </div>
-
-            <!-- Requirements -->
-            <div class="apply-modal-section">
-              <h3 class="apply-modal-section-title"><i class="fas fa-list-check"></i> Key Requirements</h3>
-              <ul class="apply-modal-list">
-                <li>Bachelor's degree in a relevant field</li>
-                <li>Strong communication and interpersonal skills</li>
-                <li>Proven experience in ${job.industry} sector</li>
-                <li>Ability to work independently and in a team</li>
-                <li>Proficiency in English; Kinyarwanda is an advantage</li>
-              </ul>
-            </div>
-
-            <!-- What we offer -->
-            <div class="apply-modal-section">
-              <h3 class="apply-modal-section-title"><i class="fas fa-gift"></i> What We Offer</h3>
-              <div class="apply-modal-perks">
-                <div class="perk-item"><i class="fas fa-coins" style="color:var(--emerald)"></i><div><strong>RWF ${job.salary}/month</strong><span>Competitive salary</span></div></div>
-                <div class="perk-item"><i class="fas fa-heartbeat" style="color:#ec4899"></i><div><strong>Health Insurance</strong><span>Full medical cover</span></div></div>
-                <div class="perk-item"><i class="fas fa-graduation-cap" style="color:var(--indigo)"></i><div><strong>Training Budget</strong><span>Annual learning allowance</span></div></div>
-                <div class="perk-item"><i class="fas fa-laptop-house" style="color:#f59e0b"></i><div><strong>Flexible Work</strong><span>Hybrid options available</span></div></div>
-              </div>
-            </div>
-
-            <!-- Life at company photos -->
-            <div class="apply-modal-section">
-              <h3 class="apply-modal-section-title"><i class="fas fa-images"></i> Life at ${job.company}</h3>
-              <div class="apply-modal-photos">
-                ${photos.map(url => `<img src="${url}" alt="Life at ${job.company}" loading="lazy">`).join('')}
-              </div>
-            </div>
-
+            <div class="apply-modal-section"><h3 class="apply-modal-section-title"><i class="fas fa-file-alt"></i> About the Role</h3><p class="detail-desc">${job.desc || 'We are looking for a talented professional to join our team.'}</p></div>
+            <div class="apply-modal-section"><h3 class="apply-modal-section-title"><i class="fas fa-list-check"></i> Key Requirements</h3><ul class="apply-modal-list"><li>Bachelor's degree in a relevant field</li><li>Strong communication skills</li><li>Proven experience in ${job.industry} sector</li></ul></div>
+            <div class="apply-modal-section"><h3 class="apply-modal-section-title"><i class="fas fa-gift"></i> What We Offer</h3><div class="apply-modal-perks"><div class="perk-item"><i class="fas fa-coins"></i><div><strong>RWF ${job.salary}/month</strong><span>Competitive salary</span></div></div><div class="perk-item"><i class="fas fa-heartbeat"></i><div><strong>Health Insurance</strong><span>Full medical cover</span></div></div></div></div>
           </div>
-
-          <!-- Right column — sticky company card + form -->
           <div class="apply-modal-right">
-
-            <!-- Company card -->
-            <div class="apply-company-card">
-              <div class="apply-company-card-header" style="background:${job.color}20;border-bottom:1px solid ${job.color}30;">
-                <div class="apply-modal-logo" style="background:${job.color};width:52px;height:52px;font-size:.95rem;">${job.company.substring(0,2).toUpperCase()}</div>
-                <div>
-                  <strong>${job.company}</strong>
-                  <span>${job.industry.charAt(0).toUpperCase()+job.industry.slice(1)}</span>
-                </div>
-              </div>
-              <div class="apply-company-card-body">
-                <div class="apply-company-stat"><i class="fas fa-map-marker-alt"></i> ${job.location}, Rwanda</div>
-                <div class="apply-company-stat"><i class="fas fa-star" style="color:var(--amber)"></i> ${stars} <span style="color:var(--muted);font-size:.78rem;">(${reviewCount} reviews)</span></div>
-                <div class="apply-company-stat"><i class="fas fa-briefcase"></i> ${job.type} position</div>
-                <div class="apply-company-stat"><i class="fas fa-users"></i> 200–1000 employees</div>
-              </div>
-            </div>
-
-            <!-- Application form -->
+            <div class="apply-company-card"><div class="apply-company-card-header" style="background:${job.color}20"><div class="apply-modal-logo" style="background:${job.color}">${job.company.substring(0,2).toUpperCase()}</div><div><strong>${job.company}</strong><span>${job.industry}</span></div></div><div class="apply-company-card-body"><div class="apply-company-stat"><i class="fas fa-map-marker-alt"></i> ${job.location}, Rwanda</div><div class="apply-company-stat"><i class="fas fa-star"></i> ${stars} (${reviewCount} reviews)</div></div></div>
             <div class="apply-box" id="apply-form-section" style="margin-top:20px;">
-              <h4 style="font-size:1.05rem;margin-bottom:18px;"><i class="fas fa-paper-plane" style="color:var(--indigo);margin-right:8px;"></i>Apply for this Role</h4>
-
+              <h4><i class="fas fa-paper-plane"></i> Apply for this Role</h4>
+              <div class="apply-form-field"><label>Full Name *</label><input id="am-name-${id}" type="text" placeholder="Your full name"></div>
+              <div class="apply-form-field"><label>Email Address *</label><input id="am-email-${id}" type="email" placeholder="you@email.com"></div>
+              <div class="apply-form-field"><label>Phone Number *</label><input id="am-phone-${id}" type="tel" placeholder="+250 7XX XXX XXX"></div>
+              <div class="apply-form-field"><label>Your Location *</label><input id="am-location-${id}" type="text" placeholder="e.g. Kigali"></div>
+              <!-- CV UPLOAD FIELD -->
               <div class="apply-form-field">
-                <label>Full Name *</label>
-                <input id="am-name-${id}" type="text" placeholder="Your full name"
-                  onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--border)'">
+                <label>Upload CV/Resume (PDF, DOC, or Image) *</label>
+                <input type="file" id="am-cv-${id}" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" required style="width:100%; padding:10px; border:1.5px solid var(--border); border-radius:10px;">
+                <small style="font-size:.7rem; color:var(--muted); display:block; margin-top:5px;">Accepted: PDF, DOC, DOCX, PNG, JPG (Max 5MB)</small>
               </div>
-              <div class="apply-form-field">
-                <label>Email Address *</label>
-                <input id="am-email-${id}" type="email" placeholder="you@email.com"
-                  onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--border)'">
-              </div>
-              <div class="apply-form-field">
-                <label>Phone Number *</label>
-                <input id="am-phone-${id}" type="tel" placeholder="+250 7XX XXX XXX"
-                  onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--border)'">
-              </div>
-              <div class="apply-form-field">
-                <label>Your Location *</label>
-                <input id="am-location-${id}" type="text" placeholder="e.g. Kigali"
-                  onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--border)'">
-              </div>
-              <div class="apply-form-field">
-                <label>Cover Message *</label>
-                <textarea id="am-msg-${id}" rows="4" placeholder="Why are you a great fit for ${job.company}?"
-                  oninput="updateCharCount(this,'am-count-${id}',500)"></textarea>
-                <div class="char-counter" id="am-count-${id}">0 / 500</div>
-              </div>
-
-              <button class="btn-submit-app" id="am-submit-${id}"
-                onclick="submitModalApplication(${id},'${job.title.replace(/'/g,"\\'")}','${job.company.replace(/'/g,"\\'")}')">
-                <i class="fas fa-paper-plane" style="margin-right:8px;"></i>Submit Application
-              </button>
+              <div class="apply-form-field"><label>Cover Message *</label><textarea id="am-msg-${id}" rows="4" placeholder="Why are you a great fit for ${job.company}?" oninput="updateCharCount(this,'am-count-${id}',500)"></textarea><div class="char-counter" id="am-count-${id}">0 / 500</div></div>
+              <button class="btn-submit-app" id="am-submit-${id}" onclick="submitModalApplication(${id},'${job.title.replace(/'/g,"\\'")}','${job.company.replace(/'/g,"\\'")}')"><i class="fas fa-paper-plane"></i> Submit Application</button>
             </div>
-
           </div>
         </div>
       </div>
@@ -1273,13 +1169,9 @@ function applyNow(id) {
 
   document.body.appendChild(modal);
   document.body.style.overflow = 'hidden';
-  // Animate in
   requestAnimationFrame(() => modal.classList.add('open'));
 
-  // Close on backdrop click
   modal.addEventListener('click', e => { if (e.target === modal) closeApplyModal(); });
-
-  // Close on Escape
   const escHandler = e => { if (e.key === 'Escape') { closeApplyModal(); document.removeEventListener('keydown', escHandler); } };
   document.addEventListener('keydown', escHandler);
 }
@@ -1292,60 +1184,152 @@ function closeApplyModal() {
   setTimeout(() => { modal.remove(); document.body.style.overflow = ''; }, 320);
 }
 
+// Replace or update the submitModalApplication function in script.js
 function submitModalApplication(jobId, title, company) {
   const nameEl     = document.getElementById(`am-name-${jobId}`);
   const emailEl    = document.getElementById(`am-email-${jobId}`);
   const phoneEl    = document.getElementById(`am-phone-${jobId}`);
   const locationEl = document.getElementById(`am-location-${jobId}`);
   const msgEl      = document.getElementById(`am-msg-${jobId}`);
+  const cvFileEl   = document.getElementById(`am-cv-${jobId}`);
 
-  const fields = [
-    { el: nameEl,     val: nameEl?.value.trim(),     label: 'Full name' },
-    { el: emailEl,    val: emailEl?.value.trim(),    label: 'Email address' },
-    { el: phoneEl,    val: phoneEl?.value.trim(),    label: 'Phone number' },
-    { el: locationEl, val: locationEl?.value.trim(), label: 'Your location' },
-    { el: msgEl,      val: msgEl?.value.trim(),      label: 'Cover message' },
-  ];
-  for (const f of fields) {
-    if (!f.val) {
-      showToast(`Please enter your ${f.label}`, 'error', 'fas fa-exclamation-circle');
-      f.el?.focus();
-      if (f.el) { f.el.style.borderColor = 'var(--rose)'; setTimeout(() => { f.el.style.borderColor = 'var(--border)'; }, 2000); }
-      return;
-    }
-  }
+  // Validate all required fields
+  if (!nameEl?.value.trim()) { showToast('Please enter your full name', 'error'); nameEl.focus(); return; }
+  if (!emailEl?.value.trim()) { showToast('Please enter your email', 'error'); emailEl.focus(); return; }
+  if (!phoneEl?.value.trim()) { showToast('Please enter your phone number', 'error'); phoneEl.focus(); return; }
+  if (!locationEl?.value.trim()) { showToast('Please enter your location', 'error'); locationEl.focus(); return; }
+  if (!msgEl?.value.trim()) { showToast('Please enter a cover message', 'error'); msgEl.focus(); return; }
+  
+  // Validate email format
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())) {
-    showToast('Please enter a valid email address', 'error', 'fas fa-exclamation-circle');
+    showToast('Please enter a valid email address', 'error');
     emailEl.focus(); return;
   }
+  
+  // Validate CV file
+  if (!cvFileEl?.files || !cvFileEl.files[0]) {
+    showToast('Please upload your CV/Resume', 'error');
+    cvFileEl.focus(); return;
+  }
+  
+  const file = cvFileEl.files[0];
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) {
+    showToast('CV file is too large. Max 5MB.', 'error');
+    return;
+  }
 
+  // Check for duplicate application
   const apps = getApps();
   if (apps.find(a => a.jobId === jobId && a.seekerEmail === emailEl.value.trim())) {
-    showToast('You already applied for this job!', 'error', 'fas fa-info-circle'); return;
+    showToast('You already applied for this job!', 'error');
+    return;
+  }
+
+  // Disable submit button to prevent double submission
+  const submitBtn = document.getElementById(`am-submit-${jobId}`);
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  }
+
+  // Read the CV file asynchronously
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const cvData = e.target.result;
+    const cvFilename = file.name;
+    const cvType = file.type;
+    
+    // Create the application object with CV
+    const newApplication = {
+      id: Date.now(),
+      jobId: jobId,
+      seekerName: nameEl.value.trim(),
+      seekerEmail: emailEl.value.trim(),
+      seekerPhone: phoneEl.value.trim(),
+      seekerPlace: locationEl.value.trim(),
+      jobTitle: title,
+      company: company,
+      message: msgEl.value.trim(),
+      status: 'New',
+      date: new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' }),
+      cvData: cvData,
+      cvFilename: cvFilename,
+      cvType: cvType
+    };
+    
+    apps.push(newApplication);
+    saveApps(apps);
+    
+    // Verify save was successful
+    const savedApps = getApps();
+    const saved = savedApps.find(a => a.id === newApplication.id);
+    if (saved && saved.cvData) {
+      console.log('CV saved successfully!', saved.cvFilename);
+      showToast(`Application sent to ${company} with CV (${cvFilename})! 🎉`, 'success');
+    } else {
+      console.warn('CV may not have saved properly');
+      showToast(`Application sent to ${company}!`, 'success');
+    }
+    
+    launchConfetti();
+    
+    if (submitBtn) {
+      submitBtn.innerHTML = '<i class="fas fa-check"></i> Submitted!';
+    }
+    
+    setTimeout(() => closeApplyModal(), 2000);
+  };
+  
+  reader.onerror = function() {
+    console.error('FileReader error:', reader.error);
+    showToast('Error reading CV file. Please try again.', 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+    }
+  };
+  
+  reader.readAsDataURL(file);
+}
+function saveApplicationWithCV(jobId, title, company, name, email, phone, location, message, cvData, cvFilename, cvType) {
+  const apps = getApps();
+  
+  if (apps.find(a => a.jobId === jobId && a.seekerEmail === email)) {
+    showToast('You already applied for this job!', 'error', 'fas fa-info-circle');
+    return;
   }
 
   apps.push({
-    id: Date.now(), jobId,
-    seekerName: nameEl.value.trim(), seekerEmail: emailEl.value.trim(),
-    seekerPhone: phoneEl.value.trim(), seekerPlace: locationEl.value.trim(),
-    jobTitle: title, company, message: msgEl.value.trim(),
+    id: Date.now(),
+    jobId,
+    seekerName: name,
+    seekerEmail: email,
+    seekerPhone: phone,
+    seekerPlace: location,
+    jobTitle: title,
+    company: company,
+    message: message,
     status: 'New',
-    date: new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' })
+    date: new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' }),
+    cvData: cvData,
+    cvFilename: cvFilename,
+    cvType: cvType
   });
   saveApps(apps);
 
+  showToast(`Application sent to ${company} with CV! 🎉`, 'success', 'fas fa-check-circle', 4500);
+  launchConfetti();
+  
   const btn = document.getElementById(`am-submit-${jobId}`);
   if (btn) {
     btn.innerHTML = '<i class="fas fa-check" style="margin-right:8px;"></i>Application Submitted!';
     btn.style.background = 'var(--emerald)';
     btn.disabled = true;
   }
-
-  showToast(`Application sent to ${company}! 🎉`, 'success', 'fas fa-check-circle', 4500);
-  launchConfetti();
+  
   setTimeout(() => closeApplyModal(), 2200);
 }
-
 function submitApplication(jobId, title, company) {
   const nameEl     = document.getElementById(`apply-name-${jobId}`);
   const emailEl    = document.getElementById(`apply-email-${jobId}`);

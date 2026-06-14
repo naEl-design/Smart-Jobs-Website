@@ -529,6 +529,16 @@
     }
     .view-btn:hover { background: var(--indigo); color: white; }
 
+    .admin-message-badge {
+      margin-top: 8px;
+      font-size: .72rem;
+      background: #f1f5f9;
+      padding: 6px 10px;
+      border-radius: 8px;
+      color: var(--indigo);
+      border-left: 3px solid var(--indigo);
+    }
+
     /* ── PROGRESS BAR ── */
     .progress-section { padding: 20px 24px; }
     .progress-item { margin-bottom: 16px; }
@@ -555,118 +565,6 @@
     .progress-fill.emerald { background: linear-gradient(90deg, var(--emerald), #34d399); }
     .progress-fill.amber { background: linear-gradient(90deg, var(--amber), #fbbf24); }
     .progress-fill.rose { background: linear-gradient(90deg, var(--rose), #f87171); }
-
-    /* ── JOB CARD ── */
-    .job-card {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 24px;
-      border-bottom: 1px solid var(--border);
-      transition: all var(--transition);
-    }
-    .job-card:last-child { border-bottom: none; }
-    .job-card:hover { background: var(--bg); }
-    .job-logo {
-      width: 48px; height: 48px;
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: 800;
-      font-size: 1rem;
-      color: white;
-      flex-shrink: 0;
-    }
-    .job-info { flex: 1; min-width: 0; }
-    .job-title { font-weight: 700; font-size: .9rem; margin-bottom: 2px; }
-    .job-company { font-size: .8rem; color: var(--muted); }
-    .job-tags { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
-    .job-tag {
-      font-size: .7rem;
-      font-weight: 600;
-      padding: 2px 9px;
-      border-radius: 6px;
-      background: var(--bg-2);
-      color: var(--muted);
-    }
-
-    /* ── PROFILE PAGE ── */
-    .profile-info-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      padding: 24px;
-    }
-    .info-item label {
-      font-size: .72rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-      display: block;
-      margin-bottom: 5px;
-    }
-    .info-item p {
-      font-size: .9rem;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .skills-wrap { padding: 20px 24px; display: flex; flex-wrap: wrap; gap: 8px; }
-    .skill-chip {
-      padding: 6px 14px;
-      border-radius: 20px;
-      background: var(--indigo-light);
-      color: var(--indigo);
-      font-size: .78rem;
-      font-weight: 700;
-      animation: pop-in .4s cubic-bezier(.34,1.56,.64,1) both;
-    }
-
-    /* ── SETTINGS PAGE ── */
-    .settings-section { padding: 24px; border-bottom: 1px solid var(--border); }
-    .settings-section:last-child { border-bottom: none; }
-    .settings-section h3 {
-      font-family: 'Sora', sans-serif;
-      font-size: .95rem;
-      font-weight: 700;
-      margin-bottom: 16px;
-    }
-    .toggle-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border);
-    }
-    .toggle-row:last-child { border-bottom: none; }
-    .toggle-label .title { font-size: .87rem; font-weight: 600; }
-    .toggle-label .desc { font-size: .77rem; color: var(--muted); margin-top: 2px; }
-    .toggle {
-      position: relative;
-      width: 44px; height: 24px;
-      flex-shrink: 0;
-    }
-    .toggle input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider {
-      position: absolute;
-      inset: 0;
-      background: var(--border);
-      border-radius: 24px;
-      cursor: pointer;
-      transition: background var(--transition);
-    }
-    .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 18px; height: 18px;
-      border-radius: 50%;
-      background: white;
-      left: 3px; top: 3px;
-      transition: transform var(--transition);
-      box-shadow: 0 1px 4px rgba(0,0,0,.2);
-    }
-    .toggle input:checked + .toggle-slider { background: var(--indigo); }
-    .toggle input:checked + .toggle-slider::before { transform: translateX(20px); }
 
     /* ── EMPTY STATE ── */
     .empty-state {
@@ -913,11 +811,11 @@
   <!-- MAIN -->
   <main class="dashboard-main">
 
-    <!-- ── APPLICATIONS PAGE ── -->
+    <!-- ── APPLICATIONS PAGE (shows admin messages) ── -->
     <div id="page-applications" class="dashboard-page active">
       <div class="page-header">
         <h1>My Applications</h1>
-        <p>Track all your job applications in real-time</p>
+        <p>Track all your job applications and view messages from admins</p>
       </div>
 
       <div class="stats-grid">
@@ -934,7 +832,7 @@
         <div class="stat-card green">
           <div class="stat-icon green"><i class="fas fa-star"></i></div>
           <div class="stat-number" id="shortlisted-apps">0</div>
-          <div class="stat-label">Shortlisted</div>
+          <div class="stat-label">Approved</div>
         </div>
         <div class="stat-card purple">
           <div class="stat-icon purple"><i class="fas fa-eye"></i></div>
@@ -955,7 +853,7 @@
         </div>
       </div>
 
-      <!-- Applications table -->
+      <!-- Applications table with admin messages -->
       <div class="section-card" style="animation-delay:.38s">
         <div class="section-header">
           <h2><i class="fas fa-paper-plane"></i> Application History</h2>
@@ -966,22 +864,10 @@
         <div style="overflow-x:auto">
           <table class="data-table">
             <thead>
-              <tr>
-                <th>Job Title</th>
-                <th>Company</th>
-                <th>Applied On</th>
-                <th>Status</th>
-                <th>Action</th>
-              </tr>
+              <tr><th>Job Title</th><th>Company</th><th>Applied On</th><th>Status</th><th>Details & Message</th></tr>
             </thead>
             <tbody id="applications-list">
-              <tr><td colspan="5">
-                <div class="empty-state">
-                  <div class="empty-icon"><i class="fas fa-inbox"></i></div>
-                  <h3>No applications yet</h3>
-                  <p>Start applying to jobs on the home page!</p>
-                </div>
-              </td></tr>
+              <tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fas fa-inbox"></i></div><h3>No applications yet</h3><p>Start applying to jobs on the home page!</p></div></td></tr>
             </tbody>
           </table>
         </div>
@@ -999,23 +885,11 @@
           <h2><i class="fas fa-user-circle"></i> Personal Information</h2>
           <button class="btn-primary" style="font-size:.8rem;padding:8px 16px"><i class="fas fa-pen"></i> Edit</button>
         </div>
-        <div class="profile-info-grid">
-          <div class="info-item">
-            <label>Full Name</label>
-            <p id="profile-name-display">—</p>
-          </div>
-          <div class="info-item">
-            <label>Email Address</label>
-            <p id="profile-email-display">—</p>
-          </div>
-          <div class="info-item">
-            <label>Account Type</label>
-            <p>Job Seeker</p>
-          </div>
-          <div class="info-item">
-            <label>Member Since</label>
-            <p id="member-since">—</p>
-          </div>
+        <div class="profile-info-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px;">
+          <div class="info-item"><label>Full Name</label><p id="profile-name-display">—</p></div>
+          <div class="info-item"><label>Email Address</label><p id="profile-email-display">—</p></div>
+          <div class="info-item"><label>Account Type</label><p>Job Seeker</p></div>
+          <div class="info-item"><label>Member Since</label><p id="member-since">—</p></div>
         </div>
       </div>
       <div class="section-card" style="animation:fadeSlideUp .5s .1s both">
@@ -1023,93 +897,35 @@
           <h2><i class="fas fa-tags"></i> Skills</h2>
           <button class="btn-primary" style="font-size:.8rem;padding:8px 16px"><i class="fas fa-plus"></i> Add Skill</button>
         </div>
-        <div class="skills-wrap">
-          <span class="skill-chip">Microsoft Office</span>
-          <span class="skill-chip">Communication</span>
-          <span class="skill-chip">Data Analysis</span>
-          <span class="skill-chip">Project Management</span>
-          <span class="skill-chip">Problem Solving</span>
-          <span class="skill-chip">Teamwork</span>
+        <div class="skills-wrap" style="padding:20px 24px;display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="skill-chip" style="padding:6px 14px;border-radius:20px;background:var(--indigo-light);color:var(--indigo);font-size:.78rem;font-weight:700;">Microsoft Office</span>
+          <span class="skill-chip" style="padding:6px 14px;border-radius:20px;background:var(--indigo-light);color:var(--indigo);font-size:.78rem;font-weight:700;">Communication</span>
+          <span class="skill-chip" style="padding:6px 14px;border-radius:20px;background:var(--indigo-light);color:var(--indigo);font-size:.78rem;font-weight:700;">Data Analysis</span>
+          <span class="skill-chip" style="padding:6px 14px;border-radius:20px;background:var(--indigo-light);color:var(--indigo);font-size:.78rem;font-weight:700;">Problem Solving</span>
         </div>
       </div>
     </div>
 
     <!-- ── BOOKMARKS PAGE ── -->
     <div id="page-bookmarks" class="dashboard-page">
-      <div class="page-header">
-        <h1>Saved Jobs</h1>
-        <p>Jobs you've bookmarked for later</p>
-      </div>
-      <div class="section-card" style="animation:fadeSlideUp .5s both">
-        <div id="bookmarks-list">
-          <div class="empty-state">
-            <div class="empty-icon"><i class="fas fa-bookmark"></i></div>
-            <h3>No saved jobs yet</h3>
-            <p>Bookmark jobs you're interested in to review them later</p>
-          </div>
-        </div>
+      <div class="page-header"><h1>Saved Jobs</h1><p>Jobs you've bookmarked for later</p></div>
+      <div class="section-card">
+        <div id="bookmarks-list"><div class="empty-state"><div class="empty-icon"><i class="fas fa-bookmark"></i></div><h3>No saved jobs yet</h3><p>Bookmark jobs you're interested in</p></div></div>
       </div>
     </div>
 
     <!-- ── SETTINGS PAGE ── -->
     <div id="page-settings" class="dashboard-page">
-      <div class="page-header">
-        <h1>Settings</h1>
-        <p>Manage your account preferences</p>
-      </div>
-      <div class="section-card" style="animation:fadeSlideUp .5s both">
-        <div class="settings-section">
-          <h3><i class="fas fa-bell" style="color:var(--indigo);margin-right:8px"></i> Notifications</h3>
-          <div class="toggle-row">
-            <div class="toggle-label">
-              <div class="title">Email Notifications</div>
-              <div class="desc">Get notified when your application status changes</div>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-label">
-              <div class="title">New Job Alerts</div>
-              <div class="desc">Receive job recommendations matching your profile</div>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-          <div class="toggle-row">
-            <div class="toggle-label">
-              <div class="title">Employer Messages</div>
-              <div class="desc">Receive messages from employers via email</div>
-            </div>
-            <label class="toggle">
-              <input type="checkbox">
-              <span class="toggle-slider"></span>
-            </label>
+      <div class="page-header"><h1>Settings</h1><p>Manage your account preferences</p></div>
+      <div class="section-card">
+        <div class="settings-section" style="padding:24px;border-bottom:1px solid var(--border);">
+          <h3 style="font-family:'Sora',sans-serif;font-size:.95rem;font-weight:700;margin-bottom:16px;"><i class="fas fa-bell" style="color:var(--indigo);margin-right:8px"></i> Notifications</h3>
+          <div class="toggle-row" style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--border);">
+            <div><div class="title" style="font-size:.87rem;font-weight:600;">Email Notifications</div><div class="desc" style="font-size:.77rem;color:var(--muted);">Get notified when your application status changes</div></div>
+            <label class="toggle" style="position:relative;width:44px;height:24px;"><input type="checkbox" checked><span class="toggle-slider" style="position:absolute;inset:0;background:var(--border);border-radius:24px;cursor:pointer;"></span></label>
           </div>
         </div>
-        <div class="settings-section">
-          <h3><i class="fas fa-lock" style="color:var(--indigo);margin-right:8px"></i> Privacy</h3>
-          <div class="toggle-row">
-            <div class="toggle-label">
-              <div class="title">Profile Visibility</div>
-              <div class="desc">Allow employers to discover your profile</div>
-            </div>
-            <label class="toggle">
-              <input type="checkbox" checked>
-              <span class="toggle-slider"></span>
-            </label>
-          </div>
-        </div>
-        <div class="settings-section">
-          <h3 style="color:var(--rose)"><i class="fas fa-trash" style="margin-right:8px"></i> Danger Zone</h3>
-          <button class="btn-ghost" onclick="logout()" style="margin-top:4px">
-            <i class="fas fa-sign-out-alt"></i> Sign Out of All Devices
-          </button>
-        </div>
+        <div class="settings-section" style="padding:24px;"><button class="btn-ghost" onclick="logout()" style="margin-top:4px"><i class="fas fa-sign-out-alt"></i> Sign Out of All Devices</button></div>
       </div>
     </div>
 
@@ -1120,24 +936,16 @@
 <div class="modal-overlay" id="appModal" style="display:none" onclick="closeModal(event)">
   <div class="modal" id="appModalContent">
     <div class="modal-header">
-      <div>
-        <h3 id="modal-title">Application Details</h3>
-        <p style="font-size:.8rem;color:var(--muted);margin-top:3px" id="modal-company">—</p>
-      </div>
+      <div><h3 id="modal-title">Application Details</h3><p style="font-size:.8rem;color:var(--muted);margin-top:3px" id="modal-company">—</p></div>
       <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
     </div>
     <div class="modal-body">
-      <div class="modal-row">
-        <span class="modal-label">Status</span>
-        <span class="modal-val" id="modal-status">—</span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-label">Applied On</span>
-        <span class="modal-val" id="modal-date">—</span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-label">Update</span>
-        <span class="modal-val" id="modal-update" style="color:var(--muted);font-weight:400;font-size:.83rem">—</span>
+      <div class="modal-row"><span class="modal-label">Status</span><span class="modal-val" id="modal-status">—</span></div>
+      <div class="modal-row"><span class="modal-label">Applied On</span><span class="modal-val" id="modal-date">—</span></div>
+      <div class="modal-row"><span class="modal-label">Update</span><span class="modal-val" id="modal-update" style="color:var(--muted);font-weight:400;font-size:.83rem">—</span></div>
+      <div class="modal-message" id="modal-admin-msg-container" style="display:none; background:#ede9ff; border-left-color:var(--indigo);">
+        <strong><i class="fas fa-user-shield"></i> Message from Admin</strong>
+        <span id="modal-admin-msg-text"></span>
       </div>
       <div class="modal-message" id="modal-msg" style="display:none">
         <strong>Your Cover Message</strong>
@@ -1151,47 +959,12 @@
 <footer class="main-footer">
   <div class="footer-inner">
     <div class="footer-grid">
-      <div class="footer-col">
-        <h4>smartJobs</h4>
-        <ul>
-          <li><a href="home.html">Browse Jobs</a></li>
-          <li><a href="market.html">Salaries</a></li>
-          <li><a href="cv-builder.html">CV Builder</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>For Employers</h4>
-        <ul>
-          <li><a href="post-job.html">Post a Job</a></li>
-          <li><a href="employer-hub.html">Employer Hub</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="help.html">Help Center</a></li>
-          <li><a href="faq.html">FAQ</a></li>
-          <li><a href="blog.html">Career Blog</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="privacy.html">Privacy Policy</a></li>
-          <li><a href="terms.html">Terms of Use</a></li>
-        </ul>
-      </div>
+      <div class="footer-col"><h4>smartJobs</h4><ul><li><a href="home.html">Browse Jobs</a></li><li><a href="market.html">Salaries</a></li><li><a href="cv-builder.html">CV Builder</a></li></ul></div>
+      <div class="footer-col"><h4>For Employers</h4><ul><li><a href="post-job.html">Post a Job</a></li><li><a href="employer-hub.html">Employer Hub</a></li></ul></div>
+      <div class="footer-col"><h4>Resources</h4><ul><li><a href="help.html">Help Center</a></li><li><a href="faq.html">FAQ</a></li></ul></div>
+      <div class="footer-col"><h4>Legal</h4><ul><li><a href="about.html">About Us</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
     </div>
-    <div class="footer-bottom">
-      <p>&copy; 2026 smartJobs Rwanda. All rights reserved.</p>
-      <div class="social-icons">
-        <div class="social-btn"><i class="fab fa-facebook-f"></i></div>
-        <div class="social-btn"><i class="fab fa-twitter"></i></div>
-        <div class="social-btn"><i class="fab fa-linkedin-in"></i></div>
-        <div class="social-btn"><i class="fab fa-instagram"></i></div>
-      </div>
-    </div>
+    <div class="footer-bottom"><p>&copy; 2026 smartJobs Rwanda. All rights reserved.</p><div class="social-icons"><div class="social-btn"><i class="fab fa-facebook-f"></i></div><div class="social-btn"><i class="fab fa-twitter"></i></div><div class="social-btn"><i class="fab fa-linkedin-in"></i></div></div></div>
   </div>
 </footer>
 
@@ -1201,38 +974,18 @@
   let currentUser = null;
   let myApplications = [];
 
-  window.addEventListener('scroll', () => {
-    document.getElementById('topNav').classList.toggle('scrolled', window.scrollY > 10);
-  });
-
-  function getUser() {
-    return JSON.parse(localStorage.getItem('currentUser'));
-  }
+  function getUser() { return JSON.parse(localStorage.getItem('currentUser')); }
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])); }
 
   function showToast(msg, type = 'success') {
     const container = document.getElementById('toast-container');
+    if (!container) return;
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
-    const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', info: 'fa-info-circle' };
-    toast.innerHTML = `<i class="fas ${icons[type] || icons.success}"></i><span>${msg}</span>`;
+    toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i><span>${msg}</span>`;
     container.appendChild(toast);
-    setTimeout(() => {
-      toast.classList.add('exiting');
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
-
-  function logout() {
-    if (confirm('Are you sure you want to sign out?')) {
-      localStorage.removeItem('currentUser');
-      showToast('Signed out successfully', 'success');
-      setTimeout(() => { window.location.href = 'auth.html'; }, 800);
-    }
-  }
-
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>"']/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[m]));
+    setTimeout(() => toast.classList.add('exiting'), 2800);
+    setTimeout(() => toast.remove(), 3200);
   }
 
   function animateNumber(el, target) {
@@ -1250,52 +1003,26 @@
 
   function getStatusBadge(status) {
     const map = {
-      'New':         ['status-new',         '📩 New'],
-      'Pending':     ['status-pending',      '⏳ Pending'],
-      'Reviewed':    ['status-reviewed',     '👁 Reviewed'],
-      'Shortlisted': ['status-shortlisted',  '⭐ Shortlisted'],
-      'Rejected':    ['status-rejected',     '✕ Rejected'],
+      'New': ['status-new', '📩 New'], 'Pending': ['status-pending', '⏳ Pending'],
+      'Reviewed': ['status-reviewed', '👁 Reviewed'], 'Shortlisted': ['status-shortlisted', '⭐ Shortlisted'],
+      'approved': ['status-shortlisted', '✅ Approved'], 'rejected': ['status-rejected', '❌ Rejected']
     };
     const [cls, label] = map[status] || ['status-pending', status];
     return `<span class="status-badge ${cls}">${label}</span>`;
   }
 
-  function renderProgressBars(apps) {
-    const section = document.getElementById('progressSection');
-    const total = apps.length;
-    if (total === 0) {
-      section.innerHTML = '<div class="empty-state" style="padding:32px"><p>Apply to jobs to see your progress breakdown</p></div>';
-      return;
-    }
-    const statuses = [
-      { label: 'Pending / New', count: apps.filter(a => a.status === 'New' || a.status === 'Pending').length, cls: 'amber' },
-      { label: 'Reviewed',      count: apps.filter(a => a.status === 'Reviewed').length,   cls: 'indigo' },
-      { label: 'Shortlisted',   count: apps.filter(a => a.status === 'Shortlisted').length, cls: 'emerald' },
-      { label: 'Rejected',      count: apps.filter(a => a.status === 'Rejected').length,    cls: 'rose' },
-    ];
-    section.innerHTML = statuses.map(s => `
-      <div class="progress-item">
-        <div class="progress-header">
-          <span class="progress-label">${s.label}</span>
-          <span class="progress-count">${s.count} / ${total}</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill ${s.cls}" style="width:${total > 0 ? (s.count / total * 100).toFixed(1) : 0}%"></div>
-        </div>
-      </div>`).join('');
-  }
-
   function loadApplications() {
     const user = getUser();
     if (!user) return;
-
     const allApps = JSON.parse(localStorage.getItem('jobApplications')) || [];
     myApplications = allApps.filter(a => a.seekerEmail === user.email);
+    const allMessages = JSON.parse(localStorage.getItem('userMessages')) || [];
+    const myMessages = allMessages.filter(m => m.userId === user.email && m.type === 'application_update');
 
     const total = myApplications.length;
-    const pending = myApplications.filter(a => a.status === 'New' || a.status === 'Pending').length;
-    const shortlisted = myApplications.filter(a => a.status === 'Shortlisted').length;
-    const reviewed = myApplications.filter(a => a.status === 'Reviewed').length;
+    const pending = myApplications.filter(a => a.status === 'New' || a.status === 'Pending' || a.status === 'pending').length;
+    const shortlisted = myApplications.filter(a => a.status === 'Shortlisted' || a.status === 'approved').length;
+    const reviewed = myApplications.filter(a => a.status === 'Reviewed' || a.status === 'rejected').length;
 
     animateNumber(document.getElementById('total-applied'), total);
     animateNumber(document.getElementById('pending-apps'), pending);
@@ -1303,59 +1030,87 @@
     animateNumber(document.getElementById('reviewed-apps'), reviewed);
 
     const badge = document.getElementById('apps-badge');
-    badge.textContent = total;
+    if (badge) badge.textContent = total;
 
-    renderProgressBars(myApplications);
+    // Progress bars
+    const progressSection = document.getElementById('progressSection');
+    if (progressSection && total > 0) {
+      const pendingCount = pending, approvedCount = shortlisted, rejectedCount = reviewed;
+      progressSection.innerHTML = `
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Pending</span><span class="progress-count">${pendingCount} / ${total}</span></div><div class="progress-track"><div class="progress-fill amber" style="width:${(pendingCount/total*100).toFixed(1)}%"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Approved</span><span class="progress-count">${approvedCount} / ${total}</span></div><div class="progress-track"><div class="progress-fill emerald" style="width:${(approvedCount/total*100).toFixed(1)}%"></div></div></div>
+        <div class="progress-item"><div class="progress-header"><span class="progress-label">Rejected</span><span class="progress-count">${rejectedCount} / ${total}</span></div><div class="progress-track"><div class="progress-fill rose" style="width:${(rejectedCount/total*100).toFixed(1)}%"></div></div></div>
+      `;
+    } else if (progressSection) {
+      progressSection.innerHTML = '<div class="empty-state" style="padding:32px"><p>Apply to jobs to see your progress breakdown</p></div>';
+    }
 
     const tbody = document.getElementById('applications-list');
+    if (!tbody) return;
     if (myApplications.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5">
-        <div class="empty-state">
-          <div class="empty-icon"><i class="fas fa-inbox"></i></div>
-          <h3>No applications yet</h3>
-          <p>Start applying to jobs on the home page!</p>
-        </div>
-      </td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><div class="empty-icon"><i class="fas fa-inbox"></i></div><h3>No applications yet</h3><p>Start applying to jobs on the home page!</p></div></td></tr>`;
       return;
     }
 
-    tbody.innerHTML = myApplications.slice().reverse().map((app, idx) => `
-      <tr style="animation:fadeSlideUp .4s ${idx * 0.05}s both">
-        <td><strong>${escapeHtml(app.jobTitle)}</strong></td>
-        <td style="color:var(--text-2)">${escapeHtml(app.company)}</td>
-        <td style="color:var(--muted);font-size:.82rem">${app.date || new Date().toLocaleDateString()}</td>
-        <td>${getStatusBadge(app.status)}</td>
-        <td>
-          <button class="view-btn" onclick="viewApplicationDetails(${app.id})">
-            <i class="fas fa-eye"></i> View
-          </button>
-        </td>
-      </tr>`).join('');
+    tbody.innerHTML = myApplications.slice().reverse().map((app, idx) => {
+      const relatedMsg = myMessages.find(m => m.applicationId === app.id);
+      const adminMessageHtml = (relatedMsg && relatedMsg.message) || app.adminMessage
+        ? `<div class="admin-message-badge" style="margin-top:8px;font-size:.72rem;background:#f1f5f9;padding:6px 10px;border-radius:8px;color:var(--indigo);border-left:3px solid var(--indigo);">
+             <i class="fas fa-comment-dots"></i> ${escapeHtml((relatedMsg?.message || app.adminMessage).substring(0, 80))}${(relatedMsg?.message || app.adminMessage).length > 80 ? '…' : ''}
+           </div>`
+        : '';
+      return `
+        <tr style="animation:fadeSlideUp .4s ${idx * 0.05}s both">
+          <td><strong>${escapeHtml(app.jobTitle)}</strong></td>
+          <td style="color:var(--text-2)">${escapeHtml(app.company)}</td>
+          <td style="color:var(--muted);font-size:.82rem">${app.date || new Date().toLocaleDateString()}</td>
+          <td>${getStatusBadge(app.status)}</td>
+          <td>
+            <button class="view-btn" onclick="viewApplicationDetails(${app.id})"><i class="fas fa-eye"></i> View Details</button>
+            ${adminMessageHtml}
+          </td>
+        </tr>
+      `;
+    }).join('');
   }
 
   function viewApplicationDetails(appId) {
     const app = myApplications.find(a => a.id === appId);
     if (!app) return;
+    const allMessages = JSON.parse(localStorage.getItem('userMessages')) || [];
+    const adminMsgObj = allMessages.find(m => m.applicationId === appId && m.type === 'application_update');
+    const adminMsg = adminMsgObj?.message || app.adminMessage;
+
     const updates = {
-      'New':         'Your application has been sent. The employer will review it soon.',
-      'Reviewed':    'The employer has reviewed your application. You may hear from them soon!',
-      'Shortlisted': '🎉 Congratulations! You have been shortlisted. Expect an interview invitation.',
-      'Rejected':    'The employer decided not to proceed. Keep applying — the right role is out there!',
+      'New': 'Your application has been sent. The employer will review it soon.',
+      'Pending': 'Your application is pending review.',
+      'approved': '✅ Your application was approved! The employer will contact you shortly.',
+      'rejected': '❌ Your application was not selected this time. Keep applying!'
     };
+
     document.getElementById('modal-title').textContent = escapeHtml(app.jobTitle);
     document.getElementById('modal-company').textContent = escapeHtml(app.company);
-    document.getElementById('modal-status').innerHTML = `<span class="status-badge ${({
-      New:'status-new', Reviewed:'status-reviewed', Shortlisted:'status-shortlisted', Rejected:'status-rejected', Pending:'status-pending'
-    }[app.status] || 'status-pending')}">${app.status}</span>`;
+    document.getElementById('modal-status').innerHTML = getStatusBadge(app.status);
     document.getElementById('modal-date').textContent = app.date || '—';
     document.getElementById('modal-update').textContent = updates[app.status] || '';
-    const msgEl = document.getElementById('modal-msg');
+
+    const adminMsgContainer = document.getElementById('modal-admin-msg-container');
+    const adminMsgText = document.getElementById('modal-admin-msg-text');
+    if (adminMsg && adminMsgContainer && adminMsgText) {
+      adminMsgText.textContent = adminMsg;
+      adminMsgContainer.style.display = 'block';
+    } else if (adminMsgContainer) {
+      adminMsgContainer.style.display = 'none';
+    }
+
+    const userMsgDiv = document.getElementById('modal-msg');
     if (app.message && app.message !== 'No cover message provided.') {
       document.getElementById('modal-msg-text').textContent = app.message;
-      msgEl.style.display = 'block';
-    } else {
-      msgEl.style.display = 'none';
+      userMsgDiv.style.display = 'block';
+    } else if (userMsgDiv) {
+      userMsgDiv.style.display = 'none';
     }
+
     document.getElementById('appModal').style.display = 'flex';
     document.body.style.overflow = 'hidden';
   }
@@ -1366,14 +1121,15 @@
     document.body.style.overflow = '';
   }
 
-  document.querySelector('.modal-close').addEventListener('click', () => {
-    document.getElementById('appModal').style.display = 'none';
-    document.body.style.overflow = '';
-  });
-
-  function refreshApplications() {
-    loadApplications();
-    showToast('Applications refreshed!', 'success');
+  function refreshApplications() { loadApplications(); showToast('Applications refreshed!', 'success'); }
+  function switchPage(page) {
+    document.querySelectorAll('.dashboard-page').forEach(p => p.classList.remove('active'));
+    const target = document.getElementById(`page-${page}`);
+    if (target) target.classList.add('active');
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+    const link = document.querySelector(`.sidebar-nav a[data-page="${page}"]`);
+    if (link) link.classList.add('active');
+    if (page === 'applications') loadApplications();
   }
 
   function loadUserProfile() {
@@ -1385,22 +1141,16 @@
     document.getElementById('profile-email').textContent = user.email || '';
     document.getElementById('profile-name-display').textContent = user.name || '—';
     document.getElementById('profile-email-display').textContent = user.email || '—';
-    document.getElementById('member-since').textContent = new Date().toLocaleDateString('en-US', { year:'numeric', month:'long' });
+    const memberSince = document.getElementById('member-since');
+    if (memberSince) memberSince.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
   }
 
-  function switchPage(page) {
-    document.querySelectorAll('.dashboard-page').forEach(p => p.classList.remove('active'));
-    const target = document.getElementById(`page-${page}`);
-    if (target) {
-      target.classList.add('active');
-      target.style.animation = 'none';
-      void target.offsetWidth;
-      target.style.animation = 'fadeSlideUp .4s cubic-bezier(.34,1.56,.64,1) both';
+  function logout() {
+    if (confirm('Are you sure you want to sign out?')) {
+      localStorage.removeItem('currentUser');
+      showToast('Signed out successfully', 'success');
+      setTimeout(() => { window.location.href = 'auth.html'; }, 800);
     }
-    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
-    const link = document.querySelector(`.sidebar-nav a[data-page="${page}"]`);
-    if (link) link.classList.add('active');
-    if (page === 'applications') loadApplications();
   }
 
   function checkAuth() {
@@ -1413,10 +1163,10 @@
     return true;
   }
 
-  window.addEventListener('storage', e => {
-    if (e.key === 'jobApplications') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'jobApplications' || e.key === 'userMessages') {
       loadApplications();
-      showToast('Your application status was updated!', 'info');
+      showToast('Your applications were updated!', 'info');
     }
   });
 
@@ -1424,6 +1174,12 @@
     if (!checkAuth()) return;
     loadUserProfile();
     loadApplications();
+    const modalCloseBtn = document.querySelector('.modal-close');
+    if (modalCloseBtn) modalCloseBtn.addEventListener('click', () => {
+      document.getElementById('appModal').style.display = 'none';
+      document.body.style.overflow = '';
+    });
+    window.closeModal = closeModal;
   });
 </script>
 </body>
