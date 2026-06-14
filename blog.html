@@ -6,181 +6,1133 @@
   <meta name="google-site-verification" content="9RkpIDPFQLY-tXviL2wdqDg_1IO1V50sdk5fTG1ur98" />
   <title>Career Blog | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="manifest" href="manifest.json">
-  <script src="cursor.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --indigo: #3b2fc9;
-      --indigo-light: #ede9ff;
-      --emerald: #10b981;
-      --amber: #f59e0b;
-      --text: #0f172a;
-      --text-2: #334155;
-      --muted: #64748b;
-      --border: #e2e8f0;
-      --bg: #f8fafc;
-      --shadow: 0 4px 24px rgba(59,47,201,0.09);
-      --shadow-lg: 0 16px 48px rgba(59,47,201,0.16);
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
 
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+      --secondary: #0f172a;
+      --accent: #f97316;
+      --success: #10b981;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+      --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      line-height: 1.5;
+    }
+
+    h1, h2, h3, h4, .logo {
+      font-family: 'Space Grotesk', monospace;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Navigation */
     .top-nav {
-      background: rgba(255,255,255,0.98);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      height: 70px;
-      display: flex;
-      align-items: center;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--gray-200);
       position: sticky;
       top: 0;
       z-index: 100;
     }
+
     .nav-content {
-      max-width: 1400px;
+      max-width: 1280px;
       margin: 0 auto;
       padding: 0 32px;
+      height: 72px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 100%;
     }
-    .nav-left { display: flex; align-items: center; gap: 48px; }
-    .main-menu { display: flex; list-style: none; gap: 8px; }
-    .main-menu a { padding: 8px 20px; text-decoration: none; color: var(--muted); font-weight: 600; border-radius: 8px; transition: all 0.2s; }
-    .main-menu a:hover, .main-menu a.active { background: var(--indigo-light); color: var(--indigo); }
-    .sj-logo-pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: linear-gradient(135deg, #3b2fc9, #5a44e8);
-      border-radius: 40px; padding: 6px 18px 6px 8px;
-      text-decoration: none; font-family: 'Sora', sans-serif;
-      font-weight: 800; font-size: 1rem; color: white;
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 40px;
     }
-    .sj-icon { width: 28px; height: 28px; background: rgba(255,255,255,.18); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
-    .sj-green { color: #10b981; }
-    .nav-btn-primary {
-      background: var(--indigo);
-      color: white;
-      padding: 9px 20px;
-      border-radius: 9px;
+
+    .main-menu {
+      display: flex;
+      list-style: none;
+      gap: 8px;
+    }
+
+    .main-menu a {
+      padding: 8px 18px;
       text-decoration: none;
+      color: var(--gray-600);
+      font-weight: 500;
+      border-radius: 40px;
+      transition: all 0.2s;
+      font-size: 0.9rem;
+    }
+
+    .main-menu a:hover,
+    .main-menu a.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .sj-logo-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border-radius: 40px;
+      padding: 6px 18px 6px 10px;
+      text-decoration: none;
+      font-family: 'Space Grotesk', monospace;
       font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .sj-logo-pill:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+    }
+
+    .sj-icon {
+      width: 28px;
+      height: 28px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+    }
+
+    .sj-green {
+      color: #a7f3d0;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
       transition: all 0.2s;
     }
 
-    .blog-hero {
-      background: linear-gradient(135deg, var(--indigo), #6d51f7);
-      padding: 80px 0 60px;
-      color: white;
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--gray-300);
+      color: var(--gray-700);
+      padding: 8px 20px;
+      border-radius: 40px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .search-section {
+      background: linear-gradient(135deg, var(--secondary) 0%, var(--primary) 100%);
+      padding: 56px 0 64px;
+      position: relative;
+    }
+
+    .search-container {
+      max-width: 800px;
+      margin: 0 auto;
       text-align: center;
     }
-    .blog-hero h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 15px; }
-    .blog-hero p { font-size: 1.1rem; max-width: 600px; margin: 0 auto; opacity: 0.9; }
 
-    .blog-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; padding: 60px 0; }
-    .blog-card {
+    .search-container h1 {
+      font-size: 2.5rem;
+      color: white;
+      margin-bottom: 12px;
+    }
+
+    .search-container p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 28px;
+    }
+
+    .job-search-bar {
+      background: white;
+      border-radius: 60px;
+      padding: 6px;
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .job-search-bar input {
+      flex: 1;
+      border: none;
+      padding: 14px 24px;
+      font-size: 0.95rem;
+      border-radius: 60px;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .job-search-bar button {
+      background: var(--primary);
+      border: none;
+      padding: 0 28px;
+      border-radius: 60px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .job-search-bar button:hover {
+      background: var(--primary-dark);
+    }
+
+    .industry-filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(4px);
+      padding: 8px 20px;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .filter-chip:hover {
+      background: white;
+      color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* Blog Layout */
+    .blog-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 48px;
+      padding: 60px 0;
+    }
+
+    /* Featured Article */
+    .featured-card {
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 48px;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .featured-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .featured-img {
+      height: 340px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      background: var(--accent);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .featured-content {
+      padding: 32px;
+    }
+
+    .featured-content h2 {
+      font-size: 1.8rem;
+      margin-bottom: 12px;
+    }
+
+    .featured-meta {
+      display: flex;
+      gap: 20px;
+      color: var(--gray-600);
+      font-size: 0.8rem;
+      margin-bottom: 16px;
+    }
+
+    .featured-excerpt {
+      color: var(--gray-700);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .read-more {
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      transition: gap 0.2s;
+    }
+
+    .read-more:hover {
+      gap: 12px;
+    }
+
+    /* Posts Grid */
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 28px;
+    }
+
+    .post-card {
       background: white;
       border-radius: 20px;
       overflow: hidden;
-      border: 1px solid var(--border);
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+
+    .post-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-xl);
+    }
+
+    .post-img {
+      height: 190px;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.4s;
+    }
+
+    .post-card:hover .post-img {
+      transform: scale(1.03);
+    }
+
+    .post-content {
+      padding: 22px;
+    }
+
+    .post-category {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .post-card h3 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+
+    .post-excerpt {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .post-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      border-top: 1px solid var(--gray-200);
+      padding-top: 14px;
+    }
+
+    /* Sidebar Widgets */
+    .sidebar {
+      position: sticky;
+      top: 90px;
+    }
+
+    .widget {
+      background: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .widget h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .widget h3 i {
+      color: var(--primary);
+    }
+
+    .category-list {
+      list-style: none;
+    }
+
+    .category-list li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .category-list li:last-child {
+      border-bottom: none;
+    }
+
+    .category-list a {
+      text-decoration: none;
+      color: var(--gray-700);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .category-list a:hover {
+      color: var(--primary);
+    }
+
+    /* Subscription Widget */
+    .subscription-widget {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+      color: white;
+    }
+
+    .subscription-widget h3 {
+      color: white;
+    }
+
+    .subscription-widget h3 i {
+      color: white;
+    }
+
+    .subscription-widget p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+
+    .subscriber-form {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .subscriber-form input {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+    }
+
+    .subscriber-form input:focus {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+    }
+
+    .subscriber-form button {
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .subscriber-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .trending-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--gray-200);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .trending-item:hover {
+      transform: translateX(4px);
+    }
+
+    .trending-number {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--primary-light);
+    }
+
+    .trending-title {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .main-footer {
+      background: var(--secondary);
+      color: var(--gray-300);
+      padding: 56px 0 32px;
+      margin-top: 40px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 40px;
+      margin-bottom: 48px;
+    }
+
+    .footer-col h4 {
+      color: white;
+      margin-bottom: 20px;
+      font-size: 1rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
+    }
+
+    .footer-col ul li {
+      margin-bottom: 12px;
+    }
+
+    .footer-col ul li a {
+      color: var(--gray-400);
+      text-decoration: none;
+      font-size: 0.85rem;
+      transition: color 0.2s;
+    }
+
+    .footer-col ul li a:hover {
+      color: white;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .social-links a {
+      width: 36px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      transition: all 0.2s;
+    }
+
+    .social-links a:hover {
+      background: var(--primary);
+      transform: translateY(-3px);
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.8rem;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(12px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.25s;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-content {
+      background: white;
+      max-width: 700px;
+      width: 100%;
+      max-height: 85vh;
+      border-radius: 28px;
+      overflow-y: auto;
+      transform: scale(0.95);
+      transition: transform 0.3s;
+    }
+
+    .modal-overlay.active .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: white;
+    }
+
+    .modal-header h2 {
+      font-size: 1.3rem;
+    }
+
+    .modal-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--gray-100);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .modal-body {
+      padding: 28px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      background: var(--gray-900);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 40px;
+      font-weight: 500;
+      z-index: 1100;
+      opacity: 0;
+      transform: translateY(20px);
       transition: all 0.3s;
     }
-    .blog-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
-    .blog-image { height: 200px; background-size: cover; background-position: center; }
-    .blog-content { padding: 24px; }
-    .blog-category { display: inline-block; padding: 4px 12px; background: var(--indigo-light); color: var(--indigo); border-radius: 20px; font-size: 0.7rem; font-weight: 700; margin-bottom: 12px; }
-    .blog-card h3 { font-size: 1.2rem; margin-bottom: 10px; }
-    .blog-card p { color: var(--muted); font-size: 0.85rem; margin-bottom: 15px; }
-    .blog-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: var(--muted); }
-    .read-more { color: var(--indigo); font-weight: 700; text-decoration: none; }
 
-    .sidebar { background: white; border-radius: 20px; padding: 24px; border: 1px solid var(--border); margin-bottom: 30px; }
-    .sidebar h3 { font-size: 1.1rem; margin-bottom: 15px; }
-    .sidebar ul { list-style: none; }
-    .sidebar ul li { padding: 8px 0; border-bottom: 1px solid var(--border); }
-    .sidebar ul li a { text-decoration: none; color: var(--text-2); transition: color 0.2s; }
-    .sidebar ul li a:hover { color: var(--indigo); }
-
-    .main-footer {
-      background: white;
-      border-top: 1px solid var(--border);
-      padding: 60px 0 30px;
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
     }
-    .footer-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 44px; margin-bottom: 44px; }
-    .footer-col h4 { font-weight: 800; margin-bottom: 20px; font-size: .92rem; }
-    .footer-col ul { list-style: none; }
-    .footer-col ul li { margin-bottom: 11px; }
-    .footer-col ul li a { color: var(--muted); text-decoration: none; font-size: .86rem; transition: color 0.2s; }
-    .footer-col ul li a:hover { color: var(--indigo); }
-    .footer-bottom { border-top: 1px solid var(--border); padding-top: 24px; text-align: center; color: var(--muted); font-size: .82rem; }
-    .social-icons { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
 
-    @media (max-width: 1024px) { .blog-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 1024px) {
+      .blog-layout {
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        position: static;
+      }
+      .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
     @media (max-width: 768px) {
-      .main-menu { display: none; }
-      .blog-grid { grid-template-columns: 1fr; }
-      .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .main-menu {
+        display: none;
+      }
+      .posts-grid {
+        grid-template-columns: 1fr;
+      }
+      .featured-content h2 {
+        font-size: 1.4rem;
+      }
+      .search-container h1 {
+        font-size: 1.8rem;
+      }
+      .nav-content {
+        padding: 0 20px;
+      }
+      .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
     }
-    @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
 
+<!-- Navigation -->
 <nav class="top-nav">
   <div class="nav-content">
     <div class="nav-left">
-      <a href="home.html" class="sj-logo-pill"><span class="sj-icon"><i class="fas fa-arrow-up"></i></span><span class="sj-text">smart<span class="sj-green">Jobs</span></span></a>
+      <a href="home.html" class="sj-logo-pill">
+        <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
+        <span>smart<span class="sj-green">Jobs</span></span>
+      </a>
       <ul class="main-menu">
         <li><a href="home.html">Find Jobs</a></li>
         <li><a href="employer-hub.html">Employer Hub</a></li>
-        <li><a href="market.html">Salaries</a></li>
-        <li><a href="about.html">About</a></li>
+        <li><a href="about.html">About Us</a></li>
         <li><a href="blog.html" class="active">Blog</a></li>
       </ul>
     </div>
-    <div class="nav-right" id="dynamic-auth"><a href="auth.html" class="nav-btn-primary">Sign In</a></div>
+    <div class="nav-actions">
+      <a href="post-job.html" class="btn-outline"><i class="fas fa-plus-circle"></i> Post a Job</a>
+      <a href="auth.html" class="btn-primary"><i class="fas fa-upload"></i> Upload Resume</a>
+    </div>
   </div>
 </nav>
 
-<section class="blog-hero">
-  <div class="container">
-    <h1>Career Insights & Advice</h1>
-    <p>Expert tips, industry trends, and career guidance for Rwandan professionals</p>
+<!-- Hero + Job Search -->
+<section class="search-section">
+  <div class="search-container">
+    <h1>Career Insights & Job Advice</h1>
+    <p>Expert tips, interview strategies, and salary guides for Rwandan professionals</p>
+    
+    <div class="job-search-bar">
+      <input type="text" id="jobSearchInput" placeholder="Search jobs by title, skill, or keyword...">
+      <button id="searchJobsBtn"><i class="fas fa-search"></i> Search Jobs</button>
+    </div>
+    
+    <div class="industry-filters">
+      <span class="filter-chip" data-industry="technology">💻 Technology</span>
+      <span class="filter-chip" data-industry="finance">🏦 Finance</span>
+      <span class="filter-chip" data-industry="healthcare">🏥 Healthcare</span>
+      <span class="filter-chip" data-industry="education">📚 Education</span>
+      <span class="filter-chip" data-industry="agriculture">🌾 Agriculture</span>
+    </div>
   </div>
 </section>
 
 <div class="container">
-  <div class="blog-grid">
-    <div class="blog-card"><div class="blog-image" style="background-image:url('https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=600')"></div><div class="blog-content"><span class="blog-category"><i class="fas fa-lightbulb"></i> Career Tips</span><h3>10 Tips for Acing Your Virtual Interview in Rwanda</h3><p>Master the art of remote interviews with these proven strategies tailored for Rwandan employers...</p><div class="blog-meta"><span><i class="far fa-calendar"></i> March 25, 2026</span><a href="#" class="read-more">Read More →</a></div></div></div>
-    <div class="blog-card"><div class="blog-image" style="background-image:url('https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=600')"></div><div class="blog-content"><span class="blog-category"><i class="fas fa-chart-line"></i> Industry Trends</span><h3>Top 5 In-Demand Tech Skills in Kigali for 2026</h3><p>Discover which technical skills are most sought after by Rwanda's fastest-growing companies...</p><div class="blog-meta"><span><i class="far fa-calendar"></i> March 20, 2026</span><a href="#" class="read-more">Read More →</a></div></div></div>
-    <div class="blog-card"><div class="blog-image" style="background-image:url('https://images.pexels.com/photos/3760069/pexels-photo-3760069.jpeg?auto=compress&cs=tinysrgb&w=600')"></div><div class="blog-content"><span class="blog-category"><i class="fas fa-file-alt"></i> CV Writing</span><h3>How to Build a CV That Gets Noticed by Employers</h3><p>Step-by-step guide to creating a professional CV that stands out in Rwanda's job market...</p><div class="blog-meta"><span><i class="far fa-calendar"></i> March 15, 2026</span><a href="#" class="read-more">Read More →</a></div></div></div>
-    <div class="blog-card"><div class="blog-image" style="background-image:url('https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=600')"></div><div class="blog-content"><span class="blog-category"><i class="fas fa-coins"></i> Salary Guide</span><h3>Salary Negotiation: Know Your Worth in Rwanda</h3><p>Learn effective negotiation strategies to get the salary you deserve...</p><div class="blog-meta"><span><i class="far fa-calendar"></i> March 10, 2026</span><a href="#" class="read-more">Read More →</a></div></div></div>
-    <div class="blog-card"><div class="blog-image" style="background-image:url('https://images.pexels.com/photos/4386370/pexels-photo-4386370.jpeg?auto=compress&cs=tinysrgb&w=600')"></div><div class="blog-content"><span class="blog-category"><i class="fas fa-building"></i> Employer Advice</span><h3>How to Attract Top Talent in Rwanda's Competitive Market</h3><p>Employer strategies for recruiting and retaining the best professionals...</p><div class="blog-meta"><span><i class="far fa-calendar"></i> March 5, 2026</span><a href="#" class="read-more">Read More →</a></div></div></div>
-    <div class="blog-card"><div class="blog-image" style="background-image:url('https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=600')"></div><div class="blog-content"><span class="blog-category"><i class="fas fa-graduation-cap"></i> Career Growth</span><h3>Upskilling: The Fastest Way to Advance Your Career</h3><p>Discover free and affordable courses to boost your professional value...</p><div class="blog-meta"><span><i class="far fa-calendar"></i> February 28, 2026</span><a href="#" class="read-more">Read More →</a></div></div></div>
+  <div class="blog-layout">
+    <!-- Main Blog Content -->
+    <main>
+      <!-- Featured Article -->
+      <article class="featured-card" id="featuredArticle">
+        <div class="featured-img" id="featuredImg" style="background-image: url('https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800')">
+          <span class="featured-badge" id="featuredBadge">Career Tips</span>
+        </div>
+        <div class="featured-content">
+          <h2 id="featuredTitle">10 Tips for Acing Your Virtual Interview in Rwanda</h2>
+          <div class="featured-meta">
+            <span><i class="far fa-calendar-alt"></i> <time id="featuredDate">March 25, 2026</time></span>
+            <span><i class="far fa-user"></i> <span id="featuredAuthor">smartJobs Career Team</span></span>
+            <span><i class="far fa-clock"></i> 8 min read</span>
+          </div>
+          <p class="featured-excerpt" id="featuredExcerpt">Master the art of remote interviews with proven strategies tailored for Rwandan employers...</p>
+          <a href="#" class="read-more" id="featuredReadMore">Read Full Article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </article>
+
+      <!-- Recent Posts Grid -->
+      <div class="posts-grid" id="postsGrid"></div>
+    </main>
+
+    <!-- Sidebar Widgets -->
+    <aside class="sidebar">
+      <!-- Categories Widget -->
+      <div class="widget">
+        <h3><i class="fas fa-folder-open"></i> Categories</h3>
+        <ul class="category-list" id="categoryList"></ul>
+      </div>
+      
+      <!-- Trending Widget -->
+      <div class="widget">
+        <h3><i class="fas fa-fire"></i> Trending Topics</h3>
+        <div id="trendingList"></div>
+      </div>
+
+      <!-- SUBSCRIPTION WIDGET - Users subscribe here -->
+      <div class="widget subscription-widget">
+        <h3><i class="fas fa-bell"></i> Subscribe to Newsletter</h3>
+        <p>Get weekly career advice, job alerts, and exclusive tips delivered to your inbox.</p>
+        <form class="subscriber-form" id="subscriberForm">
+          <input type="text" id="subscriberName" placeholder="Your full name" required>
+          <input type="email" id="subscriberEmail" placeholder="Email address" required>
+          <button type="submit"><i class="fas fa-paper-plane"></i> Subscribe Now</button>
+        </form>
+        <p style="font-size: 0.7rem; margin-top: 12px; opacity: 0.7;">No spam, unsubscribe anytime.</p>
+      </div>
+    </aside>
   </div>
 </div>
 
+<!-- Footer -->
 <footer class="main-footer">
   <div class="container">
     <div class="footer-grid">
-      <div class="footer-col"><h4>smartJobs</h4><ul><li><a href="home.html">Browse Jobs</a></li><li><a href="market.html">Salaries</a></li><li><a href="employer-hub.html">Company Reviews</a></li></ul></div>
-      <div class="footer-col"><h4>For Employers</h4><ul><li><a href="post-job.html">Post a Job</a></li><li><a href="pricing.html">Pricing</a></li></ul></div>
-      <div class="footer-col"><h4>Resources</h4><ul><li><a href="help.html">Help Center</a></li><li><a href="blog.html">Blog</a></li><li><a href="faq.html">FAQ</a></li></ul></div>
-      <div class="footer-col"><h4>Legal</h4><ul><li><a href="about.html">About Us</a></li><li><a href="privacy.html">Privacy Policy</a></li><li><a href="terms.html">Terms of Use</a></li></ul></div>
+      <div class="footer-col">
+        <h4>smartJobs Rwanda</h4>
+        <p style="font-size:0.85rem; margin-bottom:16px;">Rwanda's #1 job platform connecting top talent with leading employers.</p>
+        <div class="social-links">
+          <a href="#"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Quick Links</h4>
+        <ul>
+          <li><a href="home.html">Browse Jobs</a></li>
+          <li><a href="employer-hub.html">Find Companies</a></li>
+          <li><a href="market.html">Salary Guide</a></li>
+          <li><a href="cv-builder.html">CV Builder</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Support</h4>
+        <ul>
+          <li><a href="help.html">Help Center</a></li>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact Us</a></li>
+          <li><a href="about.html">About Us</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <ul>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="terms.html">Terms of Service</a></li>
+          <li><a href="#">Cookie Policy</a></li>
+        </ul>
+      </div>
     </div>
-    <div class="footer-bottom"><p>&copy; 2026 smartJobs Rwanda. All rights reserved.</p><div class="social-icons"><i class="fab fa-facebook-f"></i><i class="fab fa-twitter"></i><i class="fab fa-linkedin-in"></i></div></div>
+    <div class="footer-bottom">
+      <p>&copy; 2026 smartJobs Rwanda. All rights reserved. Empowering Rwanda's workforce.</p>
+    </div>
   </div>
 </footer>
 
+<!-- Article Modal -->
+<div id="articleModal" class="modal-overlay">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modalTitle"></h2>
+      <button class="modal-close" id="closeModalBtn"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<div id="toastMsg" class="toast">✨ Subscribed successfully!</div>
+
 <script>
-  function getUser() { return JSON.parse(localStorage.getItem('currentUser')); }
-  const user = getUser();
-  if (user) {
-    const navRight = document.getElementById('dynamic-auth');
-    if (navRight) navRight.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-weight:600;">${user.name}</span><button onclick="localStorage.removeItem('currentUser');window.location.href='auth.html'" style="background:var(--indigo);color:white;padding:9px 20px;border-radius:9px;border:none;cursor:pointer;">Sign Out</button></div>`;
+  // Blog Posts Database
+  const blogPosts = [
+    { id: 1, title: "10 Tips for Acing Your Virtual Interview in Rwanda", category: "Career Tips", categoryIcon: "fa-lightbulb", image: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=800", date: "Mar 25, 2026", author: "smartJobs Team", readTime: "8 min", excerpt: "Master the art of remote interviews with proven strategies tailored for Rwandan employers...", views: 1240, trending: true, full: "<p>Virtual interviews are now standard. Here are 10 proven tips: 1) Test tech beforehand, 2) Dress professionally, 3) Research the company deeply, 4) Practice with STAR method, 5) Maintain eye contact with camera, 6) Eliminate distractions, 7) Prepare questions, 8) Follow up with a thank-you email, 9) Use natural lighting, 10) Smile confidently!</p>" },
+    { id: 2, title: "Top 5 In-Demand Tech Skills in Kigali for 2026", category: "Industry Trends", categoryIcon: "fa-chart-line", image: "https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=800", date: "Mar 20, 2026", author: "Tech Desk", readTime: "6 min", excerpt: "Discover which technical skills are most sought after by Rwanda's fastest-growing companies...", views: 2150, trending: true, full: "<p>Full-Stack JavaScript, Data Analytics, Cloud (AWS/Azure), Cybersecurity, and Flutter mobile dev are the top 5 skills driving salaries up in Kigali's booming tech scene.</p>" },
+    { id: 3, title: "How to Build a CV That Gets Noticed by Employers", category: "CV Writing", categoryIcon: "fa-file-alt", image: "https://images.pexels.com/photos/3760069/pexels-photo-3760069.jpeg?auto=compress&cs=tinysrgb&w=800", date: "Mar 15, 2026", author: "HR Experts", readTime: "5 min", excerpt: "Step-by-step guide to creating a professional CV that stands out in Rwanda's job market...", views: 3420, trending: true, full: "<p>Tailor each CV, use ATS-friendly format, quantify achievements, include local context, and write a compelling professional summary. Avoid generic templates!</p>" },
+    { id: 4, title: "Salary Negotiation: Know Your Worth in Rwanda", category: "Salary Guide", categoryIcon: "fa-coins", image: "https://images.pexels.com/photos/3184339/pexels-photo-3184339.jpeg?auto=compress&cs=tinysrgb&w=800", date: "Mar 10, 2026", author: "Finance Team", readTime: "7 min", excerpt: "Learn effective negotiation strategies to get the salary you deserve...", views: 1890, trending: false, full: "<p>Research market rates using smartJobs Salary Guide, wait for the offer first, highlight your unique value, and consider total compensation including benefits.</p>" },
+    { id: 5, title: "How to Attract Top Talent in Rwanda's Competitive Market", category: "Employer Advice", categoryIcon: "fa-building", image: "https://images.pexels.com/photos/4386370/pexels-photo-4386370.jpeg?auto=compress&cs=tinysrgb&w=800", date: "Mar 5, 2026", author: "Leadership", readTime: "9 min", excerpt: "Employer strategies for recruiting and retaining the best professionals...", views: 720, trending: false, full: "<p>Build a strong employer brand, offer flexible work arrangements, invest in learning and development, and streamline your hiring process to attract top candidates.</p>" },
+    { id: 6, title: "Upskilling: The Fastest Way to Advance Your Career", category: "Career Growth", categoryIcon: "fa-graduation-cap", image: "https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=800", date: "Feb 28, 2026", author: "Learning Hub", readTime: "4 min", excerpt: "Discover free and affordable courses to boost your professional value...", views: 2540, trending: true, full: "<p>Online platforms like Coursera, ALX, and Google Career Certificates offer affordable upskilling. Focus on digital and soft skills to accelerate promotions.</p>" }
+  ];
+
+  // Function to save subscriber to localStorage (so admin can see)
+  function saveSubscriber(name, email) {
+    let subscribers = JSON.parse(localStorage.getItem('blog_subscribers') || '[]');
+    
+    // Check if email already exists
+    const exists = subscribers.find(s => s.email === email);
+    if (exists) {
+      showToast('This email is already subscribed!', 'warning');
+      return false;
+    }
+    
+    subscribers.push({
+      id: Date.now(),
+      name: name,
+      email: email,
+      subscribedAt: new Date().toISOString(),
+      status: 'active'
+    });
+    
+    localStorage.setItem('blog_subscribers', JSON.stringify(subscribers));
+    return true;
   }
+
+  // Show toast message
+  function showToast(message, type = 'success') {
+    const toast = document.getElementById('toastMsg');
+    toast.textContent = message;
+    toast.style.background = type === 'success' ? '#10b981' : '#f97316';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
+
+  // Subscription Form Handler
+  document.getElementById('subscriberForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('subscriberName').value.trim();
+    const email = document.getElementById('subscriberEmail').value.trim();
+    
+    if (!name || !email) {
+      showToast('Please fill in both name and email', 'warning');
+      return;
+    }
+    
+    if (!email.includes('@')) {
+      showToast('Please enter a valid email address', 'warning');
+      return;
+    }
+    
+    if (saveSubscriber(name, email)) {
+      showToast(`Thanks ${name}! You're now subscribed 🎉`);
+      document.getElementById('subscriberForm').reset();
+    }
+  });
+
+  function renderBlog() {
+    // Featured
+    document.getElementById('featuredImg').style.backgroundImage = `url('${blogPosts[0].image}')`;
+    document.getElementById('featuredBadge').innerText = blogPosts[0].category;
+    document.getElementById('featuredTitle').innerText = blogPosts[0].title;
+    document.getElementById('featuredDate').innerText = blogPosts[0].date;
+    document.getElementById('featuredAuthor').innerText = blogPosts[0].author;
+    document.getElementById('featuredExcerpt').innerText = blogPosts[0].excerpt;
+    document.getElementById('featuredReadMore').onclick = (e) => { e.preventDefault(); openModal(blogPosts[0]); };
+
+    // Grid
+    const grid = document.getElementById('postsGrid');
+    grid.innerHTML = blogPosts.slice(1).map(post => `
+      <div class="post-card" data-id="${post.id}">
+        <div class="post-img" style="background-image:url('${post.image}')"></div>
+        <div class="post-content">
+          <span class="post-category"><i class="fas ${post.categoryIcon}"></i> ${post.category}</span>
+          <h3>${post.title}</h3>
+          <p class="post-excerpt">${post.excerpt.substring(0, 100)}...</p>
+          <div class="post-meta">
+            <span><i class="far fa-calendar-alt"></i> ${post.date}</span>
+            <a href="#" class="read-more" data-id="${post.id}">Read <i class="fas fa-arrow-right"></i></a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.read-more[data-id]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = parseInt(btn.dataset.id);
+        const post = blogPosts.find(p => p.id === id);
+        if (post) openModal(post);
+      });
+    });
+    
+    document.querySelectorAll('.post-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.closest('.read-more')) return;
+        const id = parseInt(card.dataset.id);
+        const post = blogPosts.find(p => p.id === id);
+        if (post) openModal(post);
+      });
+    });
+
+    // Categories
+    const cats = [...new Set(blogPosts.map(p => p.category))];
+    document.getElementById('categoryList').innerHTML = cats.map(cat => `<li><a href="#" data-cat="${cat}">${cat} <span>(${blogPosts.filter(p => p.category === cat).length})</span></a></li>`).join('');
+    document.querySelectorAll('#categoryList a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const cat = link.dataset.cat;
+        filterByCategory(cat);
+      });
+    });
+
+    // Trending
+    const trending = blogPosts.filter(p => p.trending).slice(0, 3);
+    document.getElementById('trendingList').innerHTML = trending.map((p, i) => `
+      <div class="trending-item" data-id="${p.id}">
+        <span class="trending-number">0${i+1}</span>
+        <span class="trending-title">${p.title}</span>
+      </div>
+    `).join('');
+    document.querySelectorAll('.trending-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const id = parseInt(item.dataset.id);
+        const post = blogPosts.find(p => p.id === id);
+        if (post) openModal(post);
+      });
+    });
+  }
+
+  function filterByCategory(category) {
+    const filtered = blogPosts.filter(p => p.category === category);
+    if (filtered.length === 0) return;
+    document.getElementById('featuredImg').style.backgroundImage = `url('${filtered[0].image}')`;
+    document.getElementById('featuredBadge').innerText = filtered[0].category;
+    document.getElementById('featuredTitle').innerText = filtered[0].title;
+    document.getElementById('featuredDate').innerText = filtered[0].date;
+    document.getElementById('featuredAuthor').innerText = filtered[0].author;
+    document.getElementById('featuredExcerpt').innerText = filtered[0].excerpt;
+    document.getElementById('featuredReadMore').onclick = (e) => { e.preventDefault(); openModal(filtered[0]); };
+    const grid = document.getElementById('postsGrid');
+    grid.innerHTML = filtered.slice(1).map(post => `
+      <div class="post-card" data-id="${post.id}">
+        <div class="post-img" style="background-image:url('${post.image}')"></div>
+        <div class="post-content">
+          <span class="post-category"><i class="fas ${post.categoryIcon}"></i> ${post.category}</span>
+          <h3>${post.title}</h3>
+          <p class="post-excerpt">${post.excerpt.substring(0, 100)}...</p>
+          <div class="post-meta"><span><i class="far fa-calendar-alt"></i> ${post.date}</span><a href="#" class="read-more" data-id="${post.id}">Read <i class="fas fa-arrow-right"></i></a></div>
+        </div>
+      </div>
+    `).join('');
+    attachReadEvents();
+  }
+
+  function attachReadEvents() {
+    document.querySelectorAll('.read-more[data-id]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = parseInt(btn.dataset.id);
+        const post = blogPosts.find(p => p.id === id);
+        if (post) openModal(post);
+      });
+    });
+  }
+
+  function openModal(post) {
+    document.getElementById('modalTitle').innerText = post.title;
+    document.getElementById('modalBody').innerHTML = `
+      <img src="${post.image}" style="width:100%; border-radius:16px; margin-bottom:20px;">
+      <div style="margin-bottom:20px;"><strong>${post.author}</strong> · ${post.date} · ${post.readTime}</div>
+      ${post.full || `<p>${post.excerpt}</p><p>Full article content with detailed career advice for Rwandan job seekers.</p>`}
+      <hr style="margin:24px 0; border-color:#e5e7eb;">
+      <div style="display:flex; gap:16px;"><i class="fas fa-tag"></i> ${post.category}</div>
+    `;
+    document.getElementById('articleModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    document.getElementById('articleModal').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Job search redirect
+  document.getElementById('searchJobsBtn').addEventListener('click', () => {
+    const query = document.getElementById('jobSearchInput').value;
+    window.location.href = `home.html?q=${encodeURIComponent(query)}`;
+  });
+  
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      window.location.href = `home.html?industry=${chip.dataset.industry}`;
+    });
+  });
+
+  // Modal close
+  document.getElementById('closeModalBtn').addEventListener('click', closeModal);
+  document.getElementById('articleModal').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('articleModal')) closeModal();
+  });
+
+  // Auth nav update
+  function updateNavAuth() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    const navRight = document.querySelector('.nav-actions');
+    if (user && navRight) {
+      const dashboardLink = user.role === 'Employer' ? 'employer-dashboard.html' : 
+                           user.role === 'Admin' ? 'admin.html' : 'jobseeker-dashboard.html';
+      navRight.innerHTML = `
+        <a href="${dashboardLink}" class="btn-outline"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <button onclick="logout()" class="btn-primary" style="cursor:pointer;"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+      `;
+    }
+  }
+
+  window.logout = function() {
+    localStorage.removeItem('currentUser');
+    window.location.href = 'auth.html';
+  };
+
+  updateNavAuth();
+  renderBlog();
 </script>
 </body>
 </html>
