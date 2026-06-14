@@ -1054,6 +1054,9 @@ function showJobDetail(id) {
             onfocus="this.style.borderColor='var(--indigo)'" onblur="this.style.borderColor='var(--border)'">
         </div>
       </div>
+      <label style="font-size:.78rem;font-weight:700;color:var(--text);display:block;margin-bottom:4px;">Upload CV/Resume (PDF, DOC, or Image) *</label>
+      <input type="file" id="apply-cv-${id}" accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+        style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:.85rem;outline:none;box-sizing:border-box;margin-bottom:10px;background:white;cursor:pointer;">
       <label style="font-size:.78rem;font-weight:700;color:var(--text);display:block;margin-bottom:4px;">Cover Message *</label>
       <textarea id="apply-msg-${id}" placeholder="Write a short cover message to ${job.company}…"
                 oninput="updateCharCount(this, 'msg-count-${id}', 500)"></textarea>
@@ -1236,13 +1239,14 @@ function submitModalApplication(jobId, title, company) {
   // Read the CV file asynchronously
   const reader = new FileReader();
   reader.onload = function(e) {
-    const cvData = e.target.result;
-    const cvFilename = file.name;
-    const cvType = file.type;
-    
-    // Create the application object with CV
+    const appId = Date.now();
+    const cvDataB64 = e.target.result;
+
+    // Store CV separately (dedicated key)
+    saveCVData(appId, cvDataB64, file.name, file.type);
+
     const newApplication = {
-      id: Date.now(),
+      id: appId,
       jobId: jobId,
       seekerName: nameEl.value.trim(),
       seekerEmail: emailEl.value.trim(),
@@ -1252,35 +1256,32 @@ function submitModalApplication(jobId, title, company) {
       company: company,
       message: msgEl.value.trim(),
       status: 'New',
-      date: new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' }),
-      cvData: cvData,
-      cvFilename: cvFilename,
-      cvType: cvType
+      cvData: cvDataB64,
+      cvFilename: file.name,
+      cvType: file.type,
+      hasCV: true,
+      date: new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' })
     };
-    
-    apps.push(newApplication);
-    saveApps(apps);
-    
-    // Verify save was successful
-    const savedApps = getApps();
-    const saved = savedApps.find(a => a.id === newApplication.id);
-    if (saved && saved.cvData) {
-      console.log('CV saved successfully!', saved.cvFilename);
-      showToast(`Application sent to ${company} with CV (${cvFilename})! 🎉`, 'success');
-    } else {
-      console.warn('CV may not have saved properly');
-      showToast(`Application sent to ${company}!`, 'success');
+
+    try {
+      apps.push(newApplication);
+      saveApps(apps);
+    } catch(e) {
+      // If quota exceeded with inline cvData, save without it (separate key still has it)
+      newApplication.cvData = null;
+      saveApps(apps);
     }
-    
+
+    showToast('Application sent to ' + company + ' with CV (' + file.name + ')! 🎉', 'success');
     launchConfetti();
-    
+
     if (submitBtn) {
       submitBtn.innerHTML = '<i class="fas fa-check"></i> Submitted!';
     }
-    
+
     setTimeout(() => closeApplyModal(), 2000);
   };
-  
+
   reader.onerror = function() {
     console.error('FileReader error:', reader.error);
     showToast('Error reading CV file. Please try again.', 'error');
@@ -1289,7 +1290,7 @@ function submitModalApplication(jobId, title, company) {
       submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
     }
   };
-  
+
   reader.readAsDataURL(file);
 }
 function saveApplicationWithCV(jobId, title, company, name, email, phone, location, message, cvData, cvFilename, cvType) {
@@ -1330,12 +1331,31 @@ function saveApplicationWithCV(jobId, title, company, name, email, phone, locati
   
   setTimeout(() => closeApplyModal(), 2200);
 }
+// ── Helper: store CV separately to avoid localStorage quota issues ──
+function saveCVData(appId, cvData, cvFilename, cvType) {
+  try {
+    localStorage.setItem('cv_' + appId, JSON.stringify({ cvData, cvFilename, cvType }));
+    return true;
+  } catch(e) {
+    console.warn('CV storage failed (quota?):', e);
+    return false;
+  }
+}
+
+function getCVData(appId) {
+  try {
+    const raw = localStorage.getItem('cv_' + appId);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+
 function submitApplication(jobId, title, company) {
   const nameEl     = document.getElementById(`apply-name-${jobId}`);
   const emailEl    = document.getElementById(`apply-email-${jobId}`);
   const phoneEl    = document.getElementById(`apply-phone-${jobId}`);
   const locationEl = document.getElementById(`apply-location-${jobId}`);
   const msgEl      = document.getElementById(`apply-msg-${jobId}`);
+  const cvFileEl   = document.getElementById(`apply-cv-${jobId}`);
 
   const name     = nameEl     ? nameEl.value.trim()     : '';
   const email    = emailEl    ? emailEl.value.trim()    : '';
@@ -1362,52 +1382,89 @@ function submitApplication(jobId, title, company) {
       return;
     }
   }
-  // Basic email check
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     showToast('Please enter a valid email address', 'error', 'fas fa-exclamation-circle');
     emailEl?.focus();
     return;
   }
 
-  const apps = getApps();
+  // CV required
+  if (!cvFileEl || !cvFileEl.files || !cvFileEl.files[0]) {
+    showToast('Please upload your CV/Resume', 'error', 'fas fa-exclamation-circle');
+    cvFileEl?.focus();
+    return;
+  }
+  const file = cvFileEl.files[0];
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('CV file is too large. Max 5MB.', 'error');
+    return;
+  }
 
-  // Check duplicate by email + jobId
+  const apps = getApps();
   const duplicate = apps.find(a => a.jobId === jobId && a.seekerEmail === email);
   if (duplicate) {
     showToast('You already applied for this job!', 'error', 'fas fa-info-circle');
     return;
   }
 
-  apps.push({
-    id:           Date.now(),
-    jobId,
-    seekerName:   name,
-    seekerEmail:  email,
-    seekerPhone:  phone,
-    seekerPlace:  location,
-    jobTitle:     title,
-    company,
-    message:      msg,
-    status:       'New',
-    date:         new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' })
-  });
-  saveApps(apps);
-
-  // Clear fields
-  [nameEl, emailEl, phoneEl, locationEl, msgEl].forEach(el => { if (el) el.value = ''; });
-  const counter = document.getElementById(`msg-count-${jobId}`);
-  if (counter) { counter.textContent = '0 / 500'; counter.className = 'char-counter'; }
-
-  showToast(`Application sent to ${company}! 🎉`, 'success', 'fas fa-check-circle', 4500);
-  launchConfetti();
-
-  // Update submit button
+  // Disable submit button
   const btn = document.querySelector(`#apply-section-${jobId} .btn-submit-app`);
-  if (btn) {
-    btn.innerHTML = '<i class="fas fa-check" style="margin-right:8px;"></i>Application Submitted!';
-    btn.style.background = 'var(--emerald)';
-    btn.disabled = true;
-  }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const appId = Date.now();
+    const cvDataB64 = e.target.result;
+
+    // Store CV separately (dedicated key)
+    saveCVData(appId, cvDataB64, file.name, file.type);
+
+    const newApp = {
+      id:          appId,
+      jobId,
+      seekerName:  name,
+      seekerEmail: email,
+      seekerPhone: phone,
+      seekerPlace: location,
+      jobTitle:    title,
+      company,
+      message:     msg,
+      status:      'New',
+      cvData:      cvDataB64,
+      cvFilename:  file.name,
+      cvType:      file.type,
+      hasCV:       true,
+      date:        new Date().toLocaleDateString('en-RW', { day:'numeric', month:'short', year:'numeric' })
+    };
+
+    try {
+      apps.push(newApp);
+      saveApps(apps);
+    } catch(e) {
+      // Quota exceeded — save without inline cvData (separate key still has it)
+      newApp.cvData = null;
+      saveApps(apps);
+    }
+
+    [nameEl, emailEl, phoneEl, locationEl, msgEl].forEach(el => { if (el) el.value = ''; });
+    if (cvFileEl) cvFileEl.value = '';
+    const counter = document.getElementById(`msg-count-${jobId}`);
+    if (counter) { counter.textContent = '0 / 500'; counter.className = 'char-counter'; }
+
+    showToast(`Application sent to ${company} with CV! 🎉`, 'success', 'fas fa-check-circle', 4500);
+    launchConfetti();
+
+    if (btn) {
+      btn.innerHTML = '<i class="fas fa-check" style="margin-right:8px;"></i>Application Submitted!';
+      btn.style.background = 'var(--emerald)';
+      btn.disabled = true;
+    }
+  };
+  reader.onerror = function() {
+    showToast('Error reading CV file. Please try again.', 'error');
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application'; }
+  };
+  reader.readAsDataURL(file);
 }
 
 // ── CONFETTI ─────────────────────────────────────────────────
@@ -2086,4 +2143,3 @@ document.addEventListener('DOMContentLoaded', () => {
     heroSection.appendChild(orb);
   }
 });
-

@@ -1835,8 +1835,8 @@ function submitApplication(jobId, title, company) {
   const phone    = document.getElementById('apply-phone')?.value.trim();
   const location = document.getElementById('apply-location')?.value.trim();
   const msg      = document.getElementById('apply-msg')?.value.trim();
-  const fileInput= document.getElementById('resume-file');
-  const resumeName = fileInput && fileInput.files[0] ? fileInput.files[0].name : null;
+  const fileInput = document.getElementById('resume-file');
+  const file      = fileInput && fileInput.files[0] ? fileInput.files[0] : null;
 
   if (!name || !email || !phone || !location) {
     showToast('Please fill in all required fields', 'error');
@@ -1846,6 +1846,15 @@ function submitApplication(jobId, title, company) {
     showToast('Please enter a valid email address', 'error');
     return;
   }
+  if (!file) {
+    showToast('Please upload your CV/Resume', 'error');
+    fileInput?.focus();
+    return;
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('CV file is too large. Max 5MB.', 'error');
+    return;
+  }
 
   const apps = JSON.parse(localStorage.getItem('jobApplications') || '[]');
   if (apps.find(a => a.jobId === jobId && a.seekerEmail === email)) {
@@ -1853,43 +1862,94 @@ function submitApplication(jobId, title, company) {
     return;
   }
 
+  // Disable button to prevent double submit
+  const submitBtn = document.querySelector('.btn-submit-app');
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  }
+
   const allJobs = JSON.parse(localStorage.getItem('allJobs') || '[]');
   const job = allJobs.find(j => j.id === jobId);
 
-  const newApp = {
-    id: Date.now(),
-    jobId,
-    jobTitle: title,
-    company,
-    employerEmail: job ? job.employerEmail : null,
-    seekerName: name,
-    seekerEmail: email,
-    seekerPhone: phone,
-    seekerPlace: location,
-    message: msg || 'No cover message provided.',
-    resume: resumeName || null,
-    status: 'New',
-    date: new Date().toLocaleDateString()
+  // Read CV as base64 so admin can view/download it
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const appId = Date.now();
+    const cvDataB64 = e.target.result;
+
+    // Store CV in dedicated key (avoids quota issues on main array)
+    try {
+      localStorage.setItem('cv_' + appId, JSON.stringify({
+        cvData: cvDataB64,
+        cvFilename: file.name,
+        cvType: file.type
+      }));
+    } catch(err) {
+      console.warn('CV separate key storage failed:', err);
+    }
+
+    const newApp = {
+      id: appId,
+      jobId,
+      jobTitle: title,
+      company,
+      employerEmail: job ? job.employerEmail : null,
+      seekerName: name,
+      seekerEmail: email,
+      seekerPhone: phone,
+      seekerPlace: location,
+      message: msg || 'No cover message provided.',
+      cvData: cvDataB64,
+      cvFilename: file.name,
+      cvType: file.type,
+      hasCV: true,
+      resume: file.name,
+      status: 'New',
+      date: new Date().toLocaleDateString()
+    };
+
+    try {
+      apps.push(newApp);
+      localStorage.setItem('jobApplications', JSON.stringify(apps));
+    } catch(err) {
+      // Quota exceeded — save without inline cvData (separate key still has it)
+      newApp.cvData = null;
+      localStorage.setItem('jobApplications', JSON.stringify(apps));
+    }
+
+    ['apply-name','apply-email','apply-phone','apply-location','apply-msg'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    document.getElementById('resume-chosen').textContent = '';
+    if (fileInput) fileInput.value = '';
+
+    showToast('Application sent to ' + company + ' with CV! We will notify you soon.');
+    renderMyApplications();
+
+    if (submitBtn) {
+      submitBtn.innerHTML = '<i class="fas fa-check"></i> Submitted!';
+      submitBtn.style.background = '#10b981';
+    }
+
+    for (let i = 0; i < 50; i++) {
+      const c = document.createElement('div');
+      c.style.cssText = 'position:fixed;width:10px;height:10px;background:' + ['#3b2fc9','#10b981','#f59e0b','#ef4444'][i%4] + ';left:' + (Math.random()*100) + '%;top:-10px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall ' + (Math.random()*2+1) + 's linear forwards;';
+      document.body.appendChild(c);
+      setTimeout(() => c.remove(), 2500);
+    }
   };
 
-  apps.push(newApp);
-  localStorage.setItem('jobApplications', JSON.stringify(apps));
+  reader.onerror = function() {
+    showToast('Error reading CV file. Please try again.', 'error');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Application';
+    }
+  };
 
-  ['apply-name','apply-email','apply-phone','apply-location','apply-msg'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.value = '';
-  });
-  document.getElementById('resume-chosen').textContent = '';
-
-  showToast(`Application sent to ${company}! We will notify you soon.`);
-  renderMyApplications();
-
-  for (let i = 0; i < 50; i++) {
-    const c = document.createElement('div');
-    c.style.cssText = `position:fixed;width:10px;height:10px;background:${['#3b2fc9','#10b981','#f59e0b','#ef4444'][i%4]};left:${Math.random()*100}%;top:-10px;border-radius:2px;pointer-events:none;z-index:9999;animation:confettiFall ${Math.random()*2+1}s linear forwards;`;
-    document.body.appendChild(c);
-    setTimeout(() => c.remove(), 2500);
-  }
+  reader.readAsDataURL(file);
 }
 
 // ---- My Applications Panel ----
@@ -2122,4 +2182,3 @@ document.getElementById('scrollTop')?.addEventListener('click', () => {
 </script>
 </body>
 </html>
-s

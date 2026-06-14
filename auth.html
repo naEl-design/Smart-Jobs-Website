@@ -439,6 +439,25 @@
     .auth-foot a:hover { text-decoration: underline; }
     
     #register-panel { display: none; }
+
+    .role-pick-btn {
+      display:flex; align-items:center; gap:16px;
+      padding:20px 24px;
+      border:2px solid var(--border);
+      border-radius:16px;
+      background:white;
+      cursor:pointer;
+      text-align:left;
+      width:100%;
+      transition:all 0.2s;
+      font-family:'Plus Jakarta Sans',sans-serif;
+    }
+    .role-pick-btn:hover {
+      border-color: var(--indigo);
+      background: #f5f3ff;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(59,47,201,0.12);
+    }
     
     /* ========== ADMIN MODAL ========== */
     .admin-modal {
@@ -674,7 +693,7 @@
           </div>
           <div class="auth-extras">
             <label><input type="checkbox" id="remember-me"> Remember me</label>
-            <a href="forgot-password.html">Forgot password?</a>
+            <a href="forgot password.html">Forgot password?</a>
           </div>
           <button type="submit" class="btn-auth" id="login-btn">Sign In as Job Seeker</button>
         </form>
@@ -687,37 +706,64 @@
       </div>
       
       <div id="register-panel">
-        <h2>Create Account ✨</h2>
-        <p>Join thousands finding jobs in Rwanda</p>
-        <div class="role-tabs">
-          <button class="role-tab active" data-role="Job Seeker" onclick="setRole('Job Seeker')">👤 Job Seeker</button>
-          <button class="role-tab" data-role="Employer" onclick="setRole('Employer')">🏢 Employer</button>
+
+        <!-- STEP 1: Role selection -->
+        <div id="reg-role-step">
+          <h2>Create Account ✨</h2>
+          <p>First, tell us who you are</p>
+          <div style="display:flex;flex-direction:column;gap:14px;margin:28px 0;">
+            <button onclick="selectRegisterRole('Job Seeker')" class="role-pick-btn">
+              <span style="font-size:2rem;">👤</span>
+              <div>
+                <div style="font-weight:800;font-size:1rem;color:#0f172a;">Job Seeker</div>
+                <div style="font-size:0.8rem;color:#64748b;margin-top:2px;">Browse jobs and apply to opportunities</div>
+              </div>
+            </button>
+            <button onclick="selectRegisterRole('Employer')" class="role-pick-btn">
+              <span style="font-size:2rem;">🏢</span>
+              <div>
+                <div style="font-weight:800;font-size:1rem;color:#0f172a;">Employer</div>
+                <div style="font-size:0.8rem;color:#64748b;margin-top:2px;">Post jobs and find the right candidates</div>
+              </div>
+            </button>
+          </div>
+          <p class="auth-foot">Already have an account? <a href="#" onclick="showLogin()">Sign in →</a></p>
         </div>
-        <form id="register-form" onsubmit="handleRegister(event)">
-          <div class="input-field">
-            <label>Full Name</label>
-            <input type="text" id="reg-name" placeholder="Your full name" required>
+
+        <!-- STEP 2: Registration form -->
+        <div id="reg-form-step" style="display:none;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+            <button onclick="backToRoleStep()" style="background:none;border:none;cursor:pointer;color:#64748b;padding:0;font-size:1rem;"><i class="fas fa-arrow-left"></i></button>
+            <h2 style="margin:0;">Create Account ✨</h2>
           </div>
-          <div class="input-field">
-            <label>Email Address</label>
-            <input type="email" id="reg-email" placeholder="you@email.com" required>
-          </div>
-          <div class="input-field">
-            <label>Password</label>
-            <div class="pass-wrapper">
-              <input type="password" id="reg-password" placeholder="Create a strong password" required>
-              <i class="fas fa-eye pass-toggle" onclick="togglePassword('reg-password', this)"></i>
+          <div id="reg-role-badge" style="display:inline-flex;align-items:center;gap:6px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:8px;padding:5px 12px;font-size:0.8rem;font-weight:700;color:#166534;margin-bottom:20px;"></div>
+          <form id="register-form" onsubmit="handleRegister(event)">
+            <div class="input-field">
+              <label>Full Name</label>
+              <input type="text" id="reg-name" placeholder="Your full name" required>
             </div>
-          </div>
-          <div class="input-field">
-            <label>Confirm Password</label>
-            <div class="pass-wrapper">
-              <input type="password" id="reg-confirm-password" placeholder="Confirm your password" required>
+            <div class="input-field">
+              <label>Email Address</label>
+              <input type="email" id="reg-email" placeholder="you@email.com" required>
             </div>
-          </div>
-          <button type="submit" class="btn-auth">Create Account</button>
-        </form>
-        <p class="auth-foot">Already have an account? <a href="#" onclick="showLogin()">Sign in →</a></p>
+            <div class="input-field">
+              <label>Password</label>
+              <div class="pass-wrapper">
+                <input type="password" id="reg-password" placeholder="Create a strong password" required>
+                <i class="fas fa-eye pass-toggle" onclick="togglePassword('reg-password', this)"></i>
+              </div>
+            </div>
+            <div class="input-field">
+              <label>Confirm Password</label>
+              <div class="pass-wrapper">
+                <input type="password" id="reg-confirm-password" placeholder="Confirm your password" required>
+              </div>
+            </div>
+            <button type="submit" class="btn-auth">Create Account</button>
+          </form>
+          <p class="auth-foot">Already have an account? <a href="#" onclick="showLogin()">Sign in →</a></p>
+        </div>
+
       </div>
     </div>
   </div>
@@ -747,6 +793,23 @@
     </div>
   </div>
   
+  <!-- SOCIAL LOGIN MODAL -->
+  <div class="admin-modal" id="socialModal">
+    <div class="admin-modal-content">
+      <div id="social-modal-icon" style="width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:2rem;"></div>
+      <h3 id="social-modal-title">Continue with Google</h3>
+      <p id="social-modal-sub" style="color:#64748b;font-size:0.85rem;margin-bottom:20px;">Enter the email linked to your <span id="social-provider-name"></span> account</p>
+      <input type="email" id="social-email-input" placeholder="your@email.com" style="width:100%;padding:12px 16px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:0.95rem;outline:none;margin-bottom:6px;font-family:'Plus Jakarta Sans',sans-serif;">
+      <div class="error-msg" id="social-error-msg" style="display:none;color:#ef4444;font-size:0.75rem;margin-bottom:10px;"></div>
+      <button class="btn-admin" id="social-confirm-btn" onclick="confirmSocialLogin()" style="margin-top:10px;">
+        Continue
+      </button>
+      <button class="btn-close" onclick="closeSocialModal()">
+        <i class="fas fa-times"></i> Cancel
+      </button>
+    </div>
+  </div>
+
   <div class="toast-container" id="toast-container"></div>
 
   <script>
@@ -886,32 +949,125 @@
         return;
       }
       
-      const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-      const user = { name, email, role: currentRole };
+      // Check if account exists with matching email + password
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const emailExists = registeredUsers.some(u => u.email === email);
+
+      if (!emailExists) {
+        showNoAccountPrompt(email);
+        return;
+      }
+
+      const matchedUser = registeredUsers.find(u => u.email === email && u.password === password);
+
+      if (!matchedUser) {
+        showToast('Incorrect password. Please try again.', 'error');
+        return;
+      }
+
+      // Role mismatch — account exists but for a different role
+      if (matchedUser.role !== currentRole) {
+        showToast(
+          'This account is registered as a ' + matchedUser.role + '. You cannot sign in as ' + currentRole + '.',
+          'error'
+        );
+        return;
+      }
+
+      // Successful login
+      const user = { name: matchedUser.name, email: matchedUser.email, role: matchedUser.role };
       localStorage.setItem('currentUser', JSON.stringify(user));
       
-      // Register user in the registeredUsers list
-      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-      const userExists = registeredUsers.some(u => u.email === email);
-      if (!userExists) {
-        registeredUsers.push({
-          id: registeredUsers.length + 1,
-          name: name,
-          email: email,
-          role: currentRole,
-          phone: '+250 7XX XXX XXX',
-          location: 'Kigali',
-          registeredAt: new Date().toISOString(),
-          status: 'Active'
-        });
-        localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
-      }
-      
-      showToast(`Welcome back, ${name}!`, 'success');
+      showToast('Welcome back, ' + matchedUser.name + '!', 'success');
       setTimeout(() => {
-        if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
+        if (matchedUser.role === 'Employer') window.location.href = 'employer-dashboard.html';
         else window.location.href = 'home.html';
       }, 800);
+    }
+
+    function showNoAccountPrompt(email) {
+      // Remove any existing prompt
+      const existing = document.getElementById('no-account-prompt');
+      if (existing) existing.remove();
+
+      const prompt = document.createElement('div');
+      prompt.id = 'no-account-prompt';
+      prompt.innerHTML = `
+        <div style="
+          background: #fff7ed;
+          border: 1.5px solid #fed7aa;
+          border-radius: 12px;
+          padding: 16px 18px;
+          margin-top: 16px;
+          display: flex;
+          align-items: flex-start;
+          gap: 12px;
+          animation: fadeInUp 0.3s ease-out;
+        ">
+          <i class="fas fa-user-times" style="color:#ea580c;font-size:1.2rem;margin-top:2px;flex-shrink:0;"></i>
+          <div>
+            <p style="font-weight:700;color:#9a3412;margin:0 0 4px;">No account created</p>
+            <p style="color:#7c2d12;font-size:0.83rem;margin:0 0 12px;">
+              <strong>${email}</strong> has no account. Create an account to continue.
+            </p>
+            <button onclick="showRegisterWithEmail('${email}')" style="
+              background: linear-gradient(135deg,#3b2fc9,#6d51f7);
+              color:white;
+              border:none;
+              border-radius:8px;
+              padding:8px 16px;
+              font-weight:700;
+              font-size:0.83rem;
+              cursor:pointer;
+              font-family:'Plus Jakarta Sans',sans-serif;
+              margin-right:8px;
+            ">Sign Up Now →</button>
+            <button onclick="document.getElementById('no-account-prompt').remove()" style="
+              background:none;
+              border:1px solid #fed7aa;
+              border-radius:8px;
+              padding:8px 16px;
+              color:#9a3412;
+              font-weight:600;
+              font-size:0.83rem;
+              cursor:pointer;
+              font-family:'Plus Jakarta Sans',sans-serif;
+            ">Dismiss</button>
+          </div>
+        </div>
+      `;
+      // Insert after the login form
+      const loginForm = document.getElementById('login-form');
+      loginForm.after(prompt);
+    }
+
+    function showRegisterWithEmail(email) {
+      showRegister(); // shows role step first
+      // store email to pre-fill after role is chosen
+      window._pendingRegisterEmail = email;
+    }
+
+    function selectRegisterRole(role) {
+      currentRole = role;
+      // show form step, hide role step
+      document.getElementById('reg-role-step').style.display = 'none';
+      document.getElementById('reg-form-step').style.display = 'block';
+      // update badge
+      const badge = document.getElementById('reg-role-badge');
+      badge.innerHTML = role === 'Job Seeker'
+        ? '<i class="fas fa-user"></i> Registering as Job Seeker'
+        : '<i class="fas fa-building"></i> Registering as Employer';
+      // pre-fill email if came from login prompt
+      if (window._pendingRegisterEmail) {
+        document.getElementById('reg-email').value = window._pendingRegisterEmail;
+        window._pendingRegisterEmail = null;
+      }
+    }
+
+    function backToRoleStep() {
+      document.getElementById('reg-form-step').style.display = 'none';
+      document.getElementById('reg-role-step').style.display = 'block';
+      document.getElementById('register-form').reset();
     }
     
     function handleRegister(e) {
@@ -933,16 +1089,28 @@
         showToast('Passwords do not match', 'error');
         return;
       }
+
+      // Check if email is already registered
+      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const emailTaken = registeredUsers.some(u => u.email === email);
+      if (emailTaken) {
+        showToast('An account with this email already exists. Please sign in.', 'error');
+        setTimeout(() => {
+          showLogin();
+          document.getElementById('login-email').value = email;
+        }, 1200);
+        return;
+      }
       
       const user = { name, email, role: currentRole };
       localStorage.setItem('currentUser', JSON.stringify(user));
       
-      // Register new user
-      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      // Register new user (store password for login verification)
       registeredUsers.push({
         id: registeredUsers.length + 1,
         name: name,
         email: email,
+        password: password,
         role: currentRole,
         phone: '+250 7XX XXX XXX',
         location: 'Kigali',
@@ -951,26 +1119,81 @@
       });
       localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
       
-      showToast(`Account created! Welcome, ${name}!`, 'success');
+      showToast('Account created! Welcome, ' + name + '!', 'success');
       setTimeout(() => {
         if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
         else window.location.href = 'home.html';
       }, 800);
     }
     
+    let _socialProvider = '';
+
     function socialLogin(provider) {
-      const user = { name: `${provider} User`, email: `user@${provider.toLowerCase()}.com`, role: currentRole };
+      _socialProvider = provider;
+      // Reset modal state
+      const input = document.getElementById('social-email-input');
+      const errMsg = document.getElementById('social-error-msg');
+      input.value = '';
+      input.style.borderColor = '#e2e8f0';
+      errMsg.style.display = 'none';
+
+      // Set modal icon & title
+      const isGoogle = provider === 'Google';
+      document.getElementById('social-modal-icon').innerHTML = isGoogle
+        ? '<i class="fab fa-google" style="color:#ea4335;"></i>'
+        : '<i class="fab fa-linkedin" style="color:#0077b5;"></i>';
+      document.getElementById('social-modal-title').textContent = 'Continue with ' + provider;
+      document.getElementById('social-provider-name').textContent = provider;
+      document.getElementById('social-confirm-btn').style.background = isGoogle
+        ? 'linear-gradient(135deg,#ea4335,#fbbc05)'
+        : 'linear-gradient(135deg,#0077b5,#00a0dc)';
+
+      // Open modal
+      document.getElementById('socialModal').classList.add('show');
+      setTimeout(() => input.focus(), 100);
+    }
+
+    function closeSocialModal() {
+      document.getElementById('socialModal').classList.remove('show');
+    }
+
+    function confirmSocialLogin() {
+      const email = document.getElementById('social-email-input').value.trim();
+      const errMsg = document.getElementById('social-error-msg');
+      const input = document.getElementById('social-email-input');
+
+      if (!email || !email.includes('@')) {
+        errMsg.textContent = 'Please enter a valid email address.';
+        errMsg.style.display = 'block';
+        input.style.borderColor = '#ef4444';
+        return;
+      }
+
+      // Check if this email has an account with a different role
+      const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const existingUser = registeredUsers.find(u => u.email === email);
+
+      if (existingUser && existingUser.role !== currentRole) {
+        errMsg.textContent = 'This email is registered as a ' + existingUser.role + '. Switch role tab to sign in.';
+        errMsg.style.display = 'block';
+        input.style.borderColor = '#ef4444';
+        return;
+      }
+
+      const name = email.split('@')[0].replace(/[._]/g, ' ').replace(/\w/g, c => c.toUpperCase());
+      const finalName = existingUser ? existingUser.name : name;
+      const finalRole = existingUser ? existingUser.role : currentRole;
+
+      const user = { name: finalName, email: email, role: finalRole };
       localStorage.setItem('currentUser', JSON.stringify(user));
-      
-      // Register social login user
-      let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
-      const userExists = registeredUsers.some(u => u.email === user.email);
-      if (!userExists) {
+
+      // Register if new user
+      if (!existingUser) {
         registeredUsers.push({
           id: registeredUsers.length + 1,
-          name: user.name,
-          email: user.email,
-          role: currentRole,
+          name: finalName,
+          email: email,
+          role: finalRole,
           phone: '+250 7XX XXX XXX',
           location: 'Kigali',
           registeredAt: new Date().toISOString(),
@@ -978,17 +1201,34 @@
         });
         localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
       }
-      
-      showToast(`Signed in with ${provider}!`, 'success');
+
+      closeSocialModal();
+      showToast('Signed in with ' + _socialProvider + ' as ' + finalName + '!', 'success');
       setTimeout(() => {
-        if (currentRole === 'Employer') window.location.href = 'employer-dashboard.html';
+        if (finalRole === 'Employer') window.location.href = 'employer-dashboard.html';
         else window.location.href = 'home.html';
       }, 800);
     }
+
+    // Enter key support in social modal
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && document.getElementById('socialModal').classList.contains('show')) {
+        confirmSocialLogin();
+      }
+    });
+
+    // Close social modal when clicking outside
+    document.getElementById('socialModal').addEventListener('click', function(e) {
+      if (e.target === this) closeSocialModal();
+    });
     
     function showRegister() {
       document.getElementById('login-panel').style.display = 'none';
       document.getElementById('register-panel').style.display = 'block';
+      // always start at role selection step
+      document.getElementById('reg-role-step').style.display = 'block';
+      document.getElementById('reg-form-step').style.display = 'none';
+      document.getElementById('register-form').reset();
     }
     
     function showLogin() {
