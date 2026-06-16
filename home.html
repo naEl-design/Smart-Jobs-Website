@@ -1028,6 +1028,127 @@
     }
     .btn-withdraw:hover { background: #ef4444; color: white; }
 
+    /* ===== HAMBURGER MENU ===== */
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(59,47,201,0.07);
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      gap: 5px;
+      padding: 8px;
+      transition: background 0.2s;
+    }
+    .nav-hamburger:hover { background: rgba(59,47,201,0.14); }
+    .burger-bar {
+      display: block;
+      width: 20px;
+      height: 2px;
+      background: var(--primary);
+      border-radius: 2px;
+      transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    .nav-hamburger.open .burger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open .burger-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open .burger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile nav panel */
+    .mobile-nav-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 850;
+      animation: fadeIn 0.2s ease;
+    }
+    .mobile-nav-backdrop.open { display: block; }
+
+    .mobile-nav-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(300px, 85vw);
+      height: 100vh;
+      background: white;
+      z-index: 900;
+      padding: 80px 20px 30px;
+      box-shadow: -8px 0 40px rgba(0,0,0,0.15);
+      overflow-y: auto;
+      flex-direction: column;
+      gap: 4px;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.4,0,0.2,1);
+    }
+    .mobile-nav-panel.open {
+      display: flex;
+      transform: translateX(0);
+    }
+    .mobile-nav-panel a, .mobile-nav-panel button {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 16px;
+      border-radius: 12px;
+      color: #4a4a6a;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+      width: 100%;
+      text-align: left;
+    }
+    .mobile-nav-panel a:hover, .mobile-nav-panel button:hover {
+      background: rgba(59,47,201,0.08);
+      color: var(--primary);
+    }
+    .mobile-nav-panel a.active { background: rgba(59,47,201,0.1); color: var(--primary); }
+    .mobile-nav-divider {
+      height: 1px;
+      background: #f0f2f8;
+      margin: 8px 0;
+    }
+    .mobile-nav-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 36px;
+      height: 36px;
+      background: #f3f4f8;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #4a4a6a;
+      transition: background 0.2s;
+    }
+    .mobile-nav-close:hover { background: #e2e8f0; }
+    .mobile-nav-panel .btn-primary-full {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white !important;
+      border-radius: 12px;
+      margin-top: 4px;
+      justify-content: center;
+    }
+    .mobile-nav-panel .btn-outline-full {
+      border: 2px solid var(--primary) !important;
+      color: var(--primary) !important;
+      border-radius: 12px;
+      justify-content: center;
+    }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 1024px) {
       .hero-content { grid-template-columns: 1fr; text-align: center; }
@@ -1038,10 +1159,15 @@
       .testimonials-grid { grid-template-columns: 1fr; }
       .footer-grid { grid-template-columns: repeat(2, 1fr); }
       .main-menu { display: none; }
+      .nav-hamburger { display: flex; }
       .search-bar-home { flex-direction: column; }
       .search-sep { display: none; }
       .home-search-btn { padding: 14px; justify-content: center; }
       .hero-stats { justify-content: center; }
+      /* Hide desktop auth buttons from nav-right on mobile */
+      .nav-right > a, .nav-right > button { display: none; }
+      .nav-right > #dynamic-auth { display: none; }
+      .nav-hamburger { display: flex !important; }
     }
 
     @media (max-width: 768px) {
@@ -1052,6 +1178,39 @@
       .trusted-section, .features-section, .testimonials-section, .cta-section, .alerts-section { padding: 60px 20px; }
       .listing-section, .my-apps-section { padding: 0 20px; }
       .hero-section { padding: 60px 20px; }
+      .apps-table th, .apps-table td { padding: 10px 12px; font-size: 0.78rem; }
+      .section-header h2 { font-size: 1.5rem; }
+      .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
+      .hero-visual { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .nav-content { padding: 0 14px; }
+      .hero-section { padding: 44px 16px; }
+      .hero-text h1 { font-size: 1.55rem; line-height: 1.2; }
+      .hero-stats { gap: 20px; }
+      .search-container { padding: 0 12px; }
+      .search-card { padding: 16px 14px; }
+      .listing-section, .my-apps-section { padding: 0 12px; }
+      .features-section, .testimonials-section, .cta-section, .alerts-section, .trusted-section { padding: 48px 14px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .footer-grid { gap: 20px; }
+      .main-footer { padding: 40px 14px 20px; }
+      .cta-content h2 { font-size: 1.65rem; }
+      .testimonials-grid { grid-template-columns: 1fr; gap: 14px; }
+      .modal-box { padding: 24px 16px; border-radius: 16px; }
+      #toast-container { bottom: 14px; right: 10px; left: 10px; }
+      .toast { min-width: unset; width: 100%; max-width: 100%; }
+      .alerts-form { flex-direction: column; border-radius: 12px; }
+      .alerts-form input { border-radius: 12px 12px 0 0; }
+      .alerts-form button { border-radius: 0 0 12px 12px; }
+    }
+
+    @media (max-width: 360px) {
+      .hero-text h1 { font-size: 1.4rem; }
+      .sj-logo-pill { font-size: 0.88rem; padding: 6px 12px; }
+      .hero-badge { font-size: 0.78rem; padding: 6px 12px; }
     }
 
     @keyframes confettiFall {
@@ -1081,7 +1240,25 @@
       <a href="post-job.html" class="nav-btn-primary" style="background:transparent;color:var(--primary);border:2px solid var(--primary);">Post a Job</a>
       <a href="auth.html" class="nav-btn-primary">Sign In</a>
     </div>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
+      <span class="burger-bar"></span>
+      <span class="burger-bar"></span>
+      <span class="burger-bar"></span>
+    </button>
   </div>
+</nav>
+
+<!-- Mobile nav -->
+<div class="mobile-nav-backdrop" id="mobile-backdrop"></div>
+<nav class="mobile-nav-panel" id="mobile-nav-panel" aria-label="Mobile navigation">
+  <button class="mobile-nav-close" id="mobile-nav-close" aria-label="Close menu"><i class="fas fa-times"></i></button>
+  <a href="home.html" class="active"><i class="fas fa-briefcase"></i> Find Jobs</a>
+  <a href="employer-hub.html"><i class="fas fa-building"></i> Employer Hub</a>
+  <a href="market.html"><i class="fas fa-chart-line"></i> Salaries</a>
+  <a href="#alerts-section" id="mobile-alerts-link"><i class="fas fa-bell"></i> Job Alerts</a>
+  <div class="mobile-nav-divider"></div>
+  <a href="post-job.html" class="btn-outline-full"><i class="fas fa-plus"></i> Post a Job</a>
+  <a href="auth.html" class="btn-primary-full"><i class="fas fa-sign-in-alt"></i> Sign In</a>
 </nav>
 
 <!-- ===== HERO ===== -->
@@ -2179,6 +2356,57 @@ window.addEventListener('scroll', () => {
 document.getElementById('scrollTop')?.addEventListener('click', () => {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+// ---- Hamburger / Mobile Nav ----
+(function() {
+  const hamburger = document.getElementById('nav-hamburger');
+  const panel = document.getElementById('mobile-nav-panel');
+  const backdrop = document.getElementById('mobile-backdrop');
+  const closeBtn = document.getElementById('mobile-nav-close');
+
+  function openMenu() {
+    hamburger.classList.add('open');
+    panel.classList.add('open');
+    backdrop.classList.add('open');
+    hamburger.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeMenu() {
+    hamburger.classList.remove('open');
+    panel.classList.remove('open');
+    backdrop.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  hamburger?.addEventListener('click', () => {
+    panel.classList.contains('open') ? closeMenu() : openMenu();
+  });
+  closeBtn?.addEventListener('click', closeMenu);
+  backdrop?.addEventListener('click', closeMenu);
+
+  panel?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    closeMenu();
+  }));
+
+  function syncMobileAuth() {
+    const user = (typeof getUser === 'function') ? getUser() : JSON.parse(localStorage.getItem('currentUser'));
+    const signInLink = panel?.querySelector('a[href="auth.html"]');
+    if (user && signInLink) {
+      signInLink.innerHTML = `<i class="fas fa-tachometer-alt"></i> Dashboard`;
+      signInLink.href = user.role === 'Employer' ? 'employer-dashboard.html'
+                      : user.role === 'Admin' ? 'admin.html'
+                      : 'jobseeker-dashboard.html';
+    }
+  }
+  document.addEventListener('DOMContentLoaded', syncMobileAuth);
+
+  document.getElementById('mobile-alerts-link')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMenu();
+    setTimeout(() => scrollToAlerts(), 200);
+  });
+})();
 </script>
 </body>
 </html>

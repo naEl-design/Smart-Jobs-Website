@@ -324,19 +324,109 @@
       to { transform: translateX(0); opacity: 1; }
     }
 
-    @media (max-width: 768px) {
-      .admin-sidebar { width: 64px; }
-      .admin-sidebar .sidebar-brand small,
-      .admin-sidebar .user-info,
-      .admin-sidebar .btn-signout span,
-      .sidebar-nav a span { display: none; }
-      .admin-main { margin-left: 64px; padding: 20px; }
+    /* ── MOBILE TOPBAR ── */
+    .mobile-topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      box-shadow: 0 1px 10px rgba(0,0,0,.06);
+    }
+    .mobile-topbar .sj-logo-pill { font-size: .9rem; padding: 5px 14px 5px 7px; }
+    .mobile-topbar .sj-icon { width: 24px; height: 24px; font-size: .7rem; }
+
+    /* ── HAMBURGER ── */
+    .nav-hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 40px; height: 40px;
+      background: var(--indigo-light);
+      border: none; border-radius: 10px;
+      cursor: pointer; gap: 5px; padding: 8px;
+      transition: background 0.2s;
+    }
+    .nav-hamburger:hover { background: rgba(59,47,201,0.22); }
+    .burger-bar { display: block; width: 20px; height: 2px; background: var(--indigo); border-radius: 2px; transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+    .nav-hamburger.open .burger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open .burger-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open .burger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile sidebar overlay */
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; }
+    .sidebar-backdrop.open { display: block; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-photo-row { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      /* Hide desktop sidebar, show mobile topbar */
+      .admin-sidebar { transform: translateX(-100%); transition: transform 0.32s cubic-bezier(.4,0,.2,1); }
+      .admin-sidebar.mobile-open { transform: translateX(0); z-index: 400; }
+      .mobile-topbar { display: flex; }
+      .admin-main { margin-left: 0; padding: 20px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
       .dash-grid { grid-template-columns: 1fr; }
+      .admin-topbar { display: none; }
+      .data-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .data-table { min-width: 560px; }
+      .quick-photo-row { grid-template-columns: 1fr; }
+      .quick-photo-card { height: 88px; }
+      .dash-hero-strip { height: 120px; border-radius: 14px; }
+      .dash-hero-strip-overlay { padding: 16px 20px; }
+      .dash-hero-strip-text h2 { font-size: 1.1rem; }
+      .panel-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .panel-header input, .panel-header div { width: 100%; }
+      .panel-header div { display: flex; flex-wrap: wrap; gap: 8px; }
+      .panel-header input { max-width: 100% !important; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-card { padding: 14px; }
+      .stat-text h3 { font-size: 1.4rem; }
+      .stat-icon { width: 42px; height: 42px; }
+      .admin-main { padding: 14px; }
+      .dash-panel { padding: 16px; }
+      .data-table { min-width: 480px; }
+      .tbl-btn { padding: 4px 8px; font-size: .72rem; margin-right: 3px; }
+    }
+
+    @media (max-width: 360px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .mobile-topbar { padding: 0 12px; }
     }
   </style>
 </head>
 <body>
+
+<!-- MOBILE TOPBAR (visible on small screens) -->
+<div class="mobile-topbar" id="mobile-topbar">
+  <a href="home.html" class="sj-logo-pill">
+    <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
+    <span class="sj-text">smart<span class="sj-green">Jobs</span></span>
+  </a>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span class="burger-bar"></span>
+    <span class="burger-bar"></span>
+    <span class="burger-bar"></span>
+  </button>
+</div>
+
+<!-- Backdrop for mobile sidebar -->
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
 <div class="admin-layout">
 
   <!-- SIDEBAR -->
@@ -1011,6 +1101,40 @@
   window.filterSubscribers = filterSubscribers;
   window.exportSubscribersCSV = exportSubscribersCSV;
   window.sendNewsletterToAll = sendNewsletterToAll;
+
+  // ---- Mobile Sidebar Hamburger ----
+  (function() {
+    const hamburger = document.getElementById('nav-hamburger');
+    const sidebar = document.querySelector('.admin-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
+
+    function openSidebar() {
+      sidebar.classList.add('mobile-open');
+      backdrop.classList.add('open');
+      hamburger.classList.add('open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('mobile-open');
+      backdrop.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+
+    hamburger?.addEventListener('click', () => {
+      sidebar.classList.contains('mobile-open') ? closeSidebar() : openSidebar();
+    });
+    backdrop?.addEventListener('click', closeSidebar);
+
+    // Auto-close sidebar when a nav link is clicked on mobile
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+  })();
 </script>
 </body>
 </html>

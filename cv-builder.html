@@ -4,1117 +4,1137 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-site-verification" content="9RkpIDPFQLY-tXviL2wdqDg_1IO1V50sdk5fTG1ur98" />
-  <title>CV Builder | smartJobs Rwanda</title>
+  <title>Admin Dashboard | smartJobs Rwanda</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <script src="cursor.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="manifest" href="manifest.json">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
-    /* ============================================================
-       smartJobs Rwanda — CV Builder
-       Plain HTML + CSS + JavaScript (no framework required)
-    ============================================================ */
+    /* ── DASHBOARD ANIMATION & PHOTO ENHANCEMENTS ── */
+    @keyframes slideInLeft  { from { opacity:0; transform:translateX(-32px); } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideInRight { from { opacity:0; transform:translateX(32px);  } to { opacity:1; transform:translateX(0); } }
+    @keyframes slideInUp    { from { opacity:0; transform:translateY(28px);  } to { opacity:1; transform:translateY(0); } }
+    @keyframes popIn        { from { opacity:0; transform:scale(.88);        } to { opacity:1; transform:scale(1);      } }
+    @keyframes shimmer      { 0%{background-position:200% center} 100%{background-position:-200% center} }
+    @keyframes pulse-ring   { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.18);opacity:0} }
+    @keyframes float        { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    @keyframes countUp      { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes glow-pulse   { 0%,100%{box-shadow:0 0 0 0 rgba(59,47,201,.18)} 50%{box-shadow:0 0 0 10px rgba(59,47,201,0)} }
 
+    /* Global Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     :root {
-      --indigo:        #3b2fc9;
-      --indigo-dark:   #2a1fa8;
-      --indigo-light:  #ede9ff;
-      --emerald:       #10b981;
-      --emerald-dark:  #059669;
-      --emerald-light: #d1fae5;
-      --text:          #0f172a;
-      --muted:         #64748b;
-      --border:        #e2e8f0;
-      --bg:            #f8fafc;
-      --white:         #ffffff;
-      --shadow:        0 4px 24px rgba(59,47,201,0.09);
-      --radius:        12px;
+      --indigo: #3b2fc9;
+      --indigo-dark: #2a1fa8;
+      --indigo-light: #ede9ff;
+      --emerald: #10b981;
+      --emerald-dark: #059669;
+      --rose: #ef4444;
+      --amber: #f59e0b;
+      --text: #0f172a;
+      --text-2: #334155;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #f8fafc;
+      --bg-2: #f1f5f9;
+      --surface: #ffffff;
+      --shadow: 0 4px 24px rgba(59,47,201,0.09);
+      --shadow-lg: 0 16px 48px rgba(59,47,201,0.16);
+      --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
-    h1,h2,h3,h4,h5 { font-family: 'Sora', sans-serif; }
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
 
-    /* ── NAVBAR ───────────────────────────────────────────── */
-    .navbar {
-      background: rgba(255,255,255,.95);
-      backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 200;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 28px; height: 64px;
-    }
-    .navbar .logo { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--indigo); text-decoration: none; }
-    .navbar .logo span { color: var(--emerald); }
-    .navbar-actions { display: flex; gap: 12px; align-items: center; }
-    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 9px 20px; border-radius: 10px; font-weight: 700; font-size: .88rem; cursor: pointer; border: none; transition: all .2s; text-decoration: none; font-family: inherit; }
-    .btn-primary { background: var(--indigo); color: white; }
-    .btn-primary:hover { background: var(--indigo-dark); transform: translateY(-1px); }
-    .btn-emerald { background: var(--emerald); color: white; }
-    .btn-emerald:hover { background: var(--emerald-dark); transform: translateY(-1px); }
-    .btn-ghost { background: transparent; color: var(--muted); border: 1.5px solid var(--border); }
-    .btn-ghost:hover { border-color: var(--indigo); color: var(--indigo); }
-    .btn-danger { background: #fee2e2; color: #991b1b; }
-    .btn-danger:hover { background: #fecaca; }
-    .btn-sm { padding: 6px 14px; font-size: .8rem; }
+    /* Admin Layout */
+    .admin-layout { display: flex; min-height: 100vh; }
 
-    /* ── VIEWS ────────────────────────────────────────────── */
-    .view { display: none; }
-    .view.active { display: block; }
+    /* Sidebar */
+    .admin-sidebar {
+      width: 268px;
+      background: linear-gradient(180deg, #0a0730 0%, #0f0a3a 100%);
+      color: white;
+      position: fixed;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      z-index: 50;
+      box-shadow: 4px 0 24px rgba(0,0,0,.2);
+    }
 
-    /* ── HOME VIEW ────────────────────────────────────────── */
-    #view-home { padding: 48px 28px; max-width: 1100px; margin: 0 auto; }
-    .home-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 36px; flex-wrap: wrap; gap: 16px; }
-    .home-header h1 { font-size: 2rem; font-weight: 800; }
-    .home-header p { color: var(--muted); margin-top: 4px; }
-    .cv-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-    .cv-card {
-      background: white; border-radius: var(--radius); border: 1px solid var(--border);
-      overflow: hidden; transition: all .2s; cursor: pointer;
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
     }
-    .cv-card:hover { box-shadow: var(--shadow); transform: translateY(-3px); }
-    .cv-card-thumb {
-      height: 130px; display: flex; align-items: center; justify-content: center;
-      background: linear-gradient(135deg, rgba(59,47,201,.08), rgba(16,185,129,.08));
-      position: relative;
-    }
-    .cv-card-thumb i { font-size: 2.5rem; color: rgba(59,47,201,.3); }
-    .cv-card-thumb .template-badge {
-      position: absolute; top: 10px; right: 10px;
-      background: rgba(255,255,255,.85); backdrop-filter: blur(6px);
-      padding: 3px 10px; border-radius: 20px; font-size: .7rem; font-weight: 700;
-      color: var(--indigo); text-transform: capitalize;
-    }
-    .cv-card-body { padding: 16px 18px 14px; }
-    .cv-card-body h3 { font-size: 1rem; font-weight: 700; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cv-card-body p { color: var(--muted); font-size: .82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cv-card-body .cv-meta { margin-top: 8px; font-size: .73rem; color: #94a3b8; }
-    .cv-card-footer { display: flex; justify-content: space-between; padding: 12px 18px; background: var(--bg); border-top: 1px solid var(--border); }
-    .empty-state {
-      text-align: center; padding: 80px 24px;
-      background: white; border-radius: var(--radius);
-      border: 2px dashed var(--border);
-    }
-    .empty-state .icon { width: 64px; height: 64px; background: var(--emerald-light); color: var(--emerald); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 1.6rem; }
-    .empty-state h3 { font-size: 1.4rem; margin-bottom: 8px; }
-    .empty-state p { color: var(--muted); max-width: 380px; margin: 0 auto 24px; }
+    .sidebar-brand small { color: rgba(255,255,255,.4); font-size: .75rem; display: block; margin-top: 3px; }
 
-    /* ── BUILDER VIEW ─────────────────────────────────────── */
-    #view-builder {
-      display: none; flex-direction: row;
-      height: calc(100vh - 64px); overflow: hidden;
+    .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 14px;
+      border-radius: 10px;
+      color: rgba(255,255,255,.55);
+      font-size: .88rem;
+      font-weight: 600;
+      margin-bottom: 3px;
+      transition: all var(--transition);
+      text-decoration: none;
     }
-    #view-builder.active { display: flex; }
+    .sidebar-nav a:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
+    .sidebar-nav a.active { background: var(--indigo); color: white; box-shadow: 0 4px 16px rgba(59,47,201,0.4); }
+    .sidebar-nav a i { width: 18px; }
 
-    /* Editor Panel */
-    .editor-panel {
-      width: 440px; flex-shrink: 0; background: white;
-      border-right: 1px solid var(--border);
-      display: flex; flex-direction: column; overflow: hidden;
+    .sidebar-user {
+      padding: 16px;
+      border-top: 1px solid rgba(255,255,255,.07);
+      display: flex;
+      align-items: center; gap: 12px;
     }
-    .editor-topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 18px; border-bottom: 1px solid var(--border);
-      background: var(--bg); gap: 10px; flex-wrap: wrap; flex-shrink: 0;
+    .user-ava {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--indigo), #6d51f7);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .9rem;
+      box-shadow: 0 3px 12px rgba(59,47,201,0.3);
     }
-    .editor-topbar .back-link { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: .85rem; font-weight: 600; cursor: pointer; text-decoration: none; }
-    .editor-topbar .back-link:hover { color: var(--indigo); }
-    .template-select { padding: 7px 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: .84rem; font-family: inherit; color: var(--text); background: white; cursor: pointer; }
-    .template-select:focus { outline: none; border-color: var(--indigo); }
+    .user-info small { display: block; color: rgba(255,255,255,.4); font-size: .72rem; }
 
-    .editor-sections { flex: 1; overflow-y: auto; padding: 16px; }
+    .btn-signout {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; padding: 10px 14px; margin-top: 8px;
+      background: rgba(239,68,68,.1); border: none;
+      color: #fca5a5; border-radius: 10px;
+      font-weight: 700; font-size: .86rem; cursor: pointer;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .btn-signout:hover { background: rgba(239,68,68,.2); color: white; }
 
-    /* Accordion */
-    .accordion-item { background: white; border: 1px solid var(--border); border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
-    .accordion-trigger {
+    /* Main Content */
+    .admin-main {
+      margin-left: 268px;
+      flex: 1;
+      padding: 36px;
+      min-height: 100vh;
+      background: var(--bg);
+    }
+
+    .admin-topbar {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 16px; cursor: pointer; font-weight: 700; font-size: .9rem;
-      background: none; border: none; width: 100%; text-align: left; color: var(--text); font-family: inherit;
-      transition: background .15s;
+      margin-bottom: 34px;
     }
-    .accordion-trigger:hover { background: var(--bg); }
-    .accordion-trigger .chevron { transition: transform .25s; font-size: .8rem; color: var(--muted); }
-    .accordion-trigger.open .chevron { transform: rotate(180deg); }
-    .accordion-body { display: none; padding: 0 16px 16px; }
-    .accordion-body.open { display: block; }
+    .admin-topbar h1 { font-size: 1.7rem; font-weight: 800; }
+    .admin-topbar p { color: var(--muted); font-size: .88rem; }
 
-    /* Form fields */
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
-    .form-row.single { grid-template-columns: 1fr; }
-    .field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 12px; }
-    .field label { font-size: .78rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
-    .field input, .field textarea, .field select {
-      padding: 9px 12px; border: 1.5px solid var(--border); border-radius: 8px;
-      font-size: .88rem; font-family: inherit; color: var(--text); background: white;
-      transition: border-color .2s;
+    .topbar-right { display: flex; align-items: center; gap: 12px; }
+    .btn-notif {
+      width: 42px; height: 42px; border-radius: 11px;
+      background: white; border: 1.5px solid var(--border);
+      cursor: pointer; position: relative;
     }
-    .field input:focus, .field textarea:focus, .field select:focus { outline: none; border-color: var(--indigo); }
-    .field textarea { resize: vertical; min-height: 80px; }
-
-    /* Entry cards (work/education) */
-    .entry-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
-    .entry-card { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; position: relative; }
-    .entry-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: 2px; }
-    .entry-card p { font-size: .78rem; color: var(--muted); }
-    .entry-card .entry-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 6px; }
-    .entry-card .entry-actions button { background: none; border: none; cursor: pointer; color: var(--muted); font-size: .8rem; padding: 2px 5px; border-radius: 4px; transition: all .15s; }
-    .entry-card .entry-actions button:hover { background: white; color: var(--indigo); }
-    .entry-card .entry-actions button.del:hover { color: #ef4444; }
-
-    /* Entry edit modal */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; display: none; align-items: center; justify-content: center; padding: 20px; }
-    .modal-overlay.open { display: flex; }
-    .modal { background: white; border-radius: 16px; width: 100%; max-width: 540px; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 64px rgba(0,0,0,.22); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 20px 24px 16px; border-bottom: 1px solid var(--border); }
-    .modal-header h3 { font-size: 1.05rem; font-weight: 800; }
-    .modal-close { background: none; border: none; font-size: 1.1rem; color: var(--muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all .15s; }
-    .modal-close:hover { background: var(--bg); color: var(--text); }
-    .modal-body { padding: 20px 24px; }
-    .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; }
-
-    /* Skills/Languages */
-    .tag-input-row { display: flex; gap: 8px; margin-bottom: 10px; }
-    .tag-input-row input { flex: 1; }
-    .tags-list { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
-    .tag { display: inline-flex; align-items: center; gap: 6px; background: var(--indigo-light); color: var(--indigo); padding: 4px 12px; border-radius: 20px; font-size: .78rem; font-weight: 700; }
-    .tag .tag-remove { cursor: pointer; color: var(--muted); font-size: .7rem; }
-    .tag .tag-remove:hover { color: #ef4444; }
-    .lang-tag { background: var(--emerald-light); color: #065f46; }
-
-    /* ── PREVIEW PANEL ────────────────────────────────────── */
-    .preview-panel { flex: 1; background: #e2e8f0; overflow-y: auto; padding: 32px; display: flex; justify-content: center; }
-    .preview-wrap { width: 100%; max-width: 794px; position: relative; }
-    .preview-actions { display: flex; justify-content: flex-end; margin-bottom: 12px; gap: 10px; }
-
-    /* CV paper */
-    .cv-paper {
-      background: white; width: 794px; min-height: 1122px;
-      box-shadow: 0 12px 48px rgba(0,0,0,.15);
-      font-family: 'Plus Jakarta Sans', Arial, sans-serif;
-      font-size: 11px; line-height: 1.5; color: #1e293b;
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 9px; height: 9px; background: var(--rose);
+      border-radius: 50%; border: 2px solid white;
     }
 
-    /* ── CV TEMPLATES ─────────────────────────────────────── */
+    /* Section visibility */
+    .dash-section { animation: fadeSlideUp .35s ease both; }
+    .hidden { display: none !important; }
 
-    /* === CLASSIC === */
-    .tpl-classic .cv-header {
-      background: var(--indigo); color: white; padding: 32px 40px 28px;
+    /* Hero Strip */
+    .dash-hero-strip {
+      position:relative; width:100%; height:168px; border-radius:20px; overflow:hidden;
+      margin-bottom:28px;
     }
-    .tpl-classic .cv-header h1 { font-size: 24px; font-weight: 800; letter-spacing: -.3px; margin-bottom: 4px; font-family: 'Sora', sans-serif; }
-    .tpl-classic .cv-header .role { font-size: 13px; opacity: .85; margin-bottom: 14px; }
-    .tpl-classic .cv-header .contact-row { display: flex; flex-wrap: wrap; gap: 16px; font-size: 10.5px; opacity: .9; }
-    .tpl-classic .cv-header .contact-row span { display: flex; align-items: center; gap: 5px; }
-    .tpl-classic .cv-body { display: flex; gap: 0; }
-    .tpl-classic .cv-main { flex: 1; padding: 28px 32px 32px 40px; }
-    .tpl-classic .cv-sidebar { width: 210px; padding: 28px 24px 32px; background: #f8fafc; border-left: 1px solid #e2e8f0; flex-shrink: 0; }
-    .tpl-classic .section-title { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; color: var(--indigo); border-bottom: 2px solid var(--indigo); padding-bottom: 5px; margin-bottom: 14px; font-family: 'Sora', sans-serif; }
-    .tpl-classic .section { margin-bottom: 24px; }
-    .tpl-classic .entry { margin-bottom: 16px; }
-    .tpl-classic .entry-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px; }
-    .tpl-classic .entry-top h3 { font-size: 12px; font-weight: 700; }
-    .tpl-classic .entry-top .date { font-size: 10px; color: var(--muted); white-space: nowrap; margin-left: 10px; flex-shrink: 0; }
-    .tpl-classic .entry-sub { font-size: 11px; color: var(--muted); margin-bottom: 5px; }
-    .tpl-classic .entry-desc { font-size: 10.5px; color: #334155; }
-    .tpl-classic .sidebar-section { margin-bottom: 20px; }
-    .tpl-classic .sidebar-section .section-title { border-color: var(--emerald); color: var(--emerald-dark); }
-    .tpl-classic .skill-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 10.5px; }
-    .tpl-classic .skill-dots { display: flex; gap: 3px; }
-    .tpl-classic .dot { width: 7px; height: 7px; border-radius: 50%; background: #e2e8f0; }
-    .tpl-classic .dot.filled { background: var(--indigo); }
-    .tpl-classic .lang-row { margin-bottom: 7px; }
-    .tpl-classic .lang-row .lang-name { font-size: 10.5px; font-weight: 700; }
-    .tpl-classic .lang-row .lang-level { font-size: 9.5px; color: var(--muted); }
-    .tpl-classic .summary-text { font-size: 10.5px; color: #334155; }
-    .tpl-classic .achievement { font-size: 10.5px; color: #334155; padding-left: 14px; position: relative; margin-bottom: 5px; }
-    .tpl-classic .achievement::before { content: '•'; position: absolute; left: 0; color: var(--indigo); }
+    .dash-hero-strip img {
+      width:100%; height:100%; object-fit:cover; filter:brightness(.72);
+    }
+    .dash-hero-strip-overlay {
+      position:absolute; inset:0; padding:28px 32px; display:flex;
+      align-items:flex-end; justify-content:space-between;
+      background:linear-gradient(90deg, rgba(22,14,120,.65) 0%, rgba(0,0,0,.1) 100%);
+    }
+    .dash-hero-strip-text h2 { color:#fff; font-size:1.45rem; font-weight:800; }
+    .dash-hero-strip-text p { color:rgba(255,255,255,.82); font-size:.88rem; }
 
-    /* === MODERN === */
-    .tpl-modern .cv-header { background: linear-gradient(135deg, #0f0a3a 0%, var(--indigo) 100%); padding: 40px 48px 36px; }
-    .tpl-modern .cv-header h1 { font-size: 30px; font-weight: 800; color: white; letter-spacing: -.5px; margin-bottom: 4px; font-family: 'Sora', sans-serif; }
-    .tpl-modern .cv-header .role { font-size: 14px; color: #a5f3d0; font-weight: 600; margin-bottom: 16px; }
-    .tpl-modern .cv-header .contact-row { display: flex; flex-wrap: wrap; gap: 20px; font-size: 10.5px; color: rgba(255,255,255,.8); }
-    .tpl-modern .cv-header .contact-row span { display: flex; align-items: center; gap: 5px; }
-    .tpl-modern .cv-body { padding: 32px 48px; }
-    .tpl-modern .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .1em; color: var(--emerald-dark); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; font-family: 'Sora', sans-serif; }
-    .tpl-modern .section-title::after { content: ''; flex: 1; height: 2px; background: linear-gradient(90deg, var(--emerald-light), transparent); }
-    .tpl-modern .section { margin-bottom: 28px; }
-    .tpl-modern .entry { margin-bottom: 18px; padding-left: 18px; position: relative; }
-    .tpl-modern .entry::before { content: ''; position: absolute; left: 0; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 0 3px var(--emerald-light); }
-    .tpl-modern .entry::after { content: ''; position: absolute; left: 3.5px; top: 16px; bottom: -8px; width: 1px; background: var(--emerald-light); }
-    .tpl-modern .entry:last-child::after { display: none; }
-    .tpl-modern .entry-top { margin-bottom: 3px; }
-    .tpl-modern .entry-top h3 { font-size: 12.5px; font-weight: 800; color: #0f172a; }
-    .tpl-modern .entry-top .entry-meta { font-size: 10px; color: var(--emerald-dark); font-weight: 700; margin-top: 2px; }
-    .tpl-modern .entry-date { font-size: 9.5px; color: var(--muted); margin-top: 2px; }
-    .tpl-modern .entry-desc { font-size: 10.5px; color: #334155; margin-top: 5px; }
-    .tpl-modern .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-    .tpl-modern .skill-chip { display: inline-block; background: var(--indigo-light); color: var(--indigo); padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; margin: 3px; }
-    .tpl-modern .lang-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; font-size: 10.5px; }
-    .tpl-modern .lang-badge { background: var(--emerald-light); color: #065f46; padding: 2px 8px; border-radius: 10px; font-size: 9.5px; font-weight: 700; }
-    .tpl-modern .summary-text { font-size: 10.5px; color: #334155; line-height: 1.7; }
-    .tpl-modern .achievement { font-size: 10.5px; color: #334155; padding-left: 14px; position: relative; margin-bottom: 5px; }
-    .tpl-modern .achievement::before { content: '→'; position: absolute; left: 0; color: var(--emerald); font-size: 9px; }
+    /* Quick Actions */
+    .quick-photo-row {
+      display:grid; grid-template-columns:repeat(3,1fr);
+      gap:14px; margin-bottom:24px;
+    }
+    .quick-photo-card {
+      position:relative; border-radius:14px; overflow:hidden; height:110px; cursor:pointer;
+      box-shadow:0 4px 18px rgba(0,0,0,.1);
+    }
+    .quick-photo-card img { width:100%; height:100%; object-fit:cover; filter:brightness(.7); }
+    .quick-photo-card-label {
+      position:absolute; inset:0; display:flex; flex-direction:column;
+      align-items:center; justify-content:center; gap:5px;
+      background:rgba(0,0,0,.4);
+    }
+    .quick-photo-card-label i { color:#fff; font-size:1.4rem; }
+    .quick-photo-card-label span { color:#fff; font-size:.8rem; font-weight:700; }
 
-    /* === MINIMAL === */
-    .tpl-minimal .cv-header { padding: 44px 56px 36px; border-bottom: 3px solid var(--text); }
-    .tpl-minimal .cv-header h1 { font-size: 28px; font-weight: 800; letter-spacing: -.5px; margin-bottom: 4px; font-family: 'Sora', sans-serif; }
-    .tpl-minimal .cv-header .role { font-size: 13px; color: var(--muted); font-weight: 500; margin-bottom: 14px; }
-    .tpl-minimal .cv-header .contact-row { display: flex; flex-wrap: wrap; gap: 20px; font-size: 10.5px; color: var(--muted); }
-    .tpl-minimal .cv-header .contact-row span { display: flex; align-items: center; gap: 5px; }
-    .tpl-minimal .cv-body { padding: 36px 56px 48px; }
-    .tpl-minimal .section { margin-bottom: 28px; }
-    .tpl-minimal .section-title { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: .15em; color: var(--muted); margin-bottom: 14px; font-family: 'Sora', sans-serif; }
-    .tpl-minimal .entry { margin-bottom: 18px; padding-bottom: 18px; border-bottom: 1px solid #f1f5f9; }
-    .tpl-minimal .entry:last-child { border-bottom: none; padding-bottom: 0; }
-    .tpl-minimal .entry-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
-    .tpl-minimal .entry-top h3 { font-size: 12px; font-weight: 700; }
-    .tpl-minimal .entry-top .date { font-size: 9.5px; color: var(--muted); }
-    .tpl-minimal .entry-sub { font-size: 10.5px; color: #334155; font-weight: 600; margin-bottom: 5px; }
-    .tpl-minimal .entry-desc { font-size: 10.5px; color: #64748b; }
-    .tpl-minimal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
-    .tpl-minimal .skill-row { font-size: 10.5px; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
-    .tpl-minimal .skill-row::before { content: '—'; color: var(--muted); }
-    .tpl-minimal .lang-row { font-size: 10.5px; margin-bottom: 5px; display: flex; justify-content: space-between; }
-    .tpl-minimal .lang-level { color: var(--muted); font-size: 9.5px; }
-    .tpl-minimal .summary-text { font-size: 10.5px; color: #334155; line-height: 1.8; }
-    .tpl-minimal .achievement { font-size: 10.5px; color: #334155; padding-left: 14px; position: relative; margin-bottom: 5px; }
-    .tpl-minimal .achievement::before { content: '–'; position: absolute; left: 0; color: var(--muted); }
+    /* Stats Grid */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+    .stat-card {
+      background: white; border-radius: 14px; padding: 22px;
+      border: 1.5px solid var(--border);
+      display: flex; align-items: center; gap: 16px;
+    }
+    .stat-icon {
+      width: 54px; height: 54px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .si-blue { background: #dbeafe; color: #1d4ed8; }
+    .si-green { background: #d1fae5; color: #065f46; }
+    .si-amber { background: #fef3c7; color: #92400e; }
+    .si-purple { background: var(--indigo-light); color: var(--indigo); }
+    .stat-text h3 { font-size: 1.8rem; font-weight: 800; }
+    .stat-change { font-size: .74rem; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+    .stat-change.up { color: var(--emerald); }
+    .stat-change.down { color: var(--rose); }
 
-    /* ── AUTOSAVE INDICATOR ───────────────────────────────── */
-    .autosave { font-size: .75rem; color: var(--muted); display: flex; align-items: center; gap: 5px; }
-    .autosave.saved { color: var(--emerald-dark); }
+    /* Dash Grid */
+    .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .dash-panel {
+      background: white; border-radius: 14px; border: 1.5px solid var(--border);
+      padding: 24px;
+    }
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 22px; border-bottom: 1px solid var(--border); padding-bottom: 18px;
+    }
+    .panel-header h3 { font-size: .98rem; font-weight: 700; }
+    .see-all { color: var(--indigo); font-size: .8rem; font-weight: 700; cursor: pointer; }
 
-    /* ── RESPONSIVE ───────────────────────────────────────── */
-    @media (max-width: 900px) {
-      #view-builder.active { flex-direction: column; height: auto; overflow: visible; }
-      .editor-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--border); max-height: 55vh; }
-      .preview-panel { padding: 20px; }
-      .cv-paper { width: 100%; min-width: 0; transform-origin: top left; }
-      .preview-wrap { overflow-x: auto; }
+    /* Data Table */
+    .data-table-wrap { overflow-x: auto; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left; padding: 10px 14px;
+      font-size: .76rem; font-weight: 800; text-transform: uppercase;
+      color: var(--muted); background: var(--bg); border-bottom: 1.5px solid var(--border);
+    }
+    .data-table td { padding: 13px 14px; font-size: .87rem; border-bottom: 1px solid var(--border); }
+    .tbl-btn {
+      padding: 5px 12px; border-radius: 7px; font-size: .77rem; font-weight: 700;
+      cursor: pointer; border: none; margin-right: 6px;
+    }
+    .tbl-btn-edit { background: var(--indigo-light); color: var(--indigo); }
+    .tbl-btn-danger { background: #fee2e2; color: var(--rose); }
+    .tbl-btn-success { background: #d1fae5; color: #065f46; }
+    .tbl-btn-cv { background: #fef3c7; color: #92400e; }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: .73rem; font-weight: 700; }
+    .badge-blue { background: #dbeafe; color: #1d4ed8; }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+    .badge-rose { background: #fee2e2; color: #991b1b; }
+
+    /* User role badges */
+    .role-badge-seeker { background: #dbeafe; color: #1d4ed8; }
+    .role-badge-employer { background: #d1fae5; color: #065f46; }
+    .role-badge-admin { background: #fef3c7; color: #92400e; }
+
+    /* Notifications */
+    .notif-list { list-style: none; }
+    .notif-item { display: flex; gap: 12px; padding: 13px 0; border-bottom: 1px solid var(--border); }
+    .notif-icon {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .notif-icon.success { background: #d1fae5; color: #065f46; }
+    .notif-icon.warn { background: #fef3c7; color: #92400e; }
+    .notif-icon.info { background: #dbeafe; color: #1d4ed8; }
+    .notif-text p { font-size: .84rem; }
+    .notif-text small { font-size: .73rem; color: var(--muted); }
+
+    /* Logo Pill */
+    .sj-logo-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #3b2fc9, #5a44e8);
+      border-radius: 40px; padding: 6px 18px 6px 8px;
+      text-decoration: none; font-family: 'Sora', sans-serif;
+      font-weight: 800; font-size: 1rem; color: white;
+    }
+    .sj-icon { width: 28px; height: 28px; background: rgba(255,255,255,.18); border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+    .sj-green { color: #10b981; }
+
+    /* Status badge for user status */
+    .status-active { color: var(--emerald); }
+    .status-inactive { color: var(--rose); }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(15,23,42,0.6); backdrop-filter: blur(4px);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+    }
+    .modal-box {
+      background: white; border-radius: 20px; width: 90%; max-width: 500px;
+      padding: 28px; animation: popIn 0.3s ease;
+    }
+    .modal-box h3 { margin-bottom: 16px; font-family: 'Sora', sans-serif; }
+    .modal-box textarea {
+      width: 100%; padding: 12px; border: 1.5px solid var(--border);
+      border-radius: 10px; font-family: inherit; margin: 12px 0; resize: vertical;
+    }
+    .modal-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px; }
+
+    /* CV Preview Modal */
+    .cv-modal-box {
+      max-width: 800px; width: 90%;
+    }
+    .cv-preview {
+      max-height: 500px; overflow-y: auto; background: #f8f9fa;
+      border-radius: 10px; padding: 20px; margin: 15px 0;
+    }
+    .cv-preview iframe {
+      width: 100%; height: 400px; border: none; border-radius: 8px;
+    }
+    .cv-filename {
+      display: inline-block; background: var(--indigo-light); padding: 5px 12px;
+      border-radius: 20px; font-size: .8rem; margin-bottom: 10px;
     }
 
-    /* ── PRINT ────────────────────────────────────────────── */
-    @media print {
-      .navbar, .editor-panel, .preview-actions, .preview-panel > .preview-wrap > .preview-actions { display: none !important; }
-      body { background: white !important; }
-      #view-builder.active { display: block !important; height: auto !important; }
-      .preview-panel { background: white; padding: 0; display: block; }
-      .preview-wrap { max-width: 100%; }
-      .cv-paper { box-shadow: none; width: 100%; }
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .toast-container {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .toast {
+      background: #0f172a; color: white; padding: 12px 20px;
+      border-radius: 12px; font-weight: 600; animation: slideIn 0.3s ease;
+      border-left: 4px solid var(--emerald);
+    }
+    .toast.error { border-left-color: var(--rose); }
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+
+    /* ── MOBILE TOPBAR ── */
+    .mobile-topbar {
+      display: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,.97);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 60px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      box-shadow: 0 1px 10px rgba(0,0,0,.06);
+    }
+    .mobile-topbar .sj-logo-pill { font-size: .9rem; padding: 5px 14px 5px 7px; }
+    .mobile-topbar .sj-icon { width: 24px; height: 24px; font-size: .7rem; }
+
+    /* ── HAMBURGER ── */
+    .nav-hamburger {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 40px; height: 40px;
+      background: var(--indigo-light);
+      border: none; border-radius: 10px;
+      cursor: pointer; gap: 5px; padding: 8px;
+      transition: background 0.2s;
+    }
+    .nav-hamburger:hover { background: rgba(59,47,201,0.22); }
+    .burger-bar { display: block; width: 20px; height: 2px; background: var(--indigo); border-radius: 2px; transition: all 0.3s cubic-bezier(.4,0,.2,1); }
+    .nav-hamburger.open .burger-bar:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open .burger-bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .nav-hamburger.open .burger-bar:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile sidebar overlay */
+    .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; }
+    .sidebar-backdrop.open { display: block; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 1024px) {
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .quick-photo-row { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    @media (max-width: 768px) {
+      /* Hide desktop sidebar, show mobile topbar */
+      .admin-sidebar { transform: translateX(-100%); transition: transform 0.32s cubic-bezier(.4,0,.2,1); }
+      .admin-sidebar.mobile-open { transform: translateX(0); z-index: 400; }
+      .mobile-topbar { display: flex; }
+      .admin-main { margin-left: 0; padding: 20px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+      .dash-grid { grid-template-columns: 1fr; }
+      .admin-topbar { display: none; }
+      .data-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .data-table { min-width: 560px; }
+      .quick-photo-row { grid-template-columns: 1fr; }
+      .quick-photo-card { height: 88px; }
+      .dash-hero-strip { height: 120px; border-radius: 14px; }
+      .dash-hero-strip-overlay { padding: 16px 20px; }
+      .dash-hero-strip-text h2 { font-size: 1.1rem; }
+      .panel-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .panel-header input, .panel-header div { width: 100%; }
+      .panel-header div { display: flex; flex-wrap: wrap; gap: 8px; }
+      .panel-header input { max-width: 100% !important; }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .stat-card { padding: 14px; }
+      .stat-text h3 { font-size: 1.4rem; }
+      .stat-icon { width: 42px; height: 42px; }
+      .admin-main { padding: 14px; }
+      .dash-panel { padding: 16px; }
+      .data-table { min-width: 480px; }
+      .tbl-btn { padding: 4px 8px; font-size: .72rem; margin-right: 3px; }
+    }
+
+    @media (max-width: 360px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .mobile-topbar { padding: 0 12px; }
     }
   </style>
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="navbar">
-  <a class="logo" href="#" onclick="showHome()">smart<span>Jobs</span> <span style="font-size:.85rem;font-weight:500;color:var(--muted);margin-left:4px;">CV Builder</span></a>
-  <div class="navbar-actions" id="navbar-actions">
-    <a href="seeker-dashboard.html" class="btn btn-ghost"><i class="fas fa-arrow-left"></i> Dashboard</a>
-    <button class="btn btn-emerald" onclick="showHome()"><i class="fas fa-th-large"></i> My CVs</button>
-    <button class="btn btn-primary" onclick="createNewCV()"><i class="fas fa-plus"></i> New CV</button>
-    <span id="nav-user-badge" style="display:none;align-items:center;gap:8px;font-weight:700;font-size:.85rem;color:var(--muted);"></span>
-  </div>
-</nav>
+<!-- MOBILE TOPBAR (visible on small screens) -->
+<div class="mobile-topbar" id="mobile-topbar">
+  <a href="home.html" class="sj-logo-pill">
+    <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
+    <span class="sj-text">smart<span class="sj-green">Jobs</span></span>
+  </a>
+  <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+    <span class="burger-bar"></span>
+    <span class="burger-bar"></span>
+    <span class="burger-bar"></span>
+  </button>
+</div>
 
-<!-- HOME VIEW -->
-<div id="view-home" class="view active">
-  <div style="max-width:1100px;margin:0 auto;padding:48px 28px;">
-    <div class="home-header">
+<!-- Backdrop for mobile sidebar -->
+<div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+
+<div class="admin-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-brand">
+      <a href="home.html" class="sj-logo-pill">
+        <span class="sj-icon"><i class="fas fa-arrow-up"></i></span>
+        <span class="sj-text">smart<span class="sj-green">Jobs</span></span>
+      </a>
+      <small>Admin Dashboard</small>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="#" class="active" data-section="overview" onclick="switchSection('overview')">
+        <i class="fas fa-th-large"></i> <span>Overview</span>
+      </a>
+      <a href="#" data-section="jobs" onclick="switchSection('jobs')">
+        <i class="fas fa-briefcase"></i> <span>Job Listings</span>
+      </a>
+      <a href="#" data-section="apps" onclick="switchSection('apps')">
+        <i class="fas fa-file-alt"></i> <span>Applications</span>
+      </a>
+      <a href="#" data-section="users" onclick="switchSection('users')">
+        <i class="fas fa-users"></i> <span>User Management</span>
+      </a>
+      <!-- NEW: Our Subscriptions Section -->
+      <a href="#" data-section="subscriptions" onclick="switchSection('subscriptions')">
+        <i class="fas fa-envelope-open-text"></i> <span>Our Subscriptions</span>
+        <span class="nav-badge" id="subsBadge" style="margin-left:auto; background:var(--rose); color:white; font-size:.65rem; padding:2px 8px; border-radius:20px;">0</span>
+      </a>
+      <a href="#" data-section="logs" onclick="switchSection('logs')">
+        <i class="fas fa-history"></i> <span>Activity Logs</span>
+      </a>
+      <a href="#" data-section="settings" onclick="switchSection('settings')">
+        <i class="fas fa-cog"></i> <span>Settings</span>
+      </a>
+    </nav>
+
+    <div style="padding:0 12px 12px;">
+      <a href="post-job.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;
+         border-radius:8px;background:var(--indigo);color:white;font-weight:700;font-size:.88rem;text-decoration:none;">
+        <i class="fas fa-plus-circle"></i> Post New Job
+      </a>
+    </div>
+
+    <div class="sidebar-user">
+      <div class="user-ava" id="sidebar-ava">A</div>
+      <div class="user-info">
+        <span id="sidebar-name">Admin</span>
+        <small id="sidebar-role">Administrator</small>
+      </div>
+    </div>
+
+    <div style="padding:0 12px 16px;">
+      <button class="btn-signout" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> <span>Sign Out</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="admin-main">
+
+    <!-- Topbar -->
+    <div class="admin-topbar">
       <div>
-        <h1>Your Resumes</h1>
-        <p>Manage and edit your professional CVs</p>
+        <h1>Dashboard</h1>
+        <p>Welcome back! Here's what's happening today.</p>
       </div>
-      <button class="btn btn-emerald" onclick="createNewCV()"><i class="fas fa-plus"></i> Create New CV</button>
+      <div class="topbar-right">
+        <button class="btn-notif"><i class="fas fa-bell"></i><span class="notif-dot"></span></button>
+        <a href="post-job.html" class="nav-btn-primary" style="background:var(--indigo);color:white;padding:10px 20px;border-radius:10px;text-decoration:none;">Post Job</a>
+      </div>
     </div>
-    <div id="cv-list-container"></div>
+
+    <!-- OVERVIEW SECTION -->
+    <div id="section-overview" class="dash-section">
+      <div class="dash-hero-strip">
+        <img src="https://images.pexels.com/photos/3184292/pexels-photo-3184292.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Rwanda professionals">
+        <div class="dash-hero-strip-overlay">
+          <div class="dash-hero-strip-text">
+            <h2>Rwanda's #1 Job Platform 🇷🇼</h2>
+            <p>Manage listings, track applications, and grow your talent pipeline</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="quick-photo-row">
+        <div class="quick-photo-card" onclick="window.location.href='post-job.html'">
+          <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Post Job">
+          <div class="quick-photo-card-label"><i class="fas fa-plus-circle"></i><span>Post New Job</span></div>
+        </div>
+        <div class="quick-photo-card" onclick="switchSection('apps')">
+          <img src="https://images.pexels.com/photos/1181406/pexels-photo-1181406.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Applications">
+          <div class="quick-photo-card-label"><i class="fas fa-file-alt"></i><span>View Applications</span></div>
+        </div>
+        <div class="quick-photo-card" onclick="switchSection('users')">
+          <img src="https://images.pexels.com/photos/3183197/pexels-photo-3183197.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Users">
+          <div class="quick-photo-card-label"><i class="fas fa-users-cog"></i><span>Manage Users</span></div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-briefcase"></i></div><div class="stat-text"><h3 id="stat-jobs">—</h3><p>Active Jobs</p><div class="stat-change up">+12%</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-green"><i class="fas fa-file-alt"></i></div><div class="stat-text"><h3 id="stat-apps">—</h3><p>Applications</p><div class="stat-change up">+8%</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber"><i class="fas fa-users"></i></div><div class="stat-text"><h3 id="stat-seekers">0</h3><p>Job Seekers</p><div class="stat-change up" id="seekers-change">+0</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-purple"><i class="fas fa-building"></i></div><div class="stat-text"><h3 id="stat-employers">0</h3><p>Employers</p><div class="stat-change down" id="employers-change">0</div></div></div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="dash-panel"><div class="panel-header"><h3>Growth Overview</h3><span class="see-all">Last 6 months</span></div><canvas id="growthChart" height="120"></canvas></div>
+        <div class="dash-panel"><div class="panel-header"><h3>Notifications</h3><span class="see-all">Mark all read</span></div>
+          <ul class="notif-list">
+            <li class="notif-item"><div class="notif-icon success"><i class="fas fa-user-plus"></i></div><div class="notif-text"><p>New employer registered</p><small>2 hours ago</small></div></li>
+            <li class="notif-item"><div class="notif-icon warn"><i class="fas fa-flag"></i></div><div class="notif-text"><p>Job reported — needs review</p><small>5 hours ago</small></div></li>
+            <li class="notif-item"><div class="notif-icon info"><i class="fas fa-file-alt"></i></div><div class="notif-text"><p>3 new applications received</p><small>1 day ago</small></div></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="dash-panel">
+        <div class="panel-header"><h3>Recent Job Listings</h3><span class="see-all" onclick="switchSection('jobs')">View all →</span></div>
+        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Job Title</th><th>Company</th><th>Location</th><th>Type</th><th>Salary</th><th>Actions</th></tr></thead><tbody id="admin-job-list"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- JOBS SECTION -->
+    <div id="section-jobs" class="dash-section hidden">
+      <div class="dash-panel"><div class="panel-header"><h3>All Job Listings</h3><a href="post-job.html" style="background:var(--indigo);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;">+ Add Job</a></div>
+        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Title</th><th>Company</th><th>Location</th><th>Type</th><th>Salary</th><th>Actions</th></tr></thead><tbody id="admin-job-list-2"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- APPLICATIONS SECTION -->
+    <div id="section-apps" class="dash-section hidden">
+      <div class="dash-panel">
+        <div class="panel-header">
+          <h3><i class="fas fa-file-alt"></i> All Applications</h3>
+          <div>
+            <input type="text" id="app-search" placeholder="Search by name or job..." oninput="filterApplications()" style="padding:7px 14px;border:1px solid var(--border);border-radius:8px;margin-right:10px;">
+            <button class="tbl-btn tbl-btn-edit" onclick="renderApplications()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>Applicant</th><th>Email</th><th>Job Title</th><th>Company</th><th>Applied On</th><th>CV</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="admin-app-list"><tr><td colspan="8" style="text-align:center;padding:40px;">Loading applications...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS SECTION -->
+    <div id="section-users" class="dash-section hidden">
+      <div class="dash-panel">
+        <div class="panel-header">
+          <h3><i class="fas fa-users"></i> All Registered Users</h3>
+          <div>
+            <input type="text" id="user-search" placeholder="Search by name or email..." oninput="filterUsers(this.value)" style="padding:7px 14px;border:1px solid var(--border);border-radius:8px;margin-right:10px;">
+            <button class="tbl-btn tbl-btn-edit" onclick="refreshUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Location</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
+            <tbody id="user-list-table"><tr><td colspan="9" style="text-align:center;padding:40px;">Loading users...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- NEW: OUR SUBSCRIPTIONS SECTION -->
+    <div id="section-subscriptions" class="dash-section hidden">
+      <div class="dash-panel">
+        <div class="panel-header">
+          <h3><i class="fas fa-envelope-open-text"></i> Our Subscribers (Newsletter)</h3>
+          <div>
+            <input type="text" id="subs-search" placeholder="Search by name or email..." oninput="filterSubscribers()" style="padding:7px 14px;border:1px solid var(--border);border-radius:8px;margin-right:10px;">
+            <button class="tbl-btn tbl-btn-success" onclick="exportSubscribersCSV()"><i class="fas fa-download"></i> Export CSV</button>
+            <button class="tbl-btn tbl-btn-edit" onclick="sendNewsletterToAll()"><i class="fas fa-paper-plane"></i> Send Newsletter</button>
+          </div>
+        </div>
+        <div style="padding:12px 20px; background:var(--bg); border-bottom:1px solid var(--border);">
+          <div style="display:flex; gap:24px; flex-wrap:wrap;">
+            <span><strong>Total:</strong> <span id="totalSubsCount">0</span> subscribers</span>
+            <span><strong>From Blog:</strong> <span id="blogSubsCount">0</span></span>
+            <span><strong>From Homepage:</strong> <span id="homeSubsCount">0</span></span>
+          </div>
+        </div>
+        <div class="data-table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Full Name</th>
+                <th>Email Address</th>
+                <th>Source</th>
+                <th>Role Interest</th>
+                <th>Frequency</th>
+                <th>Subscribed On</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="subscribers-list-table"><tr><td colspan="9" style="text-align:center;padding:40px;">Loading subscribers...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS SECTION -->
+    <div id="section-logs" class="dash-section hidden">
+      <div class="dash-panel"><div class="panel-header"><h3>Activity Logs</h3><button class="tbl-btn tbl-btn-edit" onclick="clearLogs()">Clear Logs</button></div>
+        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>IP Address</th></tr></thead><tbody id="admin-log-list"></tbody></table></div>
+      </div>
+    </div>
+
+    <!-- SETTINGS SECTION -->
+    <div id="section-settings" class="dash-section hidden">
+      <div class="dash-panel"><div class="panel-header"><h3>Site Settings</h3></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+          <div><label>Website Name</label><input type="text" value="smartJobs Rwanda" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
+          <div><label>Support Email</label><input type="email" value="support@smartjobs.rw" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
+        </div>
+        <button onclick="alert('Settings saved!')" style="margin-top:20px;padding:10px 20px;background:var(--indigo);color:white;border:none;border-radius:8px;cursor:pointer;">Save Settings</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Review Modal -->
+<div id="reviewModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeModal()">
+  <div class="modal-box">
+    <h3 id="modal-title">Review Application</h3>
+    <p><strong>Applicant:</strong> <span id="modal-applicant"></span></p>
+    <p><strong>Job:</strong> <span id="modal-job"></span></p>
+    <label style="font-weight:700;">Decision:</label>
+    <div style="display:flex; gap:12px; margin:12px 0;">
+      <button class="tbl-btn tbl-btn-success" onclick="submitDecision('approved')"><i class="fas fa-check"></i> Approve</button>
+      <button class="tbl-btn tbl-btn-danger" onclick="submitDecision('rejected')"><i class="fas fa-times"></i> Reject</button>
+    </div>
+    <label style="font-weight:700;">Message to Job Seeker (optional):</label>
+    <textarea id="modal-message" rows="3" placeholder="Add a personal message to the applicant..."></textarea>
+    <div class="modal-actions"><button class="tbl-btn tbl-btn-edit" onclick="closeModal()">Cancel</button></div>
   </div>
 </div>
 
-<!-- BUILDER VIEW -->
-<div id="view-builder" class="view">
-  <!-- Editor Panel -->
-  <div class="editor-panel">
-    <div class="editor-topbar">
-      <a class="back-link" onclick="showHome()"><i class="fas fa-chevron-left"></i> My CVs</a>
-      <div style="display:flex;gap:10px;align-items:center;">
-        <span class="autosave" id="autosave-indicator"><i class="fas fa-circle-check"></i> Saved</span>
-        <select class="template-select" id="template-select" onchange="changeTemplate(this.value)">
-          <option value="classic">Classic</option>
-          <option value="modern">Modern</option>
-          <option value="minimal">Minimal</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="editor-sections">
-
-      <!-- Personal Info -->
-      <div class="accordion-item">
-        <button class="accordion-trigger open" onclick="toggleAccordion(this)">
-          <span><i class="fas fa-user" style="margin-right:8px;color:var(--indigo);"></i> Personal Info</span>
-          <i class="fas fa-chevron-down chevron"></i>
-        </button>
-        <div class="accordion-body open">
-          <div class="form-row">
-            <div class="field">
-              <label>Full Name *</label>
-              <input type="text" id="f-name" placeholder="e.g. Jean Claude Habimana" oninput="updatePreview()">
-            </div>
-            <div class="field">
-              <label>Job Title *</label>
-              <input type="text" id="f-title" placeholder="e.g. Software Engineer" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Email</label>
-              <input type="email" id="f-email" placeholder="you@email.com" oninput="updatePreview()">
-            </div>
-            <div class="field">
-              <label>Phone</label>
-              <input type="tel" id="f-phone" placeholder="+250 78 000 0000" oninput="updatePreview()">
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Location</label>
-              <input type="text" id="f-location" placeholder="Kigali, Rwanda" oninput="updatePreview()">
-            </div>
-            <div class="field">
-              <label>LinkedIn</label>
-              <input type="text" id="f-linkedin" placeholder="linkedin.com/in/yourname" oninput="updatePreview()">
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Summary -->
-      <div class="accordion-item">
-        <button class="accordion-trigger" onclick="toggleAccordion(this)">
-          <span><i class="fas fa-align-left" style="margin-right:8px;color:var(--indigo);"></i> Professional Summary</span>
-          <i class="fas fa-chevron-down chevron"></i>
-        </button>
-        <div class="accordion-body">
-          <div class="field">
-            <label>Summary</label>
-            <textarea id="f-summary" rows="4" placeholder="A brief overview of your experience, skills and goals..." oninput="updatePreview()"></textarea>
-          </div>
-        </div>
-      </div>
-
-      <!-- Work Experience -->
-      <div class="accordion-item">
-        <button class="accordion-trigger" onclick="toggleAccordion(this)">
-          <span><i class="fas fa-briefcase" style="margin-right:8px;color:var(--indigo);"></i> Work Experience</span>
-          <i class="fas fa-chevron-down chevron"></i>
-        </button>
-        <div class="accordion-body">
-          <div class="entry-list" id="work-list"></div>
-          <button class="btn btn-ghost btn-sm" onclick="openWorkModal(-1)" style="width:100%;justify-content:center;">
-            <i class="fas fa-plus"></i> Add Experience
-          </button>
-        </div>
-      </div>
-
-      <!-- Education -->
-      <div class="accordion-item">
-        <button class="accordion-trigger" onclick="toggleAccordion(this)">
-          <span><i class="fas fa-graduation-cap" style="margin-right:8px;color:var(--indigo);"></i> Education</span>
-          <i class="fas fa-chevron-down chevron"></i>
-        </button>
-        <div class="accordion-body">
-          <div class="entry-list" id="edu-list"></div>
-          <button class="btn btn-ghost btn-sm" onclick="openEduModal(-1)" style="width:100%;justify-content:center;">
-            <i class="fas fa-plus"></i> Add Education
-          </button>
-        </div>
-      </div>
-
-      <!-- Skills -->
-      <div class="accordion-item">
-        <button class="accordion-trigger" onclick="toggleAccordion(this)">
-          <span><i class="fas fa-star" style="margin-right:8px;color:var(--indigo);"></i> Skills & Languages</span>
-          <i class="fas fa-chevron-down chevron"></i>
-        </button>
-        <div class="accordion-body">
-          <div class="field"><label>Skills</label></div>
-          <div class="tag-input-row">
-            <div class="field" style="flex:1;margin:0;">
-              <input type="text" id="skill-input" placeholder="e.g. JavaScript" onkeydown="if(event.key==='Enter'){addSkill();event.preventDefault();}">
-            </div>
-            <button class="btn btn-ghost btn-sm" onclick="addSkill()"><i class="fas fa-plus"></i></button>
-          </div>
-          <div class="tags-list" id="skills-tags"></div>
-
-          <div class="field" style="margin-top:8px;"><label>Languages</label></div>
-          <div class="tag-input-row">
-            <div class="field" style="flex:1;margin:0;">
-              <input type="text" id="lang-input" placeholder="e.g. English — Fluent" onkeydown="if(event.key==='Enter'){addLanguage();event.preventDefault();}">
-            </div>
-            <button class="btn btn-ghost btn-sm" onclick="addLanguage()"><i class="fas fa-plus"></i></button>
-          </div>
-          <p style="font-size:.73rem;color:var(--muted);margin-top:-6px;margin-bottom:8px;">Format: "Language — Level" (e.g. Kinyarwanda — Native)</p>
-          <div class="tags-list" id="langs-tags"></div>
-        </div>
-      </div>
-
-      <!-- Achievements -->
-      <div class="accordion-item">
-        <button class="accordion-trigger" onclick="toggleAccordion(this)">
-          <span><i class="fas fa-trophy" style="margin-right:8px;color:var(--indigo);"></i> Achievements</span>
-          <i class="fas fa-chevron-down chevron"></i>
-        </button>
-        <div class="accordion-body">
-          <div class="tag-input-row">
-            <div class="field" style="flex:1;margin:0;">
-              <input type="text" id="ach-input" placeholder="e.g. Won national coding competition 2024" onkeydown="if(event.key==='Enter'){addAchievement();event.preventDefault();}">
-            </div>
-            <button class="btn btn-ghost btn-sm" onclick="addAchievement()"><i class="fas fa-plus"></i></button>
-          </div>
-          <div id="ach-list" class="entry-list"></div>
-        </div>
-      </div>
-
-    </div><!-- end editor-sections -->
-  </div><!-- end editor-panel -->
-
-  <!-- Preview Panel -->
-  <div class="preview-panel">
-    <div class="preview-wrap">
-      <div class="preview-actions">
-        <button class="btn btn-ghost btn-sm" onclick="window.print()"><i class="fas fa-download"></i> Download PDF</button>
-        <button class="btn btn-primary btn-sm" onclick="saveCurrentCV()"><i class="fas fa-save"></i> Save</button>
-      </div>
-      <div id="cv-paper" class="cv-paper tpl-classic"></div>
-    </div>
+<!-- CV Preview Modal -->
+<div id="cvModal" class="modal-overlay" style="display:none;" onclick="if(event.target===this) closeCVModal()">
+  <div class="modal-box cv-modal-box">
+    <h3><i class="fas fa-file-pdf"></i> CV Preview</h3>
+    <p><strong>Applicant:</strong> <span id="cv-applicant-name"></span></p>
+    <p><strong>Job:</strong> <span id="cv-job-title"></span></p>
+    <div class="cv-filename" id="cv-filename"></div>
+    <div class="cv-preview" id="cv-preview-container"><p>Loading CV...</p></div>
+    <div class="modal-actions"><button class="tbl-btn tbl-btn-success" id="download-cv-btn" onclick="downloadCV()"><i class="fas fa-download"></i> Download CV</button><button class="tbl-btn tbl-btn-edit" onclick="closeCVModal()">Close</button></div>
   </div>
 </div>
 
-<!-- WORK EXPERIENCE MODAL -->
-<div class="modal-overlay" id="work-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="work-modal-title">Add Work Experience</h3>
-      <button class="modal-close" onclick="closeModal('work-modal')"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="field">
-          <label>Job Title *</label>
-          <input type="text" id="w-title" placeholder="e.g. Software Engineer">
-        </div>
-        <div class="field">
-          <label>Company *</label>
-          <input type="text" id="w-company" placeholder="e.g. MTN Rwanda">
-        </div>
-      </div>
-      <div class="field">
-        <label>Location</label>
-        <input type="text" id="w-location" placeholder="e.g. Kigali, Rwanda">
-      </div>
-      <div class="form-row">
-        <div class="field">
-          <label>Start Date</label>
-          <input type="month" id="w-start">
-        </div>
-        <div class="field">
-          <label>End Date</label>
-          <input type="month" id="w-end">
-        </div>
-      </div>
-      <div class="field">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <input type="checkbox" id="w-current" onchange="document.getElementById('w-end').disabled=this.checked;"> Currently working here
-        </label>
-      </div>
-      <div class="field">
-        <label>Description</label>
-        <textarea id="w-desc" rows="3" placeholder="Key responsibilities and achievements..."></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('work-modal')">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="saveWorkEntry()">Save</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDUCATION MODAL -->
-<div class="modal-overlay" id="edu-modal">
-  <div class="modal">
-    <div class="modal-header">
-      <h3 id="edu-modal-title">Add Education</h3>
-      <button class="modal-close" onclick="closeModal('edu-modal')"><i class="fas fa-times"></i></button>
-    </div>
-    <div class="modal-body">
-      <div class="form-row">
-        <div class="field">
-          <label>Degree *</label>
-          <input type="text" id="e-degree" placeholder="e.g. Bachelor of Science">
-        </div>
-        <div class="field">
-          <label>Field of Study</label>
-          <input type="text" id="e-field" placeholder="e.g. Computer Science">
-        </div>
-      </div>
-      <div class="field">
-        <label>Institution *</label>
-        <input type="text" id="e-institution" placeholder="e.g. University of Rwanda">
-      </div>
-      <div class="form-row">
-        <div class="field">
-          <label>Start Date</label>
-          <input type="month" id="e-start">
-        </div>
-        <div class="field">
-          <label>End Date</label>
-          <input type="month" id="e-end">
-        </div>
-      </div>
-      <div class="field">
-        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;">
-          <input type="checkbox" id="e-current" onchange="document.getElementById('e-end').disabled=this.checked;"> Currently studying here
-        </label>
-      </div>
-      <div class="field">
-        <label>Grade / GPA</label>
-        <input type="text" id="e-grade" placeholder="e.g. First Class / 3.8 GPA">
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost btn-sm" onclick="closeModal('edu-modal')">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="saveEduEntry()">Save</button>
-    </div>
-  </div>
-</div>
+<div class="toast-container" id="toastContainer"></div>
 
 <script>
-/* ============================================================
-   smartJobs Rwanda — CV Builder Script
-   Pure JavaScript, no frameworks required
-   Data saved to localStorage
-============================================================ */
+  // ==================== DATA HELPERS ====================
+  function getJobs() { return JSON.parse(localStorage.getItem('allJobs')) || []; }
+  function saveJobs(jobs) { localStorage.setItem('allJobs', JSON.stringify(jobs)); }
+  function getApplications() { return JSON.parse(localStorage.getItem('jobApplications')) || []; }
+  function saveApplications(apps) { localStorage.setItem('jobApplications', JSON.stringify(apps)); }
+  function getUsers() { return JSON.parse(localStorage.getItem('registeredUsers')) || []; }
+  function getCurrentUser() { return JSON.parse(localStorage.getItem('currentUser')); }
 
-// ── STATE ──────────────────────────────────────────────────
-let cvs = JSON.parse(localStorage.getItem('smartjobs_cvs') || '[]');
-let currentId = null;
-let workEditIndex = -1;
-let eduEditIndex = -1;
+  // NEW: Subscribers functions - reads from blog_subscribers (shared with blog.html and home.html)
+  function getAllSubscribers() { return JSON.parse(localStorage.getItem('blog_subscribers')) || []; }
+  function saveAllSubscribers(subs) { localStorage.setItem('blog_subscribers', JSON.stringify(subs)); }
 
-// ── AUTH GUARD + PRE-FILL ─────────────────────────────────
-(function initAuth() {
-  const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-  if (!user) { window.location.href = 'auth.html'; return; }
-  if (user.role === 'Employer') { window.location.href = 'employer-dashboard.html'; return; }
-
-  // Show user's name in navbar
-  const badge = document.getElementById('nav-user-badge');
-  if (badge) {
-    badge.style.display = 'inline-flex';
-    badge.innerHTML = `<span style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#3b2fc9,#6d51f7);color:white;display:inline-flex;align-items:center;justify-content:center;font-weight:800;">${(user.name||'U')[0].toUpperCase()}</span> ${user.name||user.email}`;
+  function getCVData(appId) {
+    try { const raw = localStorage.getItem('cv_' + appId); return raw ? JSON.parse(raw) : null; }
+    catch(e) { return null; }
   }
-})();
 
-// Current CV data
-let cv = {
-  name: '', title: '', email: '', phone: '', location: '', linkedIn: '',
-  summary: '', template: 'classic',
-  work: [], education: [], skills: [], languages: [], achievements: []
-};
-
-// ── ID GENERATOR ──────────────────────────────────────────
-function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2); }
-
-// ── VIEWS ─────────────────────────────────────────────────
-function showHome() {
-  document.getElementById('view-home').classList.add('active');
-  document.getElementById('view-builder').classList.remove('active');
-  renderCVList();
-}
-
-function showBuilder() {
-  document.getElementById('view-home').classList.remove('active');
-  document.getElementById('view-builder').classList.add('active');
-  loadIntoForm();
-  updatePreview();
-}
-
-// ── CV LIST ────────────────────────────────────────────────
-function renderCVList() {
-  const container = document.getElementById('cv-list-container');
-  if (!cvs.length) {
-    container.innerHTML = `
-      <div class="empty-state">
-        <div class="icon"><i class="fas fa-file-alt"></i></div>
-        <h3>No CVs yet</h3>
-        <p>Create your first professional resume to stand out in the Rwandan job market.</p>
-        <button class="btn btn-primary" onclick="createNewCV()"><i class="fas fa-plus"></i> Start Building</button>
-      </div>`;
-    return;
+  function showToast(msg, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'error' ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${msg}`;
+    container.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
   }
-  container.innerHTML = `<div class="cv-grid">${cvs.map(c => `
-    <div class="cv-card" onclick="editCV('${c.id}')">
-      <div class="cv-card-thumb">
-        <i class="fas fa-file-alt"></i>
-        <span class="template-badge">${c.template || 'classic'}</span>
-      </div>
-      <div class="cv-card-body">
-        <h3>${escHtml(c.name) || 'Untitled CV'}</h3>
-        <p>${escHtml(c.title) || 'No title set'}</p>
-        <div class="cv-meta">Updated ${new Date(c.updatedAt).toLocaleDateString()}</div>
-      </div>
-      <div class="cv-card-footer">
-        <button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();editCV('${c.id}')"><i class="fas fa-edit"></i> Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();deleteCV('${c.id}')"><i class="fas fa-trash"></i></button>
-      </div>
-    </div>`).join('')}</div>`;
-}
 
-// ── CRUD ──────────────────────────────────────────────────
-function createNewCV() {
-  const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-  currentId = genId();
-  cv = {
-    id: currentId,
-    name: (user && user.name) || '',
-    title: '',
-    email: (user && user.email) || '',
-    phone: (user && user.phone) || '',
-    location: (user && user.location) || 'Kigali, Rwanda',
-    linkedIn: '',
-    summary: '', template: 'classic',
-    work: [], education: [], skills: [], languages: [], achievements: [],
-    createdAt: new Date().toISOString(), updatedAt: new Date().toISOString()
-  };
-  showBuilder();
-}
+  // ==================== SUBSCRIBERS RENDERING (NEW) ====================
+  let currentSubscribers = [];
 
-function editCV(id) {
-  const found = cvs.find(c => c.id === id);
-  if (!found) return;
-  currentId = id;
-  cv = JSON.parse(JSON.stringify(found));
-  showBuilder();
-}
+  function renderSubscribers() {
+    const subscribers = getAllSubscribers();
+    currentSubscribers = subscribers;
+    const total = subscribers.length;
+    const blogCount = subscribers.filter(s => s.source === 'blog').length;
+    const homeCount = subscribers.filter(s => s.source === 'home').length;
+    
+    // Update badges and counts
+    const subsBadge = document.getElementById('subsBadge');
+    if (subsBadge) subsBadge.textContent = total;
+    const totalSubsSpan = document.getElementById('totalSubsCount');
+    if (totalSubsSpan) totalSubsSpan.textContent = total;
+    const blogSubsSpan = document.getElementById('blogSubsCount');
+    if (blogSubsSpan) blogSubsSpan.textContent = blogCount;
+    const homeSubsSpan = document.getElementById('homeSubsCount');
+    if (homeSubsSpan) homeSubsSpan.textContent = homeCount;
+    
+    const searchTerm = document.getElementById('subs-search')?.value.toLowerCase() || '';
+    const filtered = subscribers.filter(s => 
+      s.name.toLowerCase().includes(searchTerm) || 
+      s.email.toLowerCase().includes(searchTerm)
+    );
+    
+    const tbody = document.getElementById('subscribers-list-table');
+    if (!tbody) return;
+    
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;">No subscribers yet. Share your blog to grow the list!</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = filtered.map(sub => {
+      const sourceBadge = sub.source === 'blog' ? 'badge-blue' : 'badge-green';
+      const sourceIcon = sub.source === 'blog' ? '📝' : '🏠';
+      const freqBadge = sub.frequency === 'instant' ? 'badge-blue' : (sub.frequency === 'daily' ? 'badge-green' : 'badge-amber');
+      return `
+        <tr>
+          <td>${sub.id}</td>
+          <td><strong>${escapeHtml(sub.name)}</strong></td>
+          <td>${escapeHtml(sub.email)}</td>
+          <td><span class="badge ${sourceBadge}">${sourceIcon} ${sub.source === 'blog' ? 'Blog' : 'Homepage'}</span></td>
+          <td><span class="badge badge-blue">${escapeHtml(sub.role || 'General')}</span></td>
+          <td><span class="badge ${freqBadge}">${sub.frequency || 'daily'}</span></td>
+          <td>${new Date(sub.subscribedAt).toLocaleDateString()}</td>
+          <td><span class="badge badge-green">Active</span></td>
+          <td><button class="tbl-btn tbl-btn-danger" onclick="deleteSubscriber(${sub.id})"><i class="fas fa-trash"></i> Delete</button></td>
+        </tr>
+      `;
+    }).join('');
+  }
 
-function deleteCV(id) {
-  if (!confirm('Delete this CV? This cannot be undone.')) return;
-  cvs = cvs.filter(c => c.id !== id);
-  saveAllCVs();
-  renderCVList();
-}
+  function filterSubscribers() {
+    renderSubscribers();
+  }
 
-function saveCurrentCV() {
-  collectFromForm();
-  cv.updatedAt = new Date().toISOString();
-  const idx = cvs.findIndex(c => c.id === currentId);
-  if (idx >= 0) cvs[idx] = cv;
-  else { cv.createdAt = new Date().toISOString(); cvs.push(cv); }
-  saveAllCVs();
-  showAutosave();
-}
+  function deleteSubscriber(id) {
+    if (!confirm('Are you sure you want to delete this subscriber? This action cannot be undone.')) return;
+    let subscribers = getAllSubscribers();
+    subscribers = subscribers.filter(s => s.id !== id);
+    saveAllSubscribers(subscribers);
+    renderSubscribers();
+    showToast('Subscriber removed successfully');
+  }
 
-function saveAllCVs() {
-  localStorage.setItem('smartjobs_cvs', JSON.stringify(cvs));
-  // ── Sync latest CV skills → userSkills for seeker-dashboard ──
-  if (cvs.length > 0) {
-    const latest = cvs.slice().sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt))[0];
-    const skillNames = (latest.skills || []).map(s => s.name || s).filter(Boolean);
-    if (skillNames.length > 0) {
-      localStorage.setItem('userSkills', JSON.stringify(skillNames));
+  function exportSubscribersCSV() {
+    const subscribers = getAllSubscribers();
+    if (subscribers.length === 0) {
+      showToast('No subscribers to export', 'error');
+      return;
+    }
+    const headers = ['ID', 'Name', 'Email', 'Source', 'Role Interest', 'Frequency', 'Subscription Date', 'Status'];
+    const rows = subscribers.map(s => [
+      s.id, s.name, s.email, s.source, s.role || 'General', s.frequency || 'daily', 
+      new Date(s.subscribedAt).toLocaleString(), 'Active'
+    ]);
+    const csv = [headers, ...rows].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `smartjobs_subscribers_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast(`Exported ${subscribers.length} subscribers`);
+  }
+
+  function sendNewsletterToAll() {
+    const subscribers = getAllSubscribers();
+    if (subscribers.length === 0) {
+      showToast('No subscribers to send newsletter to', 'error');
+      return;
+    }
+    // Store that newsletter was sent (for demo purposes)
+    const lastNewsletter = {
+      sentAt: new Date().toISOString(),
+      recipientCount: subscribers.length,
+      emails: subscribers.map(s => s.email)
+    };
+    localStorage.setItem('lastNewsletterSent', JSON.stringify(lastNewsletter));
+    showToast(`📧 Newsletter sent to ${subscribers.length} subscribers!`);
+  }
+
+  // ==================== RENDER APPLICATIONS WITH CV ====================
+  function renderApplications() {
+    const apps = getApplications();
+    const searchTerm = document.getElementById('app-search')?.value.toLowerCase() || '';
+    const filtered = apps.filter(a => 
+      (a.seekerName || '').toLowerCase().includes(searchTerm) || 
+      (a.jobTitle || '').toLowerCase().includes(searchTerm)
+    );
+    
+    const tbody = document.getElementById('admin-app-list');
+    if (!tbody) return;
+    
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;">No applications found</td></tr>';
+      return;
+    }
+    
+    tbody.innerHTML = filtered.map(app => {
+      let statusClass = 'badge-blue';
+      if (app.status === 'approved') statusClass = 'badge-green';
+      else if (app.status === 'rejected') statusClass = 'badge-rose';
+      const statusText = app.status ? app.status.charAt(0).toUpperCase() + app.status.slice(1) : 'Pending';
+      const cvEntry = getCVData(app.id);
+      const hasCV = !!(app.hasCV || (app.cvData && app.cvData !== '') || (cvEntry && cvEntry.cvData));
+      const cvButton = hasCV ? '<button class="tbl-btn tbl-btn-cv" onclick="viewCV(' + app.id + ')"><i class="fas fa-file-pdf"></i> View CV</button>' : '<span class="badge badge-amber">No CV</span>';
+      
+      return `<tr><td><strong>${escapeHtml(app.seekerName || '—')}</strong></td><td>${escapeHtml(app.seekerEmail || '—')}</td><td>${escapeHtml(app.jobTitle || '—')}</td><td>${escapeHtml(app.company || '—')}</td><td style="font-size:.78rem;">${app.date || '—'}</td><td>${cvButton}</td><td><span class="badge ${statusClass}">${statusText}</span></td><td><button class="tbl-btn tbl-btn-edit" onclick="openReviewModal(${app.id})"><i class="fas fa-eye"></i> Review</button></td></tr>`;
+    }).join('');
+    
+    document.getElementById('stat-jobs').textContent = getJobs().length;
+    document.getElementById('stat-apps').textContent = apps.length;
+    const users = getUsers();
+    document.getElementById('stat-seekers').textContent = users.filter(u => u.role === 'Job Seeker').length;
+    document.getElementById('stat-employers').textContent = users.filter(u => u.role === 'Employer').length;
+  }
+  
+  // ==================== CV VIEWING ====================
+  let currentCvApp = null;
+  let currentCvData = null;
+
+  function viewCV(appId) {
+    const apps = getApplications();
+    const app = apps.find(a => a.id === appId);
+    if (!app) { showToast('Application not found', 'error'); return; }
+    const cvEntry = getCVData(appId) || (app.cvData ? { cvData: app.cvData, cvFilename: app.cvFilename, cvType: app.cvType } : null);
+    if (!cvEntry || !cvEntry.cvData) { showToast('No CV found for this application', 'error'); return; }
+    currentCvApp = app;
+    currentCvData = cvEntry;
+    document.getElementById('cv-applicant-name').textContent = app.seekerName + ' (' + app.seekerEmail + ')';
+    document.getElementById('cv-job-title').textContent = app.jobTitle + ' at ' + app.company;
+    document.getElementById('cv-filename').textContent = cvEntry.cvFilename || 'resume.pdf';
+    const container = document.getElementById('cv-preview-container');
+    if (cvEntry.cvType === 'application/pdf') {
+      container.innerHTML = '<iframe src="' + cvEntry.cvData + '" style="width:100%;height:400px;border:none;border-radius:8px;"></iframe>';
+    } else if (cvEntry.cvType && cvEntry.cvType.startsWith('image/')) {
+      container.innerHTML = '<img src="' + cvEntry.cvData + '" style="max-width:100%;max-height:400px;border-radius:8px;" alt="CV">';
+    } else {
+      container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-file" style="font-size:48px;color:var(--indigo);margin-bottom:16px;display:block;"></i><p>Preview not available for this file type.</p><button class="tbl-btn tbl-btn-success" onclick="downloadCV()" style="margin-top:16px;"><i class="fas fa-download"></i> Download CV</button></div>';
+    }
+    document.getElementById('cvModal').style.display = 'flex';
+  }
+
+  function downloadCV() {
+    if (!currentCvData || !currentCvData.cvData) { showToast('No CV available to download', 'error'); return; }
+    const link = document.createElement('a');
+    link.href = currentCvData.cvData;
+    link.download = currentCvData.cvFilename || 'cv_document.pdf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast('Download started!');
+  }
+
+  function closeCVModal() { document.getElementById('cvModal').style.display = 'none'; currentCvApp = null; currentCvData = null; }
+  
+  // ==================== REVIEW MODAL ====================
+  let activeAppId = null;
+  
+  function openReviewModal(appId) {
+    const apps = getApplications();
+    const app = apps.find(a => a.id === appId);
+    if (!app) return;
+    activeAppId = appId;
+    document.getElementById('modal-applicant').textContent = `${app.seekerName} (${app.seekerEmail})`;
+    document.getElementById('modal-job').textContent = `${app.jobTitle} at ${app.company}`;
+    document.getElementById('modal-message').value = app.adminMessage || '';
+    document.getElementById('reviewModal').style.display = 'flex';
+  }
+  
+  function closeModal() { document.getElementById('reviewModal').style.display = 'none'; activeAppId = null; }
+  
+  function submitDecision(decision) {
+    if (!activeAppId) return;
+    const apps = getApplications();
+    const appIndex = apps.findIndex(a => a.id === activeAppId);
+    if (appIndex === -1) { closeModal(); showToast('Application not found', 'error'); return; }
+    const adminMsg = document.getElementById('modal-message').value.trim();
+    const newStatus = decision === 'approved' ? 'approved' : 'rejected';
+    const defaultMsg = decision === 'approved' ? '✅ Congratulations! Your application has been approved.' : '❌ Thank you for your interest. Unfortunately your application was not selected.';
+    apps[appIndex].status = newStatus;
+    apps[appIndex].adminMessage = adminMsg || defaultMsg;
+    apps[appIndex].reviewedAt = new Date().toISOString();
+    saveApplications(apps);
+    const userMessages = JSON.parse(localStorage.getItem('userMessages')) || [];
+    userMessages.push({ id: Date.now(), userId: apps[appIndex].seekerEmail, type: 'application_update', applicationId: activeAppId, jobTitle: apps[appIndex].jobTitle, company: apps[appIndex].company, status: newStatus, message: adminMsg || defaultMsg, createdAt: new Date().toISOString(), read: false });
+    localStorage.setItem('userMessages', JSON.stringify(userMessages));
+    showToast(`Application ${decision === 'approved' ? 'approved' : 'rejected'} successfully!`);
+    closeModal();
+    renderApplications();
+    renderJobsTable();
+  }
+  
+  // ==================== JOBS MANAGEMENT ====================
+  function renderJobsTable() {
+    const jobs = getJobs();
+    const tbody = document.getElementById('admin-job-list');
+    const tbody2 = document.getElementById('admin-job-list-2');
+    const html = jobs.map((job, idx) => `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.company)}</td><td>${escapeHtml(job.location)}</td><td><span class="badge badge-blue">${escapeHtml(job.type)}</span></td><td>RWF ${escapeHtml(job.salary)}</td><td><button class="tbl-btn tbl-btn-edit" onclick="editJob(${idx})">Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteJob(${idx})">Delete</button></td></tr>`).join('');
+    if (tbody) tbody.innerHTML = html;
+    if (tbody2) tbody2.innerHTML = html;
+    document.getElementById('stat-jobs').textContent = jobs.length;
+  }
+  
+  function editJob(index) {
+    const jobs = getJobs();
+    const newTitle = prompt("Edit job title:", jobs[index].title);
+    if (newTitle && newTitle.trim()) { jobs[index].title = newTitle.trim(); saveJobs(jobs); renderJobsTable(); showToast('Job updated successfully!'); }
+  }
+  
+  function deleteJob(index) {
+    if (!confirm('Delete this job?')) return;
+    const jobs = getJobs();
+    jobs.splice(index, 1);
+    saveJobs(jobs);
+    renderJobsTable();
+    showToast('Job deleted');
+  }
+  
+  // ==================== USER MANAGEMENT ====================
+  function getAllUsers() {
+    let registeredUsers = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+    if (registeredUsers.length === 0) {
+      registeredUsers = [{ id: 1, name: "John Doe", email: "john@example.com", role: "Job Seeker", phone: "+250 788 111 222", location: "Kigali", registeredAt: new Date().toISOString(), status: "Active" }, { id: 2, name: "Admin User", email: "admin@smartjobs.rw", role: "Admin", phone: "+250 788 777 888", location: "Kigali", registeredAt: new Date().toISOString(), status: "Active" }];
+      localStorage.setItem('registeredUsers', JSON.stringify(registeredUsers));
+    }
+    return registeredUsers;
+  }
+  
+  function renderUsersTable() {
+    const users = getAllUsers();
+    const tbody = document.getElementById('user-list-table');
+    if (!tbody) return;
+    if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;">No users registered yet</td></tr>'; return; }
+    tbody.innerHTML = users.map((user, index) => `<tr><td>${index + 1}</td><td><strong>${escapeHtml(user.name)}</strong></td><td>${escapeHtml(user.email)}</td><td><span class="badge ${user.role === 'Job Seeker' ? 'role-badge-seeker' : (user.role === 'Employer' ? 'role-badge-employer' : 'role-badge-admin')}">${user.role === 'Job Seeker' ? '👤 Job Seeker' : (user.role === 'Employer' ? '🏢 Employer' : '👑 Admin')}</span></td><td>${escapeHtml(user.phone || '—')}</td><td>${escapeHtml(user.location || '—')}</td><td style="font-size:.75rem;color:var(--muted);">${formatDate(user.registeredAt)}</td><td><span class="status-active">● Active</span></td><td><button class="tbl-btn tbl-btn-edit" onclick="editUser('${user.email}')"><i class="fas fa-edit"></i> Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteUser('${user.email}')"><i class="fas fa-trash"></i> Delete</button></td></tr>`).join('');
+  }
+  
+  function filterUsers(query) {
+    const users = getAllUsers();
+    const filtered = users.filter(u => u.name.toLowerCase().includes(query.toLowerCase()) || u.email.toLowerCase().includes(query.toLowerCase()));
+    const tbody = document.getElementById('user-list-table');
+    if (!tbody) return;
+    tbody.innerHTML = filtered.map((user, index) => `<tr><td>${index + 1}</td><td><strong>${escapeHtml(user.name)}</strong></td><td>${escapeHtml(user.email)}</td><td><span class="badge ${user.role === 'Job Seeker' ? 'role-badge-seeker' : (user.role === 'Employer' ? 'role-badge-employer' : 'role-badge-admin')}">${user.role === 'Job Seeker' ? '👤 Job Seeker' : (user.role === 'Employer' ? '🏢 Employer' : '👑 Admin')}</span></td><td>${escapeHtml(user.phone || '—')}</td><td>${escapeHtml(user.location || '—')}</td><td style="font-size:.75rem;color:var(--muted);">${formatDate(user.registeredAt)}</td><td><span class="status-active">● Active</span></td><td><button class="tbl-btn tbl-btn-edit" onclick="editUser('${user.email}')"><i class="fas fa-edit"></i> Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteUser('${user.email}')"><i class="fas fa-trash"></i> Delete</button></td></tr>`).join('');
+  }
+  
+  function refreshUsers() { renderUsersTable(); showToast('User list refreshed!', 'success'); }
+  
+  function editUser(email) {
+    const newName = prompt('Enter new name:');
+    if (newName && newName.trim()) {
+      let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      const userIndex = users.findIndex(u => u.email === email);
+      if (userIndex !== -1) { users[userIndex].name = newName.trim(); localStorage.setItem('registeredUsers', JSON.stringify(users)); renderUsersTable(); showToast('User updated successfully!', 'success'); }
     }
   }
-}
-
-function showAutosave() {
-  const el = document.getElementById('autosave-indicator');
-  el.className = 'autosave saved';
-  el.innerHTML = '<i class="fas fa-circle-check"></i> Saved';
-  setTimeout(() => {
-    el.className = 'autosave';
-    el.innerHTML = '<i class="fas fa-circle-check"></i> Saved';
-  }, 2500);
-}
-
-// ── FORM → STATE ──────────────────────────────────────────
-function collectFromForm() {
-  cv.name     = document.getElementById('f-name').value.trim();
-  cv.title    = document.getElementById('f-title').value.trim();
-  cv.email    = document.getElementById('f-email').value.trim();
-  cv.phone    = document.getElementById('f-phone').value.trim();
-  cv.location = document.getElementById('f-location').value.trim();
-  cv.linkedIn = document.getElementById('f-linkedin').value.trim();
-  cv.summary  = document.getElementById('f-summary').value.trim();
-  cv.template = document.getElementById('template-select').value;
-}
-
-function loadIntoForm() {
-  document.getElementById('f-name').value     = cv.name || '';
-  document.getElementById('f-title').value    = cv.title || '';
-  document.getElementById('f-email').value    = cv.email || '';
-  document.getElementById('f-phone').value    = cv.phone || '';
-  document.getElementById('f-location').value = cv.location || '';
-  document.getElementById('f-linkedin').value = cv.linkedIn || '';
-  document.getElementById('f-summary').value  = cv.summary || '';
-  document.getElementById('template-select').value = cv.template || 'classic';
-  renderWorkList();
-  renderEduList();
-  renderSkills();
-  renderLangs();
-  renderAchievements();
-}
-
-// ── ACCORDION ──────────────────────────────────────────────
-function toggleAccordion(btn) {
-  const body = btn.nextElementSibling;
-  btn.classList.toggle('open');
-  body.classList.toggle('open');
-}
-
-// ── TEMPLATE ──────────────────────────────────────────────
-function changeTemplate(tpl) {
-  cv.template = tpl;
-  updatePreview();
-}
-
-// ── WORK EXPERIENCE ───────────────────────────────────────
-function openWorkModal(idx) {
-  workEditIndex = idx;
-  document.getElementById('work-modal-title').textContent = idx < 0 ? 'Add Work Experience' : 'Edit Work Experience';
-  const entry = idx >= 0 ? cv.work[idx] : {};
-  document.getElementById('w-title').value    = entry.title    || '';
-  document.getElementById('w-company').value  = entry.company  || '';
-  document.getElementById('w-location').value = entry.location || '';
-  document.getElementById('w-start').value    = entry.start    || '';
-  document.getElementById('w-end').value      = entry.end      || '';
-  document.getElementById('w-current').checked = !!entry.current;
-  document.getElementById('w-end').disabled   = !!entry.current;
-  document.getElementById('w-desc').value     = entry.description || '';
-  document.getElementById('work-modal').classList.add('open');
-}
-
-function saveWorkEntry() {
-  const title   = document.getElementById('w-title').value.trim();
-  const company = document.getElementById('w-company').value.trim();
-  if (!title || !company) { alert('Job title and company are required.'); return; }
-  const entry = {
-    title, company,
-    location:    document.getElementById('w-location').value.trim(),
-    start:       document.getElementById('w-start').value,
-    end:         document.getElementById('w-current').checked ? 'Present' : document.getElementById('w-end').value,
-    current:     document.getElementById('w-current').checked,
-    description: document.getElementById('w-desc').value.trim()
-  };
-  if (workEditIndex >= 0) cv.work[workEditIndex] = entry;
-  else cv.work.push(entry);
-  closeModal('work-modal');
-  renderWorkList();
-  updatePreview();
-}
-
-function deleteWork(idx) {
-  if (!confirm('Remove this entry?')) return;
-  cv.work.splice(idx, 1);
-  renderWorkList();
-  updatePreview();
-}
-
-function renderWorkList() {
-  const container = document.getElementById('work-list');
-  if (!cv.work.length) { container.innerHTML = ''; return; }
-  container.innerHTML = cv.work.map((w, i) => `
-    <div class="entry-card">
-      <div class="entry-actions">
-        <button onclick="openWorkModal(${i})" title="Edit"><i class="fas fa-pen"></i></button>
-        <button class="del" onclick="deleteWork(${i})" title="Delete"><i class="fas fa-trash"></i></button>
-      </div>
-      <h4>${escHtml(w.title)}</h4>
-      <p>${escHtml(w.company)}${w.location ? ' — ' + escHtml(w.location) : ''}</p>
-      <p>${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</p>
-    </div>`).join('');
-}
-
-// ── EDUCATION ─────────────────────────────────────────────
-function openEduModal(idx) {
-  eduEditIndex = idx;
-  document.getElementById('edu-modal-title').textContent = idx < 0 ? 'Add Education' : 'Edit Education';
-  const entry = idx >= 0 ? cv.education[idx] : {};
-  document.getElementById('e-degree').value      = entry.degree      || '';
-  document.getElementById('e-field').value       = entry.field       || '';
-  document.getElementById('e-institution').value = entry.institution || '';
-  document.getElementById('e-start').value       = entry.start       || '';
-  document.getElementById('e-end').value         = entry.end         || '';
-  document.getElementById('e-current').checked   = !!entry.current;
-  document.getElementById('e-end').disabled      = !!entry.current;
-  document.getElementById('e-grade').value       = entry.grade       || '';
-  document.getElementById('edu-modal').classList.add('open');
-}
-
-function saveEduEntry() {
-  const degree      = document.getElementById('e-degree').value.trim();
-  const institution = document.getElementById('e-institution').value.trim();
-  if (!degree || !institution) { alert('Degree and institution are required.'); return; }
-  const entry = {
-    degree, institution,
-    field:   document.getElementById('e-field').value.trim(),
-    start:   document.getElementById('e-start').value,
-    end:     document.getElementById('e-current').checked ? 'Present' : document.getElementById('e-end').value,
-    current: document.getElementById('e-current').checked,
-    grade:   document.getElementById('e-grade').value.trim()
-  };
-  if (eduEditIndex >= 0) cv.education[eduEditIndex] = entry;
-  else cv.education.push(entry);
-  closeModal('edu-modal');
-  renderEduList();
-  updatePreview();
-}
-
-function deleteEdu(idx) {
-  if (!confirm('Remove this entry?')) return;
-  cv.education.splice(idx, 1);
-  renderEduList();
-  updatePreview();
-}
-
-function renderEduList() {
-  const container = document.getElementById('edu-list');
-  if (!cv.education.length) { container.innerHTML = ''; return; }
-  container.innerHTML = cv.education.map((e, i) => `
-    <div class="entry-card">
-      <div class="entry-actions">
-        <button onclick="openEduModal(${i})" title="Edit"><i class="fas fa-pen"></i></button>
-        <button class="del" onclick="deleteEdu(${i})" title="Delete"><i class="fas fa-trash"></i></button>
-      </div>
-      <h4>${escHtml(e.degree)}${e.field ? ' in ' + escHtml(e.field) : ''}</h4>
-      <p>${escHtml(e.institution)}</p>
-      <p>${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</p>
-    </div>`).join('');
-}
-
-// ── SKILLS ────────────────────────────────────────────────
-function addSkill() {
-  const input = document.getElementById('skill-input');
-  const val = input.value.trim();
-  if (!val) return;
-  cv.skills.push({ name: val });
-  input.value = '';
-  renderSkills();
-  updatePreview();
-}
-
-function removeSkill(i) { cv.skills.splice(i, 1); renderSkills(); updatePreview(); }
-
-function renderSkills() {
-  document.getElementById('skills-tags').innerHTML = cv.skills.map((s, i) =>
-    `<span class="tag">${escHtml(s.name)} <span class="tag-remove" onclick="removeSkill(${i})"><i class="fas fa-times"></i></span></span>`
-  ).join('');
-}
-
-// ── LANGUAGES ─────────────────────────────────────────────
-function addLanguage() {
-  const input = document.getElementById('lang-input');
-  const val = input.value.trim();
-  if (!val) return;
-  const parts = val.split('—').map(p => p.trim());
-  cv.languages.push({ name: parts[0], proficiency: parts[1] || '' });
-  input.value = '';
-  renderLangs();
-  updatePreview();
-}
-
-function removeLang(i) { cv.languages.splice(i, 1); renderLangs(); updatePreview(); }
-
-function renderLangs() {
-  document.getElementById('langs-tags').innerHTML = cv.languages.map((l, i) =>
-    `<span class="tag lang-tag">${escHtml(l.name)}${l.proficiency ? ' — ' + escHtml(l.proficiency) : ''} <span class="tag-remove" onclick="removeLang(${i})"><i class="fas fa-times"></i></span></span>`
-  ).join('');
-}
-
-// ── ACHIEVEMENTS ─────────────────────────────────────────
-function addAchievement() {
-  const input = document.getElementById('ach-input');
-  const val = input.value.trim();
-  if (!val) return;
-  cv.achievements.push(val);
-  input.value = '';
-  renderAchievements();
-  updatePreview();
-}
-
-function removeAchievement(i) { cv.achievements.splice(i, 1); renderAchievements(); updatePreview(); }
-
-function renderAchievements() {
-  document.getElementById('ach-list').innerHTML = cv.achievements.map((a, i) => `
-    <div class="entry-card" style="padding:10px 14px;">
-      <div class="entry-actions">
-        <button class="del" onclick="removeAchievement(${i})"><i class="fas fa-times"></i></button>
-      </div>
-      <p>${escHtml(a)}</p>
-    </div>`).join('');
-}
-
-// ── MODALS ────────────────────────────────────────────────
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-document.querySelectorAll('.modal-overlay').forEach(m => {
-  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
-});
-
-// ── PREVIEW RENDERER ──────────────────────────────────────
-function updatePreview() {
-  collectFromForm();
-  const paper = document.getElementById('cv-paper');
-  paper.className = 'cv-paper tpl-' + (cv.template || 'classic');
-  paper.innerHTML = renderTemplate(cv);
-}
-
-function renderTemplate(data) {
-  switch (data.template) {
-    case 'modern':  return renderModern(data);
-    case 'minimal': return renderMinimal(data);
-    default:        return renderClassic(data);
+  
+  function deleteUser(email) {
+    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+      let users = JSON.parse(localStorage.getItem('registeredUsers')) || [];
+      users = users.filter(u => u.email !== email);
+      localStorage.setItem('registeredUsers', JSON.stringify(users));
+      renderUsersTable();
+      showToast('User deleted successfully!', 'success');
+    }
   }
-}
+  
+  function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    try { const date = new Date(dateString); return date.toLocaleDateString('en-RW', { day: 'numeric', month: 'short', year: 'numeric' }); } 
+    catch { return dateString; }
+  }
+  
+  function filterApplications() { renderApplications(); }
+  function clearLogs() { if (confirm('Clear all logs?')) { localStorage.removeItem('activityLog'); document.getElementById('admin-log-list').innerHTML = '<tr><td colspan="4" style="text-align:center;">No logs</td></tr>'; showToast('Logs cleared'); } }
+  
+  // ==================== SECTION SWITCHING ====================
+  function switchSection(section) {
+    document.querySelectorAll('.dash-section').forEach(s => s.classList.add('hidden'));
+    document.getElementById(`section-${section}`).classList.remove('hidden');
+    document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+    const activeLink = document.querySelector(`.sidebar-nav a[data-section="${section}"]`);
+    if (activeLink) activeLink.classList.add('active');
+    if (section === 'apps') renderApplications();
+    if (section === 'jobs') renderJobsTable();
+    if (section === 'users') renderUsersTable();
+    if (section === 'subscriptions') renderSubscribers();
+  }
+  
+  function logout() { localStorage.removeItem('currentUser'); window.location.href = 'auth.html'; }
+  function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])); }
+  
+  function loadDashboard() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (user) { document.getElementById('sidebar-name').textContent = user.name || 'Admin'; document.getElementById('sidebar-ava').textContent = (user.name || 'A')[0].toUpperCase(); }
+    renderApplications();
+    renderJobsTable();
+    renderUsersTable();
+    renderSubscribers();
+    const logs = [{ time: new Date().toLocaleString(), user: 'System', action: 'Admin dashboard loaded', ip: '127.0.0.1' }];
+    const logTbody = document.getElementById('admin-log-list');
+    if (logTbody) { logTbody.innerHTML = logs.map(l => `<tr><td>${l.time}</td><td>${l.user}</td><td>${l.action}</td><td>${l.ip}</td></tr>`).join(''); }
+    const canvas = document.getElementById('growthChart');
+    if (canvas && window.Chart) { new Chart(canvas, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Users', data: [80, 120, 210, 310, 430, 580], borderColor: '#3b2fc9', fill: true }] }, options: { responsive: true } }); }
+  }
+  
+  // ==================== DEMO DATA ====================
+  function ensureDemoData() {
+    let apps = getApplications();
+    if (apps.length === 0) {
+      const demoApps = [{ id: 1001, seekerName: "Alice Uwase", seekerEmail: "alice@example.com", seekerPhone: "+250788111222", seekerPlace: "Kigali", jobTitle: "Software Engineer", company: "MTN Rwanda", message: "I have 3 years experience in React.", status: "pending", date: "Mar 28, 2026", adminMessage: "", cvData: null, cvFilename: null, cvType: null }];
+      saveApplications(demoApps);
+    }
+    let jobs = getJobs();
+    if (jobs.length === 0) {
+      const defaultJobs = [{ id: 1, title: "Software Engineer", company: "MTN Rwanda", location: "Kigali", type: "Full-time", salary: "1,500,000", industry: "technology", color: "#3b2fc9", posted: "2 days ago" }];
+      saveJobs(defaultJobs);
+    }
+    // Demo subscribers data
+    let subs = getAllSubscribers();
+    if (subs.length === 0) {
+      const demoSubs = [
+        { id: 1, name: "Alice Uwase", email: "alice@example.com", source: "blog", role: "Software Engineer", frequency: "daily", subscribedAt: new Date().toISOString(), status: "active" },
+        { id: 2, name: "Jean Claude", email: "jean@example.com", source: "home", role: "Data Analyst", frequency: "instant", subscribedAt: new Date().toISOString(), status: "active" },
+        { id: 3, name: "Grace Umutoni", email: "grace@example.com", source: "blog", role: "Remote", frequency: "weekly", subscribedAt: new Date().toISOString(), status: "active" }
+      ];
+      saveAllSubscribers(demoSubs);
+    }
+  }
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user || user.role !== 'Admin') { window.location.href = 'auth.html'; return; }
+    ensureDemoData();
+    loadDashboard();
+  });
+  
+  // Make functions global for onclick handlers
+  window.switchSection = switchSection;
+  window.filterApplications = filterApplications;
+  window.refreshUsers = refreshUsers;
+  window.editUser = editUser;
+  window.deleteUser = deleteUser;
+  window.filterUsers = filterUsers;
+  window.clearLogs = clearLogs;
+  window.logout = logout;
+  window.viewCV = viewCV;
+  window.downloadCV = downloadCV;
+  window.closeCVModal = closeCVModal;
+  window.openReviewModal = openReviewModal;
+  window.closeModal = closeModal;
+  window.submitDecision = submitDecision;
+  window.editJob = editJob;
+  window.deleteJob = deleteJob;
+  window.renderApplications = renderApplications;
+  window.renderJobsTable = renderJobsTable;
+  // New subscription functions
+  window.deleteSubscriber = deleteSubscriber;
+  window.filterSubscribers = filterSubscribers;
+  window.exportSubscribersCSV = exportSubscribersCSV;
+  window.sendNewsletterToAll = sendNewsletterToAll;
 
-// ── CLASSIC TEMPLATE ──────────────────────────────────────
-function renderClassic(d) {
-  return `
-  <div class="cv-header">
-    <h1>${escHtml(d.name) || '&nbsp;'}</h1>
-    <div class="role">${escHtml(d.title) || '&nbsp;'}</div>
-    <div class="contact-row">
-      ${d.email    ? `<span><i class="fas fa-envelope"></i> ${escHtml(d.email)}</span>` : ''}
-      ${d.phone    ? `<span><i class="fas fa-phone"></i> ${escHtml(d.phone)}</span>` : ''}
-      ${d.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(d.location)}</span>` : ''}
-      ${d.linkedIn ? `<span><i class="fab fa-linkedin"></i> ${escHtml(d.linkedIn)}</span>` : ''}
-    </div>
-  </div>
-  <div class="cv-body">
-    <div class="cv-main">
-      ${d.summary ? `<div class="section"><div class="section-title">Professional Summary</div><p class="summary-text">${escHtml(d.summary)}</p></div>` : ''}
-      ${d.work.length ? `<div class="section"><div class="section-title">Work Experience</div>${d.work.map(w => `
-        <div class="entry">
-          <div class="entry-top"><h3>${escHtml(w.title)}</h3><span class="date">${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</span></div>
-          <div class="entry-sub">${escHtml(w.company)}${w.location ? ', ' + escHtml(w.location) : ''}</div>
-          ${w.description ? `<div class="entry-desc">${escHtml(w.description)}</div>` : ''}
-        </div>`).join('')}</div>` : ''}
-      ${d.education.length ? `<div class="section"><div class="section-title">Education</div>${d.education.map(e => `
-        <div class="entry">
-          <div class="entry-top"><h3>${escHtml(e.degree)}${e.field ? ', ' + escHtml(e.field) : ''}</h3><span class="date">${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</span></div>
-          <div class="entry-sub">${escHtml(e.institution)}</div>
-          ${e.grade ? `<div class="entry-desc">Grade: ${escHtml(e.grade)}</div>` : ''}
-        </div>`).join('')}</div>` : ''}
-      ${d.achievements.length ? `<div class="section"><div class="section-title">Achievements</div>${d.achievements.map(a => `<div class="achievement">${escHtml(a)}</div>`).join('')}</div>` : ''}
-    </div>
-    <div class="cv-sidebar">
-      ${d.skills.length ? `<div class="sidebar-section"><div class="section-title">Skills</div>${d.skills.map(s => `
-        <div class="skill-row"><span>${escHtml(s.name)}</span></div>`).join('')}</div>` : ''}
-      ${d.languages.length ? `<div class="sidebar-section"><div class="section-title">Languages</div>${d.languages.map(l => `
-        <div class="lang-row"><div class="lang-name">${escHtml(l.name)}</div><div class="lang-level">${escHtml(l.proficiency)}</div></div>`).join('')}</div>` : ''}
-    </div>
-  </div>`;
-}
+  // ---- Mobile Sidebar Hamburger ----
+  (function() {
+    const hamburger = document.getElementById('nav-hamburger');
+    const sidebar = document.querySelector('.admin-sidebar');
+    const backdrop = document.getElementById('sidebar-backdrop');
 
-// ── MODERN TEMPLATE ───────────────────────────────────────
-function renderModern(d) {
-  return `
-  <div class="cv-header">
-    <h1>${escHtml(d.name) || '&nbsp;'}</h1>
-    <div class="role">${escHtml(d.title) || '&nbsp;'}</div>
-    <div class="contact-row">
-      ${d.email    ? `<span><i class="fas fa-envelope"></i> ${escHtml(d.email)}</span>` : ''}
-      ${d.phone    ? `<span><i class="fas fa-phone"></i> ${escHtml(d.phone)}</span>` : ''}
-      ${d.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(d.location)}</span>` : ''}
-      ${d.linkedIn ? `<span><i class="fab fa-linkedin"></i> ${escHtml(d.linkedIn)}</span>` : ''}
-    </div>
-  </div>
-  <div class="cv-body">
-    ${d.summary ? `<div class="section"><div class="section-title">About Me</div><p class="summary-text">${escHtml(d.summary)}</p></div>` : ''}
-    ${d.work.length ? `<div class="section"><div class="section-title">Work Experience</div>${d.work.map(w => `
-      <div class="entry">
-        <div class="entry-top"><h3>${escHtml(w.title)}</h3><div class="entry-meta">${escHtml(w.company)}${w.location ? ' · ' + escHtml(w.location) : ''}</div></div>
-        <div class="entry-date">${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</div>
-        ${w.description ? `<div class="entry-desc">${escHtml(w.description)}</div>` : ''}
-      </div>`).join('')}</div>` : ''}
-    <div class="two-col">
-      <div>
-        ${d.education.length ? `<div class="section"><div class="section-title">Education</div>${d.education.map(e => `
-          <div class="entry">
-            <div class="entry-top"><h3>${escHtml(e.degree)}</h3></div>
-            <div class="entry-meta">${escHtml(e.institution)}</div>
-            <div class="entry-date">${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</div>
-            ${e.grade ? `<div class="entry-desc">Grade: ${escHtml(e.grade)}</div>` : ''}
-          </div>`).join('')}</div>` : ''}
-        ${d.achievements.length ? `<div class="section"><div class="section-title">Achievements</div>${d.achievements.map(a => `<div class="achievement">${escHtml(a)}</div>`).join('')}</div>` : ''}
-      </div>
-      <div>
-        ${d.skills.length ? `<div class="section"><div class="section-title">Skills</div><div>${d.skills.map(s => `<span class="skill-chip">${escHtml(s.name)}</span>`).join('')}</div></div>` : ''}
-        ${d.languages.length ? `<div class="section"><div class="section-title">Languages</div>${d.languages.map(l => `
-          <div class="lang-row"><span>${escHtml(l.name)}</span>${l.proficiency ? `<span class="lang-badge">${escHtml(l.proficiency)}</span>` : ''}</div>`).join('')}</div>` : ''}
-      </div>
-    </div>
-  </div>`;
-}
+    function openSidebar() {
+      sidebar.classList.add('mobile-open');
+      backdrop.classList.add('open');
+      hamburger.classList.add('open');
+      hamburger.setAttribute('aria-expanded', 'true');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeSidebar() {
+      sidebar.classList.remove('mobile-open');
+      backdrop.classList.remove('open');
+      hamburger.classList.remove('open');
+      hamburger.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
 
-// ── MINIMAL TEMPLATE ──────────────────────────────────────
-function renderMinimal(d) {
-  return `
-  <div class="cv-header">
-    <h1>${escHtml(d.name) || '&nbsp;'}</h1>
-    <div class="role">${escHtml(d.title) || '&nbsp;'}</div>
-    <div class="contact-row">
-      ${d.email    ? `<span><i class="fas fa-envelope"></i> ${escHtml(d.email)}</span>` : ''}
-      ${d.phone    ? `<span><i class="fas fa-phone"></i> ${escHtml(d.phone)}</span>` : ''}
-      ${d.location ? `<span><i class="fas fa-map-marker-alt"></i> ${escHtml(d.location)}</span>` : ''}
-      ${d.linkedIn ? `<span><i class="fab fa-linkedin"></i> ${escHtml(d.linkedIn)}</span>` : ''}
-    </div>
-  </div>
-  <div class="cv-body">
-    ${d.summary ? `<div class="section"><div class="section-title">Profile</div><p class="summary-text">${escHtml(d.summary)}</p></div>` : ''}
-    ${d.work.length ? `<div class="section"><div class="section-title">Experience</div>${d.work.map(w => `
-      <div class="entry">
-        <div class="entry-top"><h3>${escHtml(w.title)}</h3><span class="date">${formatDate(w.start)} – ${w.current ? 'Present' : formatDate(w.end)}</span></div>
-        <div class="entry-sub">${escHtml(w.company)}${w.location ? ', ' + escHtml(w.location) : ''}</div>
-        ${w.description ? `<div class="entry-desc">${escHtml(w.description)}</div>` : ''}
-      </div>`).join('')}</div>` : ''}
-    ${d.education.length ? `<div class="section"><div class="section-title">Education</div>${d.education.map(e => `
-      <div class="entry">
-        <div class="entry-top"><h3>${escHtml(e.degree)}${e.field ? ' · ' + escHtml(e.field) : ''}</h3><span class="date">${formatDate(e.start)} – ${e.current ? 'Present' : formatDate(e.end)}</span></div>
-        <div class="entry-sub">${escHtml(e.institution)}</div>
-        ${e.grade ? `<div class="entry-desc">${escHtml(e.grade)}</div>` : ''}
-      </div>`).join('')}</div>` : ''}
-    <div class="two-col">
-      <div>
-        ${d.skills.length ? `<div class="section"><div class="section-title">Skills</div>${d.skills.map(s => `<div class="skill-row">${escHtml(s.name)}</div>`).join('')}</div>` : ''}
-      </div>
-      <div>
-        ${d.languages.length ? `<div class="section"><div class="section-title">Languages</div>${d.languages.map(l => `
-          <div class="lang-row"><span>${escHtml(l.name)}</span><span class="lang-level">${escHtml(l.proficiency)}</span></div>`).join('')}</div>` : ''}
-        ${d.achievements.length ? `<div class="section"><div class="section-title">Achievements</div>${d.achievements.map(a => `<div class="achievement">${escHtml(a)}</div>`).join('')}</div>` : ''}
-      </div>
-    </div>
-  </div>`;
-}
+    hamburger?.addEventListener('click', () => {
+      sidebar.classList.contains('mobile-open') ? closeSidebar() : openSidebar();
+    });
+    backdrop?.addEventListener('click', closeSidebar);
 
-// ── UTILS ─────────────────────────────────────────────────
-function escHtml(str) {
-  if (!str) return '';
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function formatDate(val) {
-  if (!val || val === 'Present') return val || '';
-  try {
-    const [y, m] = val.split('-');
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-    return (months[parseInt(m) - 1] || '') + ' ' + y;
-  } catch { return val; }
-}
-
-// ── INIT ──────────────────────────────────────────────────
-renderCVList();
+    // Auto-close sidebar when a nav link is clicked on mobile
+    document.querySelectorAll('.sidebar-nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 768) closeSidebar();
+      });
+    });
+  })();
 </script>
 </body>
 </html>
