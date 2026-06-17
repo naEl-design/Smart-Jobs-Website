@@ -407,7 +407,102 @@
       .stats-grid { grid-template-columns: 1fr; }
       .mobile-topbar { padding: 0 12px; }
     }
-  </style>
+  
+/* ═══ RESPONSIVE — smartJobs Rwanda ═══ */
+.nav-hamburger {
+  display: none;
+  align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  padding: 8px 10px; border-radius: 10px;
+  color: #0f172a; font-size: 1.3rem;
+  transition: background .2s; flex-shrink: 0;
+}
+.nav-hamburger:hover { background: rgba(59,47,201,.07); }
+.mobile-nav-drawer { display: none; position: fixed; inset: 0; z-index: 9999; }
+.mobile-nav-drawer.open { display: block; }
+.mobile-nav-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(15,23,42,.55);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+}
+.mobile-nav-panel {
+  position: absolute; top: 0; right: 0;
+  width: min(300px,86vw); height: 100%;
+  background: #fff; box-shadow: -8px 0 40px rgba(15,23,42,.15);
+  padding: 20px; overflow-y: auto;
+  animation: _mnSlideIn .28s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes _mnSlideIn { from{transform:translateX(100%)} to{transform:translateX(0)} }
+.mobile-nav-close { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+.mobile-nav-close button {
+  background: #f8fafc; border: 1px solid #e2e8f0;
+  border-radius: 10px; padding: 8px 14px;
+  font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.mobile-nav-links { list-style: none; margin-bottom: 20px; }
+.mobile-nav-links li a {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 14px; border-radius: 12px;
+  font-weight: 600; font-size: .93rem;
+  color: #334155; text-decoration: none; transition: all .2s;
+}
+.mobile-nav-links li a:hover, .mobile-nav-links li a.active {
+  background: #ede9ff; color: #3b2fc9;
+}
+.mobile-nav-divider { height: 1px; background: #e2e8f0; margin: 16px 0; }
+.mobile-nav-actions { display: flex; flex-direction: column; gap: 10px; }
+.mobile-nav-actions a {
+  display: block; text-align: center; padding: 13px;
+  border-radius: 12px; font-weight: 700; font-size: .9rem;
+  text-decoration: none; transition: all .2s;
+}
+.mobile-nav-actions a.primary { background: #3b2fc9; color: white; }
+.mobile-nav-actions a.primary:hover { background: #2a1fa8; }
+.mobile-nav-actions a.ghost { border: 1.5px solid #e2e8f0; color: #334155; }
+.mobile-nav-actions a.ghost:hover { border-color: #3b2fc9; color: #3b2fc9; }
+
+.sidebar-toggle-btn {
+  display: none; align-items: center; justify-content: center;
+  background: none; border: none; cursor: pointer;
+  padding: 8px 10px; border-radius: 10px;
+  color: white; font-size: 1.3rem; transition: background .2s;
+}
+.sidebar-toggle-btn:hover { background: rgba(255,255,255,.1); }
+.sidebar-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.5); z-index: 49;
+}
+.sidebar-overlay.open { display: block; }
+@media (max-width: 1024px) {
+  .stats-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .dash-grid { grid-template-columns: 1fr !important; }
+  .quick-photo-row { grid-template-columns: repeat(2,1fr) !important; }
+}
+@media (max-width: 900px) {
+  .admin-sidebar, .cv-sidebar {
+    transform: translateX(-100%);
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
+    z-index: 50 !important;
+  }
+  .admin-sidebar.open, .cv-sidebar.open { transform: translateX(0); }
+  .sidebar-toggle-btn { display: flex !important; }
+  .admin-main, .cv-main { margin-left: 0 !important; padding: 20px 14px !important; }
+  .admin-topbar { flex-direction: column !important; align-items: flex-start !important; gap: 8px !important; }
+}
+@media (max-width: 768px) {
+  .stats-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+  .data-table-wrap { overflow-x: auto !important; }
+  .dash-hero-strip { height: 110px !important; }
+  .dash-hero-strip-text h2 { font-size: 1.05rem !important; }
+  .modal-box { padding: 18px 14px !important; width: 95% !important; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .quick-photo-row { grid-template-columns: 1fr !important; }
+  .admin-main, .cv-main { padding: 14px 10px !important; }
+}
+</style>
 </head>
 <body>
 
@@ -1135,6 +1230,27 @@
       });
     });
   })();
+</script>
+
+<script>
+(function(){
+  function openSidebar(){
+    var s=document.querySelector('.admin-sidebar,.cv-sidebar');
+    var o=document.getElementById('sidebar-overlay');
+    if(s)s.classList.add('open');
+    if(o)o.classList.add('open');
+    document.body.style.overflow='hidden';
+  }
+  function closeSidebar(){
+    var s=document.querySelector('.admin-sidebar,.cv-sidebar');
+    var o=document.getElementById('sidebar-overlay');
+    if(s)s.classList.remove('open');
+    if(o)o.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  window.openSidebar=openSidebar;
+  window.closeSidebar=closeSidebar;
+})();
 </script>
 </body>
 </html>
