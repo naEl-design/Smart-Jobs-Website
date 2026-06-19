@@ -112,7 +112,43 @@
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 24px; }
     }
     @media (max-width: 480px) { .footer-grid { grid-template-columns: 1fr; } }
-  
+
+/* ═══ CHAT WITH US SECTION ═══ */
+.chat-section { padding: 0 0 60px; }
+.chat-section-inner {
+  background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+  border-radius: 24px; padding: 52px 40px; text-align: center;
+}
+.chat-section-inner h2 { color: white; font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+.chat-section-inner p { color: rgba(255,255,255,.65); font-size: .97rem; margin-bottom: 38px; }
+.chat-cards { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+.chat-card {
+  display: flex; align-items: center; gap: 16px;
+  background: rgba(255,255,255,.07);
+  border: 1.5px solid rgba(255,255,255,.13);
+  border-radius: 18px; padding: 22px 32px;
+  text-decoration: none; transition: all .25s;
+  min-width: 220px; flex: 1; max-width: 300px;
+}
+.chat-card:hover { transform: translateY(-4px); background: rgba(255,255,255,.13); border-color: rgba(255,255,255,.28); box-shadow: 0 12px 32px rgba(0,0,0,.3); }
+.chat-card-icon {
+  width: 54px; height: 54px; border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; flex-shrink: 0;
+}
+.chat-card-icon.ig { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+.chat-card-icon.wa { background: #25d366; }
+.chat-card-body { text-align: left; }
+.chat-card-body strong { display: block; color: white; font-size: 1rem; font-weight: 700; margin-bottom: 3px; }
+.chat-card-body span { color: rgba(255,255,255,.55); font-size: .83rem; }
+.chat-card-arrow { margin-left: auto; color: rgba(255,255,255,.35); font-size: .85rem; transition: transform .2s; }
+.chat-card:hover .chat-card-arrow { transform: translateX(4px); color: rgba(255,255,255,.7); }
+@media (max-width: 600px) {
+  .chat-section-inner { padding: 36px 18px; }
+  .chat-card { min-width: unset; max-width: 100%; width: 100%; }
+  .chat-section-inner h2 { font-size: 1.4rem; }
+}
+
 /* ═══ RESPONSIVE — smartJobs Rwanda ═══ */
 .nav-hamburger {
   display: none;
@@ -248,6 +284,43 @@
 
 <section class="map-section">
   <div class="container"><div class="map-container"><i class="fas fa-map" style="font-size: 3rem; margin-right: 10px;"></i> Map View - KG 9 Ave, Kigali, Rwanda</div></div>
+</section>
+
+<!-- ═══ CHAT WITH US ═══ -->
+<section class="chat-section">
+  <div class="container">
+    <div class="chat-section-inner">
+      <h2><i class="fas fa-comments" style="margin-right:10px;opacity:.8;"></i>Prefer to Chat Directly?</h2>
+      <p>Reach us instantly on Instagram or WhatsApp — we reply fast.</p>
+      <div class="chat-cards">
+
+        <!-- Instagram -->
+        <a class="chat-card"
+           href="https://ig.me/m/_s.na3l_"
+           target="_blank" rel="noopener noreferrer">
+          <div class="chat-card-icon ig"><i class="fab fa-instagram" style="color:white;"></i></div>
+          <div class="chat-card-body">
+            <strong>Instagram DM</strong>
+            <span>@_s.na3l_</span>
+          </div>
+          <i class="fas fa-arrow-right chat-card-arrow"></i>
+        </a>
+
+        <!-- WhatsApp -->
+        <a class="chat-card"
+           href="https://wa.me/250792832574?text=Hello%2C%20I%20found%20you%20on%20smartJobs%20Rwanda%20and%20would%20like%20to%20chat."
+           target="_blank" rel="noopener noreferrer">
+          <div class="chat-card-icon wa"><i class="fab fa-whatsapp" style="color:white;"></i></div>
+          <div class="chat-card-body">
+            <strong>WhatsApp</strong>
+            <span>+250 792 832 574</span>
+          </div>
+          <i class="fas fa-arrow-right chat-card-arrow"></i>
+        </a>
+
+      </div>
+    </div>
+  </div>
 </section>
 
 <footer class="main-footer">
