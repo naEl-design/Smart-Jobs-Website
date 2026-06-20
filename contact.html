@@ -235,6 +235,7 @@
   .footer-grid { grid-template-columns: 1fr !important; }
   .container { padding: 0 14px !important; }
 }
+
 </style>
 </head>
 <body>
@@ -297,7 +298,7 @@
 
         <!-- Instagram -->
         <a class="chat-card"
-           href="https://ig.me/m/_s.na3l_"
+           href="https://www.instagram.com/_s.na3l_/"
            target="_blank" rel="noopener noreferrer">
           <div class="chat-card-icon ig"><i class="fab fa-instagram" style="color:white;"></i></div>
           <div class="chat-card-body">
@@ -320,15 +321,14 @@
         </a>
 
         <!-- Email -->
-        <a class="chat-card"
-           href="mailto:smartjobwebsite@gmail.com?subject=Hello%20from%20smartJobs%20Rwanda&body=Hi%2C%0A%0AI%20found%20you%20on%20smartJobs%20Rwanda%20and%20would%20like%20to%20get%20in%20touch.%0A%0A">
+        <div class="chat-card" onclick="handleEmailCard()" style="cursor:pointer;">
           <div class="chat-card-icon em"><i class="fas fa-envelope" style="color:white;"></i></div>
           <div class="chat-card-body">
             <strong>Email Us</strong>
             <span>smartjobwebsite@gmail.com</span>
           </div>
           <i class="fas fa-arrow-right chat-card-arrow"></i>
-        </a>
+        </div>
 
       </div>
     </div>
@@ -347,7 +347,12 @@
   </div>
 </footer>
 
+
 <script>
+  function handleEmailCard() {
+    window.open('https://mail.google.com/mail/?view=cm&fs=1&to=smartjobwebsite@gmail.com&su=SmartJob%20Website%20Inquiry', '_blank');
+  }
+
   function submitContact(e) {
     e.preventDefault();
     alert('Thank you for your message! We will get back to you within 24 hours.');
