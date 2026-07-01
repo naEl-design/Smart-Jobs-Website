@@ -133,13 +133,16 @@
       align-items: center;
       gap: 12px;
       padding: 12px 14px;
+      min-height: 44px;
       border-radius: 12px;
       color: var(--text-2);
       font-weight: 600;
       text-decoration: none;
       transition: all var(--transition);
+      border-left: 3px solid transparent;
     }
-    .sidebar-nav a:hover, .sidebar-nav a.active { background: var(--indigo-light); color: var(--indigo); }
+    .sidebar-nav a:hover { background: var(--indigo-light); color: var(--indigo); }
+    .sidebar-nav a.active { background: linear-gradient(90deg, var(--indigo-light) 0%, rgba(237,233,255,.4) 100%); color: var(--indigo); border-left: 3px solid var(--indigo); font-weight: 800; }
     .sidebar-nav a i { width: 20px; font-size: 1rem; }
     
     /* Main Content */
@@ -157,15 +160,32 @@
       padding: 24px;
       border-radius: 18px;
       border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
       transition: all var(--transition);
       animation: fadeSlideUp 0.4s ease both;
+      display: flex; align-items: flex-start; gap: 16px;
     }
     .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-    .stat-card h3 { font-size: 2rem; font-weight: 800; color: var(--indigo); margin-bottom: 5px; }
-    .stat-card p { color: var(--muted); font-size: 0.85rem; font-weight: 500; }
-    .stat-card .trend { font-size: 0.75rem; margin-top: 8px; display: flex; align-items: center; gap: 4px; }
+    .stat-icon {
+      width: 50px; height: 50px; border-radius: 13px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: white; box-shadow: 0 6px 16px rgba(0,0,0,.12);
+    }
+    .stat-icon.si-indigo { background: linear-gradient(135deg, #8b7ef5, var(--indigo)); }
+    .stat-icon.si-emerald { background: linear-gradient(135deg, #34d399, #059669); }
+    .stat-icon.si-amber { background: linear-gradient(135deg, #fbbf24, #d97706); }
+    .stat-icon.si-blue { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .stat-card h3 { font-size: 1.9rem; font-weight: 800; color: var(--text); margin-bottom: 3px; letter-spacing: -.02em; }
+    .stat-card p { color: var(--muted); font-size: 0.85rem; font-weight: 600; }
+    .stat-card .trend { font-size: 0.75rem; margin-top: 8px; display: flex; align-items: center; gap: 4px; font-weight: 700; }
     .trend.up { color: var(--emerald); }
     .trend.down { color: var(--rose); }
+
+    /* Job progress bar (applications vs target) */
+    .job-progress-wrap { margin-top: 6px; width: 100%; max-width: 140px; }
+    .job-progress-bar { height: 6px; border-radius: 6px; background: var(--bg-2, #f1f5f9); overflow: hidden; }
+    .job-progress-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--indigo), var(--emerald)); transition: width .5s ease; }
+    .job-progress-label { font-size: .68rem; color: var(--muted); margin-top: 3px; font-weight: 600; }
     
     /* Section Cards */
     .section-card {
@@ -551,7 +571,13 @@
         <li><a href="market.html">Salaries</a></li>
       </ul>
     </div>
-    <div class="nav-right" id="dynamic-auth"></div>
+    <div class="nav-right" style="display:flex;align-items:center;gap:12px;">
+      <button class="btn-notif" id="notifBell" onclick="switchTab('applications')" aria-label="New applications" style="width:42px;height:42px;border-radius:11px;background:white;border:1.5px solid var(--border);cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:1rem;">
+        <i class="fas fa-bell"></i>
+        <span class="nav-badge" id="notifBadge" style="display:none;position:absolute;top:-6px;right:-6px;background:var(--rose);color:white;font-size:.65rem;font-weight:800;padding:2px 6px;border-radius:20px;min-width:18px;text-align:center;">0</span>
+      </button>
+      <div id="dynamic-auth"></div>
+    </div>
     <button class="nav-hamburger" id="nav-hamburger" aria-label="Open menu" aria-expanded="false">
       <span class="burger-bar"></span>
       <span class="burger-bar"></span>
@@ -582,11 +608,11 @@
   <aside class="sidebar">
     <ul class="sidebar-nav">
       <li><a href="#" onclick="switchTab('overview'); return false;" class="active" data-tab="overview"><i class="fas fa-chart-line"></i> Overview</a></li>
+      <li><a href="#" onclick="switchTab('profile'); return false;" data-tab="profile"><i class="fas fa-building"></i> Company Profile</a></li>
       <li><a href="#" onclick="switchTab('jobs'); return false;" data-tab="jobs"><i class="fas fa-briefcase"></i> My Jobs</a></li>
       <li><a href="#" onclick="switchTab('pipeline'); return false;" data-tab="pipeline"><i class="fas fa-columns"></i> Hiring Pipeline</a></li>
       <li><a href="#" onclick="switchTab('applications'); return false;" data-tab="applications"><i class="fas fa-file-alt"></i> Applications</a></li>
       <li><a href="#" onclick="switchTab('analytics'); return false;" data-tab="analytics"><i class="fas fa-chart-bar"></i> Analytics</a></li>
-      <li><a href="#" onclick="switchTab('profile'); return false;" data-tab="profile"><i class="fas fa-building"></i> Company Profile</a></li>
       <li><a href="post-job.html"><i class="fas fa-plus-circle"></i> Post a Job</a></li>
     </ul>
   </aside>
@@ -599,11 +625,19 @@
         <p style="color:var(--muted);">Track your recruitment metrics and manage your hiring pipeline</p>
       </div>
       
+      <div id="profileBanner" class="hidden" style="display:none;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(90deg,var(--indigo-light),rgba(237,233,255,.3));border:1px solid var(--border-focus,#c7d2fe);border-radius:16px;padding:18px 22px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8b7ef5,var(--indigo));display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;"><i class="fas fa-building"></i></div>
+          <div><strong style="font-size:.9rem;">Complete your company profile</strong><p style="color:var(--muted);font-size:.8rem;margin-top:2px;">A complete profile builds trust with job seekers and improves applications.</p></div>
+        </div>
+        <button class="nav-btn-primary" style="font-size:.78rem;padding:9px 18px;white-space:nowrap;" onclick="switchTab('profile')">Complete Profile</button>
+      </div>
+
       <div class="stats-grid">
-        <div class="stat-card"><h3 id="totalJobs">0</h3><p><i class="fas fa-briefcase"></i> Active Jobs</p><div class="trend up" id="jobsTrend"><i class="fas fa-arrow-up"></i> +12% from last month</div></div>
-        <div class="stat-card"><h3 id="totalApps">0</h3><p><i class="fas fa-users"></i> Total Applications</p><div class="trend up" id="appsTrend"><i class="fas fa-arrow-up"></i> +8% this week</div></div>
-        <div class="stat-card"><h3 id="avgTime">0</h3><p><i class="fas fa-clock"></i> Avg. Time-to-Hire (days)</p><div class="trend down" id="timeTrend"><i class="fas fa-arrow-down"></i> Faster by 3 days</div></div>
-        <div class="stat-card"><h3 id="conversionRate">0%</h3><p><i class="fas fa-chart-line"></i> Application → Hire Rate</p><div class="trend up" id="convTrend"><i class="fas fa-arrow-up"></i> +5% vs last quarter</div></div>
+        <div class="stat-card"><div class="stat-icon si-indigo"><i class="fas fa-briefcase"></i></div><div><h3 id="totalJobs">0</h3><p>Active Jobs</p><div class="trend up" id="jobsTrend"><i class="fas fa-arrow-up"></i> +12% from last month</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-emerald"><i class="fas fa-paper-plane"></i></div><div><h3 id="totalApps">0</h3><p>Total Applications</p><div class="trend up" id="appsTrend"><i class="fas fa-arrow-up"></i> +8% this week</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-amber"><i class="fas fa-clock"></i></div><div><h3 id="avgTime">0</h3><p>Avg. Time-to-Hire (days)</p><div class="trend down" id="timeTrend"><i class="fas fa-arrow-down"></i> Faster by 3 days</div></div></div>
+        <div class="stat-card"><div class="stat-icon si-blue"><i class="fas fa-chart-line"></i></div><div><h3 id="conversionRate">0%</h3><p>Application → Hire Rate</p><div class="trend up" id="convTrend"><i class="fas fa-arrow-up"></i> +5% vs last quarter</div></div></div>
       </div>
 
       <div class="section-card">
@@ -849,6 +883,13 @@
     if (profile.description) document.getElementById('companyDesc').value = profile.description;
     if (profile.location) document.getElementById('companyLocation').value = profile.location;
     if (profile.size) document.getElementById('companySize').value = profile.size;
+
+    const banner = document.getElementById('profileBanner');
+    if (banner) {
+      const fields = [profile.name, profile.description, profile.location, profile.industry];
+      const isComplete = fields.every(f => f && f.trim().length > 0);
+      banner.style.display = isComplete ? 'none' : 'flex';
+    }
   }
 
   // Export analytics
@@ -887,6 +928,14 @@
   }
 
   function loadDashboard() {
+    function buildAppsProgressCell(count, target = 15) {
+      const pct = Math.min(100, Math.round((count / target) * 100));
+      return `<span class="badge badge-blue">${count} apps</span>
+        <div class="job-progress-wrap">
+          <div class="job-progress-bar"><div class="job-progress-fill" style="width:${pct}%"></div></div>
+          <div class="job-progress-label">${count} / ${target} target</div>
+        </div>`;
+    }
     const user = getUser();
     if (!user) { window.location.href = 'auth.html'; return; }
     if (user.role !== 'Employer') { window.location.href = user.role === 'Admin' ? 'admin.html' : 'jobseeker-dashboard.html'; return; }
@@ -900,6 +949,13 @@
     
     document.getElementById('totalJobs').textContent = myJobs.length;
     document.getElementById('totalApps').textContent = myApps.length;
+
+    const pendingCount = myApps.filter(a => a.status === 'pending' || a.status === 'New').length;
+    const badge = document.getElementById('notifBadge');
+    if (badge) {
+      if (pendingCount > 0) { badge.textContent = pendingCount; badge.style.display = 'flex'; }
+      else { badge.style.display = 'none'; }
+    }
     
     const hiredCount = myApps.filter(a => a.status === 'approved' || a.status === 'Shortlisted').length;
     const hireRate = myApps.length > 0 ? Math.round((hiredCount / myApps.length) * 100) : 0;
@@ -915,12 +971,12 @@
     
     const jobsTbody = document.getElementById('recentJobsList');
     if (jobsTbody) {
-      jobsTbody.innerHTML = myJobs.slice(0, 5).map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td><i class="fas fa-map-marker-alt"></i> ${escapeHtml(job.location || 'Kigali')}</td><td>${job.posted || 'Recently'}</td><td><span class="badge badge-blue">${jobApps.length} apps</span></td><td><span class="job-status status-active">● Active</span></td><td>${job.views || 0} views</td></tr>`; }).join('') || '<tr><td colspan="6" style="text-align:center; padding:40px;">No jobs posted yet. <a href="post-job.html">Post your first job</a></td></tr>';
+      jobsTbody.innerHTML = myJobs.slice(0, 5).map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td><i class="fas fa-map-marker-alt"></i> ${escapeHtml(job.location || 'Kigali')}</td><td>${job.posted || 'Recently'}</td><td>${buildAppsProgressCell(jobApps.length)}</td><td><span class="job-status status-active">● Active</span></td><td>${job.views || 0} views</td></tr>`; }).join('') || '<tr><td colspan="6" style="text-align:center; padding:40px;">No jobs posted yet. <a href="post-job.html">Post your first job</a></td></tr>';
     }
     
     const allJobsTbody = document.getElementById('allJobsList');
     if (allJobsTbody) {
-      allJobsTbody.innerHTML = myJobs.map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.location || 'Kigali')}</td><td>${job.type || 'Full-time'}</td><td>RWF ${job.salary || 'N/A'}</td><td>${job.posted || 'Recently'}</td><td><span class="badge badge-blue">${jobApps.length}</span></td><td>${job.views || 0}</td><td><span class="job-status status-active">Active</span></td><td><button class="nav-btn-primary" style="font-size:0.7rem; padding:4px 12px;" onclick="window.location.href='post-job.html'">Edit</button></td></tr>`; }).join('') || '<tr><td colspan="9" style="text-align:center; padding:40px;">No jobs posted yet.</td></tr>';
+      allJobsTbody.innerHTML = myJobs.map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.location || 'Kigali')}</td><td>${job.type || 'Full-time'}</td><td>RWF ${job.salary || 'N/A'}</td><td>${job.posted || 'Recently'}</td><td>${buildAppsProgressCell(jobApps.length)}</td><td>${job.views || 0}</td><td><span class="job-status status-active">Active</span></td><td><button class="nav-btn-primary" style="font-size:0.7rem; padding:4px 12px;" onclick="window.location.href='post-job.html'">Edit</button></td></tr>`; }).join('') || '<tr><td colspan="9" style="text-align:center; padding:40px;">No jobs posted yet.</td></tr>';
     }
     
     renderApplicationsList(myApps);

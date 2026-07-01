@@ -327,6 +327,7 @@
       align-items: center;
       gap: 12px;
       padding: 11px 12px;
+      min-height: 44px;
       border-radius: 12px;
       color: var(--text-2);
       font-weight: 600;
@@ -395,6 +396,7 @@
       border-radius: 18px;
       padding: 22px;
       border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
       transition: all var(--transition);
       position: relative;
       overflow: hidden;
@@ -426,10 +428,10 @@
       margin-bottom: 14px;
       font-size: 1.05rem;
     }
-    .stat-icon.blue   { background: #dbeafe; color: #1d4ed8; }
-    .stat-icon.green  { background: var(--emerald-light); color: #065f46; }
-    .stat-icon.amber  { background: var(--amber-light); color: #92400e; }
-    .stat-icon.purple { background: var(--indigo-light); color: var(--violet); }
+    .stat-icon.blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; box-shadow: 0 6px 16px rgba(29,78,216,.25); }
+    .stat-icon.green  { background: linear-gradient(135deg, #34d399, #059669); color: white; box-shadow: 0 6px 16px rgba(5,150,105,.25); }
+    .stat-icon.amber  { background: linear-gradient(135deg, #fbbf24, #d97706); color: white; box-shadow: 0 6px 16px rgba(217,119,6,.25); }
+    .stat-icon.purple { background: linear-gradient(135deg, #8b7ef5, var(--violet)); color: white; box-shadow: 0 6px 16px rgba(59,47,201,.25); }
 
     .stat-number {
       font-family: 'Sora', sans-serif;
@@ -450,6 +452,7 @@
       background: var(--surface);
       border-radius: 20px;
       border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
       overflow: hidden;
       margin-bottom: 28px;
       animation: fadeSlideUp .5s cubic-bezier(.34,1.56,.64,1) .3s both;
@@ -1009,16 +1012,36 @@
       <div class="section-card" style="animation:fadeSlideUp .5s both">
         <div class="section-header">
           <h2><i class="fas fa-user-circle"></i> Personal Information</h2>
-          <button class="btn-primary" style="font-size:.8rem;padding:8px 16px"><i class="fas fa-pen"></i> Edit</button>
+          <button class="btn-primary" style="font-size:.8rem;padding:8px 16px" onclick="editProfileField()"><i class="fas fa-pen"></i> Edit</button>
         </div>
         <div class="profile-info-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:24px;">
           <div class="info-item"><label>Full Name</label><p id="profile-name-display">—</p></div>
           <div class="info-item"><label>Email Address</label><p id="profile-email-display">—</p></div>
+          <div class="info-item"><label>Phone Number</label><p id="profile-phone-display">—</p></div>
+          <div class="info-item"><label>Location</label><p id="profile-location-display">—</p></div>
           <div class="info-item"><label>Account Type</label><p>Job Seeker</p></div>
           <div class="info-item"><label>Member Since</label><p id="member-since">—</p></div>
         </div>
       </div>
-      <div class="section-card" style="animation:fadeSlideUp .5s .1s both">
+      <div class="section-card" style="animation:fadeSlideUp .5s .05s both">
+        <div class="section-header"><h2><i class="fas fa-align-left"></i> About Me</h2></div>
+        <div style="padding:20px 24px;">
+          <p id="profile-bio-display" style="font-size:.87rem;color:var(--text-2);line-height:1.7;">Add a short bio to help employers get to know you better.</p>
+        </div>
+      </div>
+      <div class="section-card" style="animation:fadeSlideUp .5s .08s both">
+        <div class="section-header"><h2><i class="fas fa-briefcase"></i> Work Experience</h2><button class="btn-primary" style="font-size:.8rem;padding:8px 16px"><i class="fas fa-plus"></i> Add</button></div>
+        <div id="profile-experience-list" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+          <div class="empty-state" style="padding:20px;"><div class="empty-icon" style="font-size:1.3rem;"><i class="fas fa-briefcase"></i></div><p style="font-size:.82rem;">No work experience added yet.</p></div>
+        </div>
+      </div>
+      <div class="section-card" style="animation:fadeSlideUp .5s .11s both">
+        <div class="section-header"><h2><i class="fas fa-graduation-cap"></i> Education</h2><button class="btn-primary" style="font-size:.8rem;padding:8px 16px"><i class="fas fa-plus"></i> Add</button></div>
+        <div id="profile-education-list" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;">
+          <div class="empty-state" style="padding:20px;"><div class="empty-icon" style="font-size:1.3rem;"><i class="fas fa-graduation-cap"></i></div><p style="font-size:.82rem;">No education history added yet.</p></div>
+        </div>
+      </div>
+      <div class="section-card" style="animation:fadeSlideUp .5s .14s both">
         <div class="section-header">
           <h2><i class="fas fa-tags"></i> Skills</h2>
           <button class="btn-primary" style="font-size:.8rem;padding:8px 16px"><i class="fas fa-plus"></i> Add Skill</button>
@@ -1256,6 +1279,46 @@
     const link = document.querySelector(`.sidebar-nav a[data-page="${page}"]`);
     if (link) link.classList.add('active');
     if (page === 'applications') loadApplications();
+    if (page === 'bookmarks') renderBookmarks();
+  }
+
+  // ── SAVED JOBS (bookmarks) ──
+  function getAllJobsList() { return JSON.parse(localStorage.getItem('allJobs')) || []; }
+  function getSavedJobIds() { return JSON.parse(localStorage.getItem('savedJobs')) || []; }
+  function removeSavedJob(id) {
+    let saved = getSavedJobIds().filter(jid => jid !== id);
+    localStorage.setItem('savedJobs', JSON.stringify(saved));
+    showToast('Removed from saved jobs', 'success');
+    renderBookmarks();
+  }
+  function renderBookmarks() {
+    const wrap = document.getElementById('bookmarks-list');
+    if (!wrap) return;
+    const savedIds = getSavedJobIds();
+    const jobs = getAllJobsList().filter(j => savedIds.includes(j.id));
+    if (jobs.length === 0) {
+      wrap.innerHTML = `<div class="empty-state"><div class="empty-icon"><i class="fas fa-bookmark"></i></div><h3>No saved jobs yet</h3><p>Bookmark jobs you're interested in from the <a href="home.html" style="color:var(--indigo);font-weight:700;">job listings</a></p></div>`;
+      return;
+    }
+    wrap.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;padding:20px;">${jobs.map(job => `
+      <div style="border:1px solid var(--border);border-radius:16px;padding:18px;background:white;box-shadow:0 2px 8px rgba(15,23,42,.04);transition:box-shadow .2s ease;" onmouseover="this.style.boxShadow='0 8px 20px rgba(15,23,42,.08)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(15,23,42,.04)'">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;">
+          <div>
+            <h3 style="font-family:'Sora',sans-serif;font-size:.98rem;font-weight:800;margin-bottom:3px;">${escapeHtml(job.title || 'Untitled Role')}</h3>
+            <p style="font-size:.8rem;color:var(--muted);font-weight:600;">${escapeHtml(job.company || 'Company')}</p>
+          </div>
+          <button onclick="removeSavedJob(${job.id})" title="Remove bookmark" style="background:none;border:none;color:var(--indigo);cursor:pointer;font-size:1rem;min-width:32px;min-height:32px;"><i class="fas fa-bookmark"></i></button>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0;font-size:.76rem;color:var(--text-2);">
+          <span><i class="fas fa-map-marker-alt" style="color:var(--muted);"></i> ${escapeHtml(job.location || 'Kigali')}</span>
+          <span><i class="fas fa-briefcase" style="color:var(--muted);"></i> ${escapeHtml(job.type || 'Full-time')}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;">
+          <strong style="font-size:.88rem;color:var(--emerald-dark,#059669);">RWF ${escapeHtml(job.salary || 'Negotiable')}</strong>
+          ${job.deadline ? `<span style="font-size:.72rem;color:var(--rose);font-weight:700;"><i class="fas fa-hourglass-half"></i> ${escapeHtml(job.deadline)}</span>` : ''}
+        </div>
+        <a href="home.html" class="btn-primary" style="display:block;text-align:center;font-size:.82rem;padding:10px;min-height:44px;line-height:24px;">Apply Now</a>
+      </div>`).join('')}</div>`;
   }
 
   function loadUserProfile() {
@@ -1267,8 +1330,24 @@
     document.getElementById('profile-email').textContent = user.email || '';
     document.getElementById('profile-name-display').textContent = user.name || '—';
     document.getElementById('profile-email-display').textContent = user.email || '—';
+    document.getElementById('profile-phone-display').textContent = user.phone || 'Not set';
+    document.getElementById('profile-location-display').textContent = user.location || 'Not set';
+    if (user.bio) document.getElementById('profile-bio-display').textContent = user.bio;
     const memberSince = document.getElementById('member-since');
     if (memberSince) memberSince.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+  }
+
+  function editProfileField() {
+    const user = getUser() || {};
+    const name = prompt('Full name:', user.name || '');
+    if (name === null) return;
+    const phone = prompt('Phone number:', user.phone || '');
+    const location = prompt('Location (city):', user.location || '');
+    const bio = prompt('Short bio (helps employers get to know you):', user.bio || '');
+    const updated = { ...user, name: name || user.name, phone: phone ?? user.phone, location: location ?? user.location, bio: bio ?? user.bio };
+    localStorage.setItem('currentUser', JSON.stringify(updated));
+    showToast('Profile updated!', 'success');
+    loadUserProfile();
   }
 
   function logout() {

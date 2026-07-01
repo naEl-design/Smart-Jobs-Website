@@ -53,44 +53,55 @@
     /* Admin Layout */
     .admin-layout { display: flex; min-height: 100vh; }
 
-    /* Sidebar */
+    /* Sidebar — light, brand-aligned glassmorphism */
     .admin-sidebar {
       width: 268px;
-      background: linear-gradient(180deg, #0a0730 0%, #0f0a3a 100%);
-      color: white;
+      background: rgba(255,255,255,.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      border-right: 1px solid var(--border);
+      color: var(--text);
       position: fixed;
       height: 100vh;
       display: flex;
       flex-direction: column;
       z-index: 50;
-      box-shadow: 4px 0 24px rgba(0,0,0,.2);
+      box-shadow: 4px 0 24px rgba(15,23,42,.05);
     }
 
     .sidebar-brand {
       padding: 24px 20px;
-      border-bottom: 1px solid rgba(255,255,255,.07);
+      border-bottom: 1px solid var(--border);
     }
-    .sidebar-brand small { color: rgba(255,255,255,.4); font-size: .75rem; display: block; margin-top: 3px; }
+    .sidebar-brand small { color: var(--muted); font-size: .75rem; display: block; margin-top: 3px; font-weight: 600; }
 
     .sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
     .sidebar-nav a {
       display: flex; align-items: center; gap: 12px;
       padding: 11px 14px;
       border-radius: 10px;
-      color: rgba(255,255,255,.55);
+      color: var(--text-2);
       font-size: .88rem;
       font-weight: 600;
       margin-bottom: 3px;
       transition: all var(--transition);
       text-decoration: none;
+      border-left: 3px solid transparent;
+      min-height: 44px;
     }
-    .sidebar-nav a:hover { background: rgba(255,255,255,.07); color: rgba(255,255,255,.9); }
-    .sidebar-nav a.active { background: var(--indigo); color: white; box-shadow: 0 4px 16px rgba(59,47,201,0.4); }
-    .sidebar-nav a i { width: 18px; }
+    .sidebar-nav a:hover { background: var(--indigo-light); color: var(--indigo); }
+    .sidebar-nav a.active {
+      background: linear-gradient(90deg, var(--indigo-light) 0%, rgba(237,233,255,.4) 100%);
+      color: var(--indigo);
+      border-left: 3px solid var(--indigo);
+      font-weight: 800;
+    }
+    .sidebar-nav a.active i { color: var(--indigo); }
+    .sidebar-nav a i { width: 18px; color: var(--muted); }
 
     .sidebar-user {
       padding: 16px;
-      border-top: 1px solid rgba(255,255,255,.07);
+      border-top: 1px solid var(--border);
       display: flex;
       align-items: center; gap: 12px;
     }
@@ -98,20 +109,22 @@
       width: 40px; height: 40px; border-radius: 50%;
       background: linear-gradient(135deg, var(--indigo), #6d51f7);
       display: flex; align-items: center; justify-content: center;
-      font-weight: 800; font-size: .9rem;
+      font-weight: 800; font-size: .9rem; color: white;
       box-shadow: 0 3px 12px rgba(59,47,201,0.3);
     }
-    .user-info small { display: block; color: rgba(255,255,255,.4); font-size: .72rem; }
+    .user-info span { display: block; color: var(--text); font-weight: 700; font-size: .86rem; }
+    .user-info small { display: block; color: var(--muted); font-size: .72rem; }
 
     .btn-signout {
       display: flex; align-items: center; gap: 10px;
       width: 100%; padding: 10px 14px; margin-top: 8px;
-      background: rgba(239,68,68,.1); border: none;
-      color: #fca5a5; border-radius: 10px;
+      background: #fef2f2; border: 1px solid #fee2e2;
+      color: var(--rose); border-radius: 10px;
       font-weight: 700; font-size: .86rem; cursor: pointer;
       font-family: 'Plus Jakarta Sans', sans-serif;
+      min-height: 44px;
     }
-    .btn-signout:hover { background: rgba(239,68,68,.2); color: white; }
+    .btn-signout:hover { background: #fee2e2; }
 
     /* Main Content */
     .admin-main {
@@ -126,8 +139,8 @@
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 34px;
     }
-    .admin-topbar h1 { font-size: 1.7rem; font-weight: 800; }
-    .admin-topbar p { color: var(--muted); font-size: .88rem; }
+    .admin-topbar h1 { font-size: 1.8rem; font-weight: 800; }
+    .admin-topbar p { color: var(--muted); font-size: .9rem; margin-top: 3px; }
 
     .topbar-right { display: flex; align-items: center; gap: 12px; }
     .btn-notif {
@@ -180,51 +193,66 @@
     .quick-photo-card-label span { color:#fff; font-size:.8rem; font-weight:700; }
 
     /* Stats Grid */
-    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 28px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 32px; }
     .stat-card {
-      background: white; border-radius: 14px; padding: 22px;
-      border: 1.5px solid var(--border);
+      background: white; border-radius: 16px; padding: 24px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
       display: flex; align-items: center; gap: 16px;
+      transition: transform .22s cubic-bezier(.4,0,.2,1), box-shadow .22s cubic-bezier(.4,0,.2,1);
+      position: relative; overflow: hidden;
     }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--border-focus, #c7d2fe); }
     .stat-icon {
       width: 54px; height: 54px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
+      font-size: 1.15rem; flex-shrink: 0; color: white;
+      box-shadow: 0 6px 16px rgba(0,0,0,.12);
     }
-    .si-blue { background: #dbeafe; color: #1d4ed8; }
-    .si-green { background: #d1fae5; color: #065f46; }
-    .si-amber { background: #fef3c7; color: #92400e; }
-    .si-purple { background: var(--indigo-light); color: var(--indigo); }
-    .stat-text h3 { font-size: 1.8rem; font-weight: 800; }
-    .stat-change { font-size: .74rem; margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+    .si-blue   { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+    .si-green  { background: linear-gradient(135deg, #34d399, #059669); }
+    .si-amber  { background: linear-gradient(135deg, #fbbf24, #d97706); }
+    .si-purple { background: linear-gradient(135deg, #8b7ef5, var(--indigo)); }
+    .stat-text h3 { font-size: 1.85rem; font-weight: 800; letter-spacing: -.02em; }
+    .stat-text p { font-size: .82rem; color: var(--muted); font-weight: 600; margin-top: 2px; }
+    .stat-change { font-size: .74rem; margin-top: 6px; display: flex; align-items: center; gap: 4px; font-weight: 700; }
     .stat-change.up { color: var(--emerald); }
     .stat-change.down { color: var(--rose); }
 
     /* Dash Grid */
-    .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px; }
+    .dash-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 28px; }
     .dash-panel {
-      background: white; border-radius: 14px; border: 1.5px solid var(--border);
-      padding: 24px;
+      background: white; border-radius: 16px; border: 1px solid var(--border);
+      padding: 26px;
+      box-shadow: 0 2px 8px rgba(15,23,42,.04);
+      transition: box-shadow .22s ease;
     }
+    .dash-panel:hover { box-shadow: 0 8px 24px rgba(15,23,42,.08); }
     .panel-header {
       display: flex; justify-content: space-between; align-items: center;
       margin-bottom: 22px; border-bottom: 1px solid var(--border); padding-bottom: 18px;
     }
-    .panel-header h3 { font-size: .98rem; font-weight: 700; }
+    .panel-header h3 { font-size: 1.1rem; font-weight: 800; font-family: 'Sora', sans-serif; }
     .see-all { color: var(--indigo); font-size: .8rem; font-weight: 700; cursor: pointer; }
 
     /* Data Table */
-    .data-table-wrap { overflow-x: auto; }
+    .data-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
     .data-table { width: 100%; border-collapse: collapse; }
     .data-table th {
-      text-align: left; padding: 10px 14px;
-      font-size: .76rem; font-weight: 800; text-transform: uppercase;
+      text-align: left; padding: 12px 16px;
+      font-size: .74rem; font-weight: 800; text-transform: uppercase; letter-spacing: .04em;
       color: var(--muted); background: var(--bg); border-bottom: 1.5px solid var(--border);
     }
-    .data-table td { padding: 13px 14px; font-size: .87rem; border-bottom: 1px solid var(--border); }
+    .data-table tbody tr { transition: background .15s ease; }
+    .data-table tbody tr:hover { background: var(--bg); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table td { padding: 14px 16px; font-size: .87rem; border-bottom: 1px solid var(--border); }
     .tbl-btn {
-      padding: 5px 12px; border-radius: 7px; font-size: .77rem; font-weight: 700;
-      cursor: pointer; border: none; margin-right: 6px;
+      padding: 7px 13px; border-radius: 7px; font-size: .77rem; font-weight: 700;
+      cursor: pointer; border: none; margin-right: 6px; min-height: 32px;
+      transition: transform .15s ease, box-shadow .15s ease;
     }
+    .tbl-btn:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(15,23,42,.12); }
     .tbl-btn-edit { background: var(--indigo-light); color: var(--indigo); }
     .tbl-btn-danger { background: #fee2e2; color: var(--rose); }
     .tbl-btn-success { background: #d1fae5; color: #065f46; }
@@ -364,6 +392,16 @@
     .sidebar-backdrop { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 300; }
     .sidebar-backdrop.open { display: block; }
 
+    /* Settings tabs */
+    .settings-tab-btn {
+      background: none; border: none; padding: 16px 6px; margin-right: 22px;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: .88rem; font-weight: 700;
+      color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+      transition: color var(--transition), border-color var(--transition);
+    }
+    .settings-tab-btn:hover { color: var(--indigo); }
+    .settings-tab-btn.active { color: var(--indigo); border-bottom-color: var(--indigo); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 1024px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
@@ -381,6 +419,31 @@
       .admin-topbar { display: none; }
       .data-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       .data-table { min-width: 560px; }
+
+      /* Card-based tables on mobile for tagged tables */
+      .data-table-wrap.mobile-cards { overflow-x: visible; border: none; }
+      .mobile-cards .data-table { min-width: 0; }
+      .mobile-cards .data-table thead { display: none; }
+      .mobile-cards .data-table tbody { display: block; }
+      .mobile-cards .data-table tr {
+        display: block; background: white; border: 1px solid var(--border);
+        border-radius: 12px; margin-bottom: 12px; padding: 6px 14px;
+        box-shadow: 0 2px 6px rgba(15,23,42,.05);
+      }
+      .mobile-cards .data-table td {
+        display: flex; justify-content: space-between; align-items: center;
+        gap: 12px; text-align: right; border-bottom: 1px solid var(--bg-2, #f1f5f9);
+        padding: 10px 0;
+      }
+      .mobile-cards .data-table td:last-child { border-bottom: none; }
+      .mobile-cards .data-table td[data-label]::before {
+        content: attr(data-label); font-weight: 700; color: var(--muted);
+        font-size: .72rem; text-transform: uppercase; letter-spacing: .04em;
+        text-align: left; flex-shrink: 0;
+      }
+      .mobile-cards .data-table td[data-label="Actions"] { flex-direction: column; align-items: stretch; gap: 6px; }
+      .mobile-cards .data-table td[data-label="Actions"]::before { margin-bottom: 4px; }
+      .mobile-cards .data-table td[data-label="Actions"] .tbl-btn { margin-right: 0; width: 100%; text-align: center; }
       .quick-photo-row { grid-template-columns: 1fr; }
       .quick-photo-card { height: 88px; }
       .dash-hero-strip { height: 120px; border-radius: 14px; }
@@ -454,11 +517,11 @@
       </a>
       <!-- NEW: Our Subscriptions Section -->
       <a href="#" data-section="subscriptions" onclick="switchSection('subscriptions')">
-        <i class="fas fa-envelope-open-text"></i> <span>Our Subscriptions</span>
+        <i class="fas fa-envelope-open-text"></i> <span>Subscriber Management</span>
         <span class="nav-badge" id="subsBadge" style="margin-left:auto; background:var(--rose); color:white; font-size:.65rem; padding:2px 8px; border-radius:20px;">0</span>
       </a>
       <a href="#" data-section="logs" onclick="switchSection('logs')">
-        <i class="fas fa-history"></i> <span>Activity Logs</span>
+        <i class="fas fa-history"></i> <span>Audit Log</span>
       </a>
       <a href="#" data-section="settings" onclick="switchSection('settings')">
         <i class="fas fa-cog"></i> <span>Settings</span>
@@ -466,8 +529,8 @@
     </nav>
 
     <div style="padding:0 12px 12px;">
-      <a href="post-job.html" style="display:flex;align-items:center;gap:10px;padding:11px 14px;
-         border-radius:8px;background:var(--indigo);color:white;font-weight:700;font-size:.88rem;text-decoration:none;">
+      <a href="post-job.html" style="display:flex;align-items:center;gap:10px;padding:12px 14px;min-height:44px;
+         border-radius:10px;background:linear-gradient(135deg,var(--indigo),#5a44e8);color:white;font-weight:700;font-size:.88rem;text-decoration:none;box-shadow:0 4px 14px rgba(59,47,201,.28);">
         <i class="fas fa-plus-circle"></i> Post New Job
       </a>
     </div>
@@ -589,9 +652,14 @@
             <button class="tbl-btn tbl-btn-edit" onclick="refreshUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
           </div>
         </div>
-        <div class="data-table-wrap">
+        <div id="bulk-actions-bar" class="hidden" style="display:flex;align-items:center;gap:14px;padding:12px 20px;background:var(--indigo-light);border-bottom:1px solid var(--border);font-size:.85rem;font-weight:600;color:var(--indigo);">
+          <span><span id="bulk-selected-count">0</span> selected</span>
+          <button class="tbl-btn tbl-btn-edit" onclick="bulkEmailUsers()"><i class="fas fa-envelope"></i> Email Selected</button>
+          <button class="tbl-btn tbl-btn-danger" onclick="bulkDeleteUsers()"><i class="fas fa-trash"></i> Delete Selected</button>
+        </div>
+        <div class="data-table-wrap mobile-cards">
           <table class="data-table">
-            <thead><tr><th>#</th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Location</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
+            <thead><tr><th style="width:36px;"><input type="checkbox" onchange="toggleSelectAllUsers(this)" aria-label="Select all users"></th><th>Name</th><th>Email</th><th>Role</th><th>Phone</th><th>Location</th><th>Registered</th><th>Status</th><th>Actions</th></tr></thead>
             <tbody id="user-list-table"><tr><td colspan="9" style="text-align:center;padding:40px;">Loading users...</td></tr></tbody>
           </table>
         </div>
@@ -637,21 +705,65 @@
       </div>
     </div>
 
-    <!-- LOGS SECTION -->
+    <!-- AUDIT LOG SECTION -->
     <div id="section-logs" class="dash-section hidden">
-      <div class="dash-panel"><div class="panel-header"><h3>Activity Logs</h3><button class="tbl-btn tbl-btn-edit" onclick="clearLogs()">Clear Logs</button></div>
-        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>IP Address</th></tr></thead><tbody id="admin-log-list"></tbody></table></div>
+      <div class="dash-panel">
+        <div class="panel-header">
+          <h3><i class="fas fa-history"></i> Audit Log</h3>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <input type="text" id="log-search" placeholder="Search user or action..." oninput="filterLogs()" style="padding:7px 14px;border:1px solid var(--border);border-radius:8px;min-height:36px;">
+            <select id="log-action-filter" onchange="filterLogs()" style="padding:7px 10px;border:1px solid var(--border);border-radius:8px;min-height:36px;">
+              <option value="">All Actions</option>
+            </select>
+            <input type="date" id="log-date-filter" onchange="filterLogs()" style="padding:7px 10px;border:1px solid var(--border);border-radius:8px;min-height:36px;">
+            <button class="tbl-btn tbl-btn-danger" onclick="clearLogs()"><i class="fas fa-trash"></i> Clear Logs</button>
+          </div>
+        </div>
+        <div class="data-table-wrap mobile-cards"><table class="data-table"><thead><tr><th>Timestamp</th><th>User</th><th>Action</th><th>IP Address</th></tr></thead><tbody id="admin-log-list"></tbody></table></div>
       </div>
     </div>
 
     <!-- SETTINGS SECTION -->
     <div id="section-settings" class="dash-section hidden">
-      <div class="dash-panel"><div class="panel-header"><h3>Site Settings</h3></div>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
-          <div><label>Website Name</label><input type="text" value="smartJobs Rwanda" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
-          <div><label>Support Email</label><input type="email" value="support@smartjobs.rw" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;"></div>
+      <div class="dash-panel" style="padding:0;overflow:hidden;">
+        <div class="settings-tabs" style="display:flex;border-bottom:1px solid var(--border);padding:0 24px;gap:4px;">
+          <button class="settings-tab-btn active" data-tab="general" onclick="switchSettingsTab('general')">General</button>
+          <button class="settings-tab-btn" data-tab="security" onclick="switchSettingsTab('security')">Security</button>
+          <button class="settings-tab-btn" data-tab="email" onclick="switchSettingsTab('email')">Email</button>
         </div>
-        <button onclick="alert('Settings saved!')" style="margin-top:20px;padding:10px 20px;background:var(--indigo);color:white;border:none;border-radius:8px;cursor:pointer;">Save Settings</button>
+
+        <div id="settings-tab-general" class="settings-tab-panel" style="padding:26px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div><label>Website Name</label><input type="text" value="smartJobs Rwanda" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+            <div><label>Support Email</label><input type="email" value="support@smartjobs.rw" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+            <div><label>Default Currency</label><input type="text" value="RWF" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+            <div><label>Timezone</label><input type="text" value="Africa/Kigali (GMT+2)" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+          </div>
+          <button onclick="alert('Settings saved!')" style="margin-top:22px;padding:11px 22px;min-height:44px;background:var(--indigo);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Save Settings</button>
+        </div>
+
+        <div id="settings-tab-security" class="settings-tab-panel hidden" style="padding:26px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div><label>Change Admin Password</label><input type="password" placeholder="New password" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+            <div><label>Confirm Password</label><input type="password" placeholder="Confirm new password" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid var(--border);margin-top:20px;">
+            <div><strong style="font-size:.88rem;">Two-Factor Authentication</strong><p style="color:var(--muted);font-size:.78rem;margin-top:2px;">Add an extra layer of security to your admin account</p></div>
+            <label class="toggle" style="position:relative;width:44px;height:24px;display:inline-block;"><input type="checkbox" style="opacity:0;width:0;"><span style="position:absolute;inset:0;background:var(--border);border-radius:24px;"></span></label>
+          </div>
+          <button onclick="alert('Security settings saved!')" style="margin-top:12px;padding:11px 22px;min-height:44px;background:var(--indigo);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Save Security Settings</button>
+        </div>
+
+        <div id="settings-tab-email" class="settings-tab-panel hidden" style="padding:26px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div><label>From Name</label><input type="text" value="smartJobs Rwanda" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+            <div><label>From Email</label><input type="email" value="no-reply@smartjobs.rw" style="width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;margin-top:6px;"></div>
+          </div>
+          <div style="margin-top:20px;">
+            <button class="tbl-btn tbl-btn-edit" onclick="alert('Test email sent!')"><i class="fas fa-paper-plane"></i> Send Test Email</button>
+          </div>
+          <button onclick="alert('Email settings saved!')" style="margin-top:20px;padding:11px 22px;min-height:44px;background:var(--indigo);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:700;">Save Email Settings</button>
+        </div>
       </div>
     </div>
 
@@ -970,12 +1082,29 @@
     return registeredUsers;
   }
   
+  function buildUserRow(user, index) {
+    const roleClass = user.role === 'Job Seeker' ? 'role-badge-seeker' : (user.role === 'Employer' ? 'role-badge-employer' : 'role-badge-admin');
+    const roleLabel = user.role === 'Job Seeker' ? '👤 Job Seeker' : (user.role === 'Employer' ? '🏢 Employer' : '👑 Admin');
+    return `<tr>
+      <td data-label="#"><input type="checkbox" class="user-row-check" value="${escapeHtml(user.email)}" onchange="updateBulkBar()" aria-label="Select ${escapeHtml(user.name)}"></td>
+      <td data-label="Name"><strong>${escapeHtml(user.name)}</strong></td>
+      <td data-label="Email">${escapeHtml(user.email)}</td>
+      <td data-label="Role"><span class="badge ${roleClass}">${roleLabel}</span></td>
+      <td data-label="Phone">${escapeHtml(user.phone || '—')}</td>
+      <td data-label="Location">${escapeHtml(user.location || '—')}</td>
+      <td data-label="Registered" style="font-size:.75rem;color:var(--muted);">${formatDate(user.registeredAt)}</td>
+      <td data-label="Status"><span class="status-active">● Active</span></td>
+      <td data-label="Actions"><button class="tbl-btn tbl-btn-edit" onclick="editUser('${user.email}')"><i class="fas fa-edit"></i> Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteUser('${user.email}')"><i class="fas fa-trash"></i> Delete</button></td>
+    </tr>`;
+  }
+
   function renderUsersTable() {
     const users = getAllUsers();
     const tbody = document.getElementById('user-list-table');
     if (!tbody) return;
     if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;">No users registered yet</td></tr>'; return; }
-    tbody.innerHTML = users.map((user, index) => `<tr><td>${index + 1}</td><td><strong>${escapeHtml(user.name)}</strong></td><td>${escapeHtml(user.email)}</td><td><span class="badge ${user.role === 'Job Seeker' ? 'role-badge-seeker' : (user.role === 'Employer' ? 'role-badge-employer' : 'role-badge-admin')}">${user.role === 'Job Seeker' ? '👤 Job Seeker' : (user.role === 'Employer' ? '🏢 Employer' : '👑 Admin')}</span></td><td>${escapeHtml(user.phone || '—')}</td><td>${escapeHtml(user.location || '—')}</td><td style="font-size:.75rem;color:var(--muted);">${formatDate(user.registeredAt)}</td><td><span class="status-active">● Active</span></td><td><button class="tbl-btn tbl-btn-edit" onclick="editUser('${user.email}')"><i class="fas fa-edit"></i> Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteUser('${user.email}')"><i class="fas fa-trash"></i> Delete</button></td></tr>`).join('');
+    tbody.innerHTML = users.map((user, index) => buildUserRow(user, index)).join('');
+    updateBulkBar();
   }
   
   function filterUsers(query) {
@@ -983,9 +1112,44 @@
     const filtered = users.filter(u => u.name.toLowerCase().includes(query.toLowerCase()) || u.email.toLowerCase().includes(query.toLowerCase()));
     const tbody = document.getElementById('user-list-table');
     if (!tbody) return;
-    tbody.innerHTML = filtered.map((user, index) => `<tr><td>${index + 1}</td><td><strong>${escapeHtml(user.name)}</strong></td><td>${escapeHtml(user.email)}</td><td><span class="badge ${user.role === 'Job Seeker' ? 'role-badge-seeker' : (user.role === 'Employer' ? 'role-badge-employer' : 'role-badge-admin')}">${user.role === 'Job Seeker' ? '👤 Job Seeker' : (user.role === 'Employer' ? '🏢 Employer' : '👑 Admin')}</span></td><td>${escapeHtml(user.phone || '—')}</td><td>${escapeHtml(user.location || '—')}</td><td style="font-size:.75rem;color:var(--muted);">${formatDate(user.registeredAt)}</td><td><span class="status-active">● Active</span></td><td><button class="tbl-btn tbl-btn-edit" onclick="editUser('${user.email}')"><i class="fas fa-edit"></i> Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteUser('${user.email}')"><i class="fas fa-trash"></i> Delete</button></td></tr>`).join('');
+    tbody.innerHTML = filtered.map((user, index) => buildUserRow(user, index)).join('');
+    updateBulkBar();
   }
-  
+
+  function toggleSelectAllUsers(checkbox) {
+    document.querySelectorAll('.user-row-check').forEach(cb => cb.checked = checkbox.checked);
+    updateBulkBar();
+  }
+
+  function updateBulkBar() {
+    const checked = document.querySelectorAll('.user-row-check:checked');
+    const bar = document.getElementById('bulk-actions-bar');
+    const countEl = document.getElementById('bulk-selected-count');
+    if (!bar) return;
+    if (checked.length > 0) {
+      bar.classList.remove('hidden');
+      if (countEl) countEl.textContent = checked.length;
+    } else {
+      bar.classList.add('hidden');
+    }
+  }
+
+  function bulkDeleteUsers() {
+    const checked = Array.from(document.querySelectorAll('.user-row-check:checked')).map(cb => cb.value);
+    if (checked.length === 0) return;
+    if (!confirm(`Delete ${checked.length} selected user(s)? This cannot be undone.`)) return;
+    let users = getAllUsers().filter(u => !checked.includes(u.email));
+    localStorage.setItem('registeredUsers', JSON.stringify(users));
+    showToast(`${checked.length} user(s) deleted`, 'success');
+    renderUsersTable();
+  }
+
+  function bulkEmailUsers() {
+    const checked = Array.from(document.querySelectorAll('.user-row-check:checked')).map(cb => cb.value);
+    if (checked.length === 0) return;
+    window.location.href = `mailto:?bcc=${checked.join(',')}`;
+  }
+
   function refreshUsers() { renderUsersTable(); showToast('User list refreshed!', 'success'); }
   
   function editUser(email) {
@@ -1014,7 +1178,70 @@
   }
   
   function filterApplications() { renderApplications(); }
-  function clearLogs() { if (confirm('Clear all logs?')) { localStorage.removeItem('activityLog'); document.getElementById('admin-log-list').innerHTML = '<tr><td colspan="4" style="text-align:center;">No logs</td></tr>'; showToast('Logs cleared'); } }
+
+  // ==================== AUDIT LOG ====================
+  function getLogs() {
+    let logs = JSON.parse(localStorage.getItem('activityLog')) || [];
+    if (logs.length === 0) {
+      logs = [
+        { time: new Date(Date.now() - 3600e3 * 1).toLocaleString(), user: 'Admin', action: 'Approved application', ip: '41.186.20.14' },
+        { time: new Date(Date.now() - 3600e3 * 5).toLocaleString(), user: 'Jean Claude', action: 'Posted a new job', ip: '105.163.2.9' },
+        { time: new Date(Date.now() - 3600e3 * 26).toLocaleString(), user: 'System', action: 'Newsletter sent to subscribers', ip: '127.0.0.1' },
+        { time: new Date(Date.now() - 3600e3 * 48).toLocaleString(), user: 'Alice Uwase', action: 'Registered new account', ip: '196.220.4.31' },
+      ];
+      localStorage.setItem('activityLog', JSON.stringify(logs));
+    }
+    return logs;
+  }
+  function logActivity(user, action) {
+    const logs = JSON.parse(localStorage.getItem('activityLog')) || [];
+    logs.unshift({ time: new Date().toLocaleString(), user, action, ip: '127.0.0.1' });
+    localStorage.setItem('activityLog', JSON.stringify(logs.slice(0, 200)));
+  }
+  function populateLogActionFilter(logs) {
+    const select = document.getElementById('log-action-filter');
+    if (!select) return;
+    const current = select.value;
+    const actions = [...new Set(logs.map(l => l.action))];
+    select.innerHTML = '<option value="">All Actions</option>' + actions.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join('');
+    select.value = current;
+  }
+  function renderLogRows(logs) {
+    const logTbody = document.getElementById('admin-log-list');
+    if (!logTbody) return;
+    if (logs.length === 0) { logTbody.innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;">No matching log entries</td></tr>'; return; }
+    logTbody.innerHTML = logs.map(l => `<tr><td data-label="Timestamp" style="font-size:.8rem;color:var(--muted);">${l.time}</td><td data-label="User"><strong>${escapeHtml(l.user)}</strong></td><td data-label="Action">${escapeHtml(l.action)}</td><td data-label="IP" style="font-size:.8rem;color:var(--muted);">${l.ip}</td></tr>`).join('');
+  }
+  function renderLogs() {
+    const logs = getLogs();
+    populateLogActionFilter(logs);
+    renderLogRows(logs);
+  }
+  function filterLogs() {
+    const q = (document.getElementById('log-search')?.value || '').toLowerCase();
+    const action = document.getElementById('log-action-filter')?.value || '';
+    const date = document.getElementById('log-date-filter')?.value || '';
+    let logs = getLogs();
+    if (q) logs = logs.filter(l => l.user.toLowerCase().includes(q) || l.action.toLowerCase().includes(q));
+    if (action) logs = logs.filter(l => l.action === action);
+    if (date) logs = logs.filter(l => new Date(l.time).toISOString().slice(0, 10) === date);
+    renderLogRows(logs);
+  }
+  function clearLogs() {
+    if (confirm('Clear all audit log entries? This cannot be undone.')) {
+      localStorage.removeItem('activityLog');
+      document.getElementById('admin-log-list').innerHTML = '<tr><td colspan="4" style="text-align:center;padding:30px;">No logs</td></tr>';
+      showToast('Audit log cleared');
+    }
+  }
+
+  // ==================== SETTINGS TABS ====================
+  function switchSettingsTab(tab) {
+    document.querySelectorAll('.settings-tab-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById(`settings-tab-${tab}`)?.classList.remove('hidden');
+    document.querySelectorAll('.settings-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.settings-tab-btn[data-tab="${tab}"]`)?.classList.add('active');
+  }
   
   // ==================== SECTION SWITCHING ====================
   function switchSection(section) {
@@ -1027,6 +1254,7 @@
     if (section === 'jobs') renderJobsTable();
     if (section === 'users') renderUsersTable();
     if (section === 'subscriptions') renderSubscribers();
+    if (section === 'logs') renderLogs();
   }
   
   function logout() { localStorage.removeItem('currentUser'); window.location.href = 'auth.html'; }
@@ -1039,9 +1267,8 @@
     renderJobsTable();
     renderUsersTable();
     renderSubscribers();
-    const logs = [{ time: new Date().toLocaleString(), user: 'System', action: 'Admin dashboard loaded', ip: '127.0.0.1' }];
-    const logTbody = document.getElementById('admin-log-list');
-    if (logTbody) { logTbody.innerHTML = logs.map(l => `<tr><td>${l.time}</td><td>${l.user}</td><td>${l.action}</td><td>${l.ip}</td></tr>`).join(''); }
+    logActivity('System', 'Admin dashboard loaded');
+    renderLogs();
     const canvas = document.getElementById('growthChart');
     if (canvas && window.Chart) { new Chart(canvas, { type: 'line', data: { labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], datasets: [{ label: 'Users', data: [80, 120, 210, 310, 430, 580], borderColor: '#3b2fc9', fill: true }] }, options: { responsive: true } }); }
   }
@@ -1085,6 +1312,12 @@
   window.deleteUser = deleteUser;
   window.filterUsers = filterUsers;
   window.clearLogs = clearLogs;
+  window.toggleSelectAllUsers = toggleSelectAllUsers;
+  window.updateBulkBar = updateBulkBar;
+  window.bulkDeleteUsers = bulkDeleteUsers;
+  window.bulkEmailUsers = bulkEmailUsers;
+  window.filterLogs = filterLogs;
+  window.switchSettingsTab = switchSettingsTab;
   window.logout = logout;
   window.viewCV = viewCV;
   window.downloadCV = downloadCV;
