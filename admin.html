@@ -133,6 +133,7 @@
       padding: 36px;
       min-height: 100vh;
       background: var(--bg);
+      max-width: 1680px;
     }
 
     .admin-topbar {
@@ -262,6 +263,7 @@
     .badge-green { background: #d1fae5; color: #065f46; }
     .badge-amber { background: #fef3c7; color: #92400e; }
     .badge-rose { background: #fee2e2; color: #991b1b; }
+    .badge-grey { background: #f1f5f9; color: #475569; }
 
     /* User role badges */
     .role-badge-seeker { background: #dbeafe; color: #1d4ed8; }
@@ -303,6 +305,7 @@
     }
     .modal-box {
       background: white; border-radius: 20px; width: 90%; max-width: 500px;
+      max-height: 88vh; overflow-y: auto;
       padding: 28px; animation: popIn 0.3s ease;
     }
     .modal-box h3 { margin-bottom: 16px; font-family: 'Sora', sans-serif; }
@@ -453,6 +456,9 @@
       .panel-header input, .panel-header div { width: 100%; }
       .panel-header div { display: flex; flex-wrap: wrap; gap: 8px; }
       .panel-header input { max-width: 100% !important; }
+      #section-settings div[style*="grid-template-columns:1fr 1fr"] { grid-template-columns: 1fr !important; }
+      #bulk-actions-bar { flex-wrap: wrap; }
+      .settings-tab-panel > div[style*="justify-content:space-between"] { flex-wrap: wrap; gap: 12px; }
     }
 
     @media (max-width: 480px) {
@@ -508,6 +514,7 @@
       </a>
       <a href="#" data-section="jobs" onclick="switchSection('jobs')">
         <i class="fas fa-briefcase"></i> <span>Job Listings</span>
+        <span class="nav-badge" id="jobsPendingBadge" style="display:none;margin-left:auto; background:var(--amber, #d97706); color:white; font-size:.65rem; padding:2px 8px; border-radius:20px;">0</span>
       </a>
       <a href="#" data-section="apps" onclick="switchSection('apps')">
         <i class="fas fa-file-alt"></i> <span>Applications</span>
@@ -599,6 +606,14 @@
         <div class="stat-card"><div class="stat-icon si-purple"><i class="fas fa-building"></i></div><div class="stat-text"><h3 id="stat-employers">0</h3><p>Employers</p><div class="stat-change down" id="employers-change">0</div></div></div>
       </div>
 
+      <div id="security-alerts-panel" class="dash-panel hidden" style="border-color:#fde68a;background:#fffbeb;margin-bottom:24px;">
+        <div class="panel-header" style="border-bottom-color:#fde68a;">
+          <h3 style="color:#92400e;"><i class="fas fa-shield-alt"></i> Security Alerts</h3>
+          <span class="see-all" onclick="switchSection('users')">Review in Users →</span>
+        </div>
+        <div id="security-alerts-list"></div>
+      </div>
+
       <div class="dash-grid">
         <div class="dash-panel"><div class="panel-header"><h3>Growth Overview</h3><span class="see-all">Last 6 months</span></div><canvas id="growthChart" height="120"></canvas></div>
         <div class="dash-panel"><div class="panel-header"><h3>Notifications</h3><span class="see-all">Mark all read</span></div>
@@ -612,14 +627,15 @@
 
       <div class="dash-panel">
         <div class="panel-header"><h3>Recent Job Listings</h3><span class="see-all" onclick="switchSection('jobs')">View all →</span></div>
-        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Job Title</th><th>Company</th><th>Location</th><th>Type</th><th>Salary</th><th>Actions</th></tr></thead><tbody id="admin-job-list"></tbody></table></div>
+        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Job Title</th><th>Company</th><th>Location</th><th>Type</th><th>Salary</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admin-job-list"></tbody></table></div>
       </div>
     </div>
 
     <!-- JOBS SECTION -->
     <div id="section-jobs" class="dash-section hidden">
-      <div class="dash-panel"><div class="panel-header"><h3>All Job Listings</h3><a href="post-job.html" style="background:var(--indigo);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;">+ Add Job</a></div>
-        <div class="data-table-wrap"><table class="data-table"><thead><tr><th>Title</th><th>Company</th><th>Location</th><th>Type</th><th>Salary</th><th>Actions</th></tr></thead><tbody id="admin-job-list-2"></tbody></table></div>
+      <div class="dash-panel"><div class="panel-header"><h3>All Job Listings</h3><div style="display:flex;gap:8px;flex-wrap:wrap;"><select id="job-status-filter" onchange="renderJobsTable()" style="padding:7px 10px;border:1px solid var(--border);border-radius:8px;min-height:36px;"><option value="">All Statuses</option><option value="pending">Pending Approval</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="expired">Expired</option></select><a href="post-job.html" style="background:var(--indigo);color:white;padding:8px 16px;border-radius:8px;text-decoration:none;">+ Add Job</a></div></div>
+        <div id="job-approval-summary" style="display:flex;gap:10px;flex-wrap:wrap;padding:0 24px 16px;"></div>
+        <div class="data-table-wrap mobile-cards"><table class="data-table"><thead><tr><th>Title</th><th>Company</th><th>Location</th><th>Type</th><th>Salary</th><th>Posted</th><th>Status</th><th>Actions</th></tr></thead><tbody id="admin-job-list-2"></tbody></table></div>
       </div>
     </div>
 
@@ -726,7 +742,7 @@
     <!-- SETTINGS SECTION -->
     <div id="section-settings" class="dash-section hidden">
       <div class="dash-panel" style="padding:0;overflow:hidden;">
-        <div class="settings-tabs" style="display:flex;border-bottom:1px solid var(--border);padding:0 24px;gap:4px;">
+        <div class="settings-tabs" style="display:flex;flex-wrap:wrap;border-bottom:1px solid var(--border);padding:0 24px;gap:4px;">
           <button class="settings-tab-btn active" data-tab="general" onclick="switchSettingsTab('general')">General</button>
           <button class="settings-tab-btn" data-tab="security" onclick="switchSettingsTab('security')">Security</button>
           <button class="settings-tab-btn" data-tab="email" onclick="switchSettingsTab('email')">Email</button>
@@ -1047,14 +1063,127 @@
   }
   
   // ==================== JOBS MANAGEMENT ====================
-  function renderJobsTable() {
+  // ==================== JOB APPROVAL & EXPIRY LOGIC ====================
+  const JOB_EXPIRY_DAYS = 30;
+
+  function getJobAgeDays(job) {
+    // Prefer a real timestamp if available; never mutate id (would orphan linked applications)
+    if (typeof job.renewedAt === 'number') return Math.floor((Date.now() - job.renewedAt) / 86400000);
+    if (typeof job.id === 'number' && job.id > 1e12) {
+      return Math.floor((Date.now() - job.id) / 86400000);
+    }
+    const text = (job.posted || '').toLowerCase();
+    if (text.includes('just now') || text.includes('today')) return 0;
+    const m = text.match(/(\d+)\s*(day|week|month)/);
+    if (m) {
+      const n = parseInt(m[1], 10);
+      if (m[2] === 'day') return n;
+      if (m[2] === 'week') return n * 7;
+      if (m[2] === 'month') return n * 30;
+    }
+    return 0; // unknown format — assume fresh rather than wrongly expiring it
+  }
+  function isJobExpired(job) {
+    if (job.approvalStatus === 'rejected') return false; // rejected isn't "expired"
+    return getJobAgeDays(job) >= (job.expiryDays || JOB_EXPIRY_DAYS);
+  }
+  function getJobStatus(job) {
+    const approval = job.approvalStatus || 'pending';
+    if (approval === 'rejected') return 'rejected';
+    if (isJobExpired(job)) return 'expired';
+    return approval === 'approved' ? 'approved' : 'pending';
+  }
+  function jobStatusBadge(status) {
+    const map = {
+      pending:  ['badge-amber', '⏳ Pending Approval'],
+      approved: ['badge-green', '✅ Active'],
+      rejected: ['badge-rose', '❌ Rejected'],
+      expired:  ['badge-grey', '⌛ Expired'],
+    };
+    const [cls, label] = map[status] || ['badge-grey', status];
+    return `<span class="badge ${cls}">${label}</span>`;
+  }
+  function approveJob(id) {
     const jobs = getJobs();
+    const job = jobs.find(j => j.id === id);
+    if (!job) return;
+    job.approvalStatus = 'approved';
+    saveJobs(jobs);
+    logActivity('Admin', `Approved job listing "${job.title}"`);
+    showToast('Job approved and now live', 'success');
+    renderJobsTable();
+  }
+  function rejectJob(id) {
+    const jobs = getJobs();
+    const job = jobs.find(j => j.id === id);
+    if (!job) return;
+    if (!confirm(`Reject "${job.title}"? The employer will need to resubmit.`)) return;
+    job.approvalStatus = 'rejected';
+    saveJobs(jobs);
+    logActivity('Admin', `Rejected job listing "${job.title}"`);
+    showToast('Job rejected', 'info');
+    renderJobsTable();
+  }
+  function renewJob(id) {
+    const jobs = getJobs();
+    const job = jobs.find(j => j.id === id);
+    if (!job) return;
+    job.posted = 'Just now';
+    job.renewedAt = Date.now();
+    saveJobs(jobs);
+    logActivity('Admin', `Renewed job listing "${job.title}"`);
+    showToast('Job renewed for another 30 days', 'success');
+    renderJobsTable();
+  }
+
+  function renderJobsTable() {
+    const allJobs = getJobs();
+    const filter = document.getElementById('job-status-filter')?.value || '';
+    const jobs = filter ? allJobs.filter(j => getJobStatus(j) === filter) : allJobs;
+
+    const rowHtml = (job) => {
+      const status = getJobStatus(job);
+      const idx = allJobs.indexOf(job);
+      let actionBtns = `<button class="tbl-btn tbl-btn-edit" onclick="editJob(${idx})">Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteJob(${idx})">Delete</button>`;
+      if (status === 'pending') {
+        actionBtns = `<button class="tbl-btn" style="background:var(--emerald-light);color:#065f46;" onclick="approveJob(${job.id})"><i class="fas fa-check"></i> Approve</button><button class="tbl-btn tbl-btn-danger" onclick="rejectJob(${job.id})"><i class="fas fa-times"></i> Reject</button>`;
+      } else if (status === 'expired') {
+        actionBtns = `<button class="tbl-btn" style="background:var(--indigo-light);color:var(--indigo);" onclick="renewJob(${job.id})"><i class="fas fa-redo"></i> Renew</button>` + actionBtns;
+      }
+      return `<tr><td data-label="Title"><strong>${escapeHtml(job.title)}</strong></td><td data-label="Company">${escapeHtml(job.company)}</td><td data-label="Location">${escapeHtml(job.location)}</td><td data-label="Type"><span class="badge badge-blue">${escapeHtml(job.type)}</span></td><td data-label="Salary">RWF ${escapeHtml(job.salary)}</td><td data-label="Posted" style="font-size:.78rem;color:var(--muted);">${escapeHtml(job.posted || '—')}</td><td data-label="Status">${jobStatusBadge(status)}</td><td data-label="Actions">${actionBtns}</td></tr>`;
+    };
+
+    const html = jobs.map(rowHtml).join('') || '<tr><td colspan="8" style="text-align:center;padding:30px;">No jobs match this filter</td></tr>';
     const tbody = document.getElementById('admin-job-list');
     const tbody2 = document.getElementById('admin-job-list-2');
-    const html = jobs.map((job, idx) => `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.company)}</td><td>${escapeHtml(job.location)}</td><td><span class="badge badge-blue">${escapeHtml(job.type)}</span></td><td>RWF ${escapeHtml(job.salary)}</td><td><button class="tbl-btn tbl-btn-edit" onclick="editJob(${idx})">Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteJob(${idx})">Delete</button></td></tr>`).join('');
-    if (tbody) tbody.innerHTML = html;
+    if (tbody) {
+      // Overview table stays compact — no dedicated status filter, just the plain feed
+      tbody.innerHTML = allJobs.slice(0, 6).map(job => {
+        const status = getJobStatus(job);
+        const idx = allJobs.indexOf(job);
+        return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.company)}</td><td>${escapeHtml(job.location)}</td><td><span class="badge badge-blue">${escapeHtml(job.type)}</span></td><td>RWF ${escapeHtml(job.salary)}</td><td>${jobStatusBadge(status)}</td><td><button class="tbl-btn tbl-btn-edit" onclick="editJob(${idx})">Edit</button><button class="tbl-btn tbl-btn-danger" onclick="deleteJob(${idx})">Delete</button></td></tr>`;
+      }).join('');
+    }
     if (tbody2) tbody2.innerHTML = html;
-    document.getElementById('stat-jobs').textContent = jobs.length;
+    document.getElementById('stat-jobs').textContent = allJobs.length;
+
+    const summaryEl = document.getElementById('job-approval-summary');
+    if (summaryEl) {
+      const counts = { pending: 0, approved: 0, rejected: 0, expired: 0 };
+      allJobs.forEach(j => counts[getJobStatus(j)]++);
+      summaryEl.innerHTML = `
+        <span class="badge badge-amber" style="cursor:pointer;" onclick="document.getElementById('job-status-filter').value='pending';renderJobsTable();">⏳ ${counts.pending} pending</span>
+        <span class="badge badge-green" style="cursor:pointer;" onclick="document.getElementById('job-status-filter').value='approved';renderJobsTable();">✅ ${counts.approved} active</span>
+        <span class="badge badge-rose" style="cursor:pointer;" onclick="document.getElementById('job-status-filter').value='rejected';renderJobsTable();">❌ ${counts.rejected} rejected</span>
+        <span class="badge badge-grey" style="cursor:pointer;" onclick="document.getElementById('job-status-filter').value='expired';renderJobsTable();">⌛ ${counts.expired} expired</span>`;
+    }
+
+    const navBadge = document.getElementById('jobsPendingBadge');
+    if (navBadge) {
+      const pendingCount = allJobs.filter(j => getJobStatus(j) === 'pending').length;
+      if (pendingCount > 0) { navBadge.textContent = pendingCount; navBadge.style.display = 'inline-block'; }
+      else navBadge.style.display = 'none';
+    }
   }
   
   function editJob(index) {
@@ -1082,12 +1211,65 @@
     return registeredUsers;
   }
   
+  // ==================== SUSPICIOUS ACCOUNT DETECTION ====================
+  const DISPOSABLE_EMAIL_DOMAINS = ['mailinator.com', 'tempmail.com', '10minutemail.com', 'guerrillamail.com', 'yopmail.com', 'trashmail.com', 'fakeinbox.com'];
+
+  function normalizeEmailForDupeCheck(email) {
+    if (!email) return '';
+    const [local, domain] = email.toLowerCase().split('@');
+    if (!domain) return email.toLowerCase();
+    if (domain === 'gmail.com' || domain === 'googlemail.com') return local.split('+')[0].replace(/\./g, '') + '@gmail.com';
+    return local.split('+')[0] + '@' + domain;
+  }
+
+  function getFlaggedUsers() {
+    const users = getAllUsers();
+    const phoneCounts = {}, emailCounts = {};
+    users.forEach(u => {
+      if (u.phone) phoneCounts[u.phone] = (phoneCounts[u.phone] || 0) + 1;
+      const norm = normalizeEmailForDupeCheck(u.email);
+      if (norm) emailCounts[norm] = (emailCounts[norm] || 0) + 1;
+    });
+    const flagged = [];
+    users.forEach(u => {
+      const reasons = [];
+      if (u.phone && phoneCounts[u.phone] > 1) reasons.push('Phone number reused across multiple accounts');
+      const norm = normalizeEmailForDupeCheck(u.email);
+      if (norm && emailCounts[norm] > 1) reasons.push('Email pattern matches another registered account');
+      const domain = (u.email || '').split('@')[1]?.toLowerCase();
+      if (domain && DISPOSABLE_EMAIL_DOMAINS.includes(domain)) reasons.push('Registered with a disposable/temporary email domain');
+      if (reasons.length) flagged.push({ user: u, reasons });
+    });
+    return flagged;
+  }
+
+  function renderSecurityAlerts() {
+    const flagged = getFlaggedUsers();
+    const panel = document.getElementById('security-alerts-panel');
+    const list = document.getElementById('security-alerts-list');
+    if (!panel || !list) return;
+    if (flagged.length === 0) { panel.classList.add('hidden'); return; }
+    panel.classList.remove('hidden');
+    list.innerHTML = flagged.slice(0, 5).map(f => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid #fde68a;gap:12px;flex-wrap:wrap;">
+        <div>
+          <strong style="font-size:.85rem;color:#78350f;">${escapeHtml(f.user.name)}</strong>
+          <span style="color:#92400e;font-size:.78rem;"> (${escapeHtml(f.user.email)})</span>
+          <p style="font-size:.76rem;color:#92400e;margin-top:2px;">${f.reasons.map(escapeHtml).join(' • ')}</p>
+        </div>
+        <button class="tbl-btn" style="background:#fde68a;color:#78350f;" onclick="switchSection('users');document.getElementById('user-search')?.focus();">Review</button>
+      </div>`).join('');
+    if (flagged.length > 5) list.innerHTML += `<p style="font-size:.78rem;color:#92400e;padding-top:10px;">+${flagged.length - 5} more flagged accounts — see Users for details</p>`;
+  }
+
   function buildUserRow(user, index) {
     const roleClass = user.role === 'Job Seeker' ? 'role-badge-seeker' : (user.role === 'Employer' ? 'role-badge-employer' : 'role-badge-admin');
     const roleLabel = user.role === 'Job Seeker' ? '👤 Job Seeker' : (user.role === 'Employer' ? '🏢 Employer' : '👑 Admin');
+    const flagMatch = getFlaggedUsers().find(f => f.user.email === user.email);
+    const flagIcon = flagMatch ? ` <i class="fas fa-flag" style="color:#d97706;font-size:.75rem;" title="${escapeHtml(flagMatch.reasons.join(' • '))}"></i>` : '';
     return `<tr>
       <td data-label="#"><input type="checkbox" class="user-row-check" value="${escapeHtml(user.email)}" onchange="updateBulkBar()" aria-label="Select ${escapeHtml(user.name)}"></td>
-      <td data-label="Name"><strong>${escapeHtml(user.name)}</strong></td>
+      <td data-label="Name"><strong>${escapeHtml(user.name)}</strong>${flagIcon}</td>
       <td data-label="Email">${escapeHtml(user.email)}</td>
       <td data-label="Role"><span class="badge ${roleClass}">${roleLabel}</span></td>
       <td data-label="Phone">${escapeHtml(user.phone || '—')}</td>
@@ -1105,6 +1287,7 @@
     if (users.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:40px;">No users registered yet</td></tr>'; return; }
     tbody.innerHTML = users.map((user, index) => buildUserRow(user, index)).join('');
     updateBulkBar();
+    renderSecurityAlerts();
   }
   
   function filterUsers(query) {
@@ -1267,6 +1450,7 @@
     renderJobsTable();
     renderUsersTable();
     renderSubscribers();
+    renderSecurityAlerts();
     logActivity('System', 'Admin dashboard loaded');
     renderLogs();
     const canvas = document.getElementById('growthChart');
@@ -1312,6 +1496,10 @@
   window.deleteUser = deleteUser;
   window.filterUsers = filterUsers;
   window.clearLogs = clearLogs;
+  window.approveJob = approveJob;
+  window.rejectJob = rejectJob;
+  window.renewJob = renewJob;
+  window.renderSecurityAlerts = renderSecurityAlerts;
   window.toggleSelectAllUsers = toggleSelectAllUsers;
   window.updateBulkBar = updateBulkBar;
   window.bulkDeleteUsers = bulkDeleteUsers;

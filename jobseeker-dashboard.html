@@ -370,6 +370,7 @@
       padding: 36px 40px;
       background: var(--bg);
       min-width: 0;
+      max-width: 1680px;
     }
 
     .page-header {
@@ -605,9 +606,10 @@
       border-radius: 24px;
       max-width: 520px;
       width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
       box-shadow: 0 24px 80px rgba(0,0,0,.25);
       animation: fadeSlideUp .3s cubic-bezier(.34,1.56,.64,1) both;
-      overflow: hidden;
     }
     .modal-header {
       padding: 24px 28px 20px;
@@ -725,7 +727,6 @@
     @media (max-width: 768px) {
       .main-menu { display: none; }
       .nav-hamburger { display: flex !important; }
-      .dashboard-sidebar { display: none; }
       .dashboard-main { padding: 20px; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -982,6 +983,15 @@
         </div>
       </div>
 
+      <!-- Recommended jobs -->
+      <div class="section-card" style="animation-delay:.34s">
+        <div class="section-header">
+          <h2><i class="fas fa-magic"></i> Recommended For You</h2>
+          <span style="font-size:.72rem;color:var(--muted);">Based on jobs you've saved & applied to</span>
+        </div>
+        <div id="recommendationsList" style="padding:20px 24px;"></div>
+      </div>
+
       <!-- Applications table with admin messages -->
       <div class="section-card" style="animation-delay:.38s">
         <div class="section-header">
@@ -1008,6 +1018,16 @@
       <div class="page-header">
         <h1>My Profile</h1>
         <p>Manage your personal information and skills</p>
+      </div>
+      <div class="section-card" style="animation:fadeSlideUp .5s both;padding:20px 24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <strong style="font-size:.88rem;"><i class="fas fa-chart-line" style="color:var(--indigo);"></i> Profile Completeness</strong>
+          <span id="profile-completeness-pct" style="font-size:.85rem;font-weight:800;color:var(--indigo);">0%</span>
+        </div>
+        <div class="job-progress-bar" style="height:8px;border-radius:8px;background:var(--bg-2,#f1f5f9);overflow:hidden;">
+          <div id="profile-completeness-fill" style="height:100%;border-radius:8px;background:linear-gradient(90deg,var(--indigo),var(--emerald));width:0%;transition:width .5s ease;"></div>
+        </div>
+        <p id="profile-completeness-hint" style="font-size:.76rem;color:var(--muted);margin-top:8px;"></p>
       </div>
       <div class="section-card" style="animation:fadeSlideUp .5s both">
         <div class="section-header">
@@ -1154,10 +1174,50 @@
     const map = {
       'New': ['status-new', '📩 New'], 'Pending': ['status-pending', '⏳ Pending'],
       'Reviewed': ['status-reviewed', '👁 Reviewed'], 'Shortlisted': ['status-shortlisted', '⭐ Shortlisted'],
-      'approved': ['status-shortlisted', '✅ Approved'], 'rejected': ['status-rejected', '❌ Rejected']
+      'approved': ['status-shortlisted', '✅ Approved'], 'rejected': ['status-rejected', '❌ Rejected'],
+      'Withdrawn': ['status-rejected', '🚫 Auto-Withdrawn']
     };
     const [cls, label] = map[status] || ['status-pending', status];
     return `<span class="status-badge ${cls}">${label}</span>`;
+  }
+
+  // ==================== AUTO-WITHDRAW (job deleted/expired) ====================
+  function getJobAgeDays(job) {
+    if (typeof job.renewedAt === 'number') return Math.floor((Date.now() - job.renewedAt) / 86400000);
+    if (typeof job.id === 'number' && job.id > 1e12) return Math.floor((Date.now() - job.id) / 86400000);
+    const text = (job.posted || '').toLowerCase();
+    if (text.includes('just now') || text.includes('today')) return 0;
+    const m = text.match(/(\d+)\s*(day|week|month)/);
+    if (m) { const n = parseInt(m[1], 10); return m[2] === 'day' ? n : (m[2] === 'week' ? n * 7 : n * 30); }
+    return 0;
+  }
+  function autoWithdrawStaleApplications(apps) {
+    const allJobs = getAllJobsList();
+    const allApps = JSON.parse(localStorage.getItem('jobApplications')) || [];
+    let changed = false;
+    let withdrawnCount = 0;
+    const terminal = ['Rejected', 'rejected', 'Withdrawn', 'approved', 'Shortlisted'];
+    apps.forEach(app => {
+      if (terminal.includes(app.status)) return;
+      const job = allJobs.find(j => j.id === app.jobId);
+      const jobGone = !job;
+      const jobExpired = job && getJobAgeDays(job) >= (job.expiryDays || 30);
+      if (jobGone || jobExpired) {
+        const real = allApps.find(a => a.id === app.id);
+        if (real) {
+          real.status = 'Withdrawn';
+          real.adminMessage = jobGone ? 'Automatically withdrawn: this job listing no longer exists.' : 'Automatically withdrawn: this job listing has expired.';
+          app.status = real.status;
+          app.adminMessage = real.adminMessage;
+          changed = true;
+          withdrawnCount++;
+        }
+      }
+    });
+    if (changed) {
+      localStorage.setItem('jobApplications', JSON.stringify(allApps));
+      showToast(`${withdrawnCount} application(s) auto-withdrawn — the job listing closed`, 'info');
+    }
   }
 
   function loadApplications() {
@@ -1165,6 +1225,7 @@
     if (!user) return;
     const allApps = JSON.parse(localStorage.getItem('jobApplications')) || [];
     myApplications = allApps.filter(a => a.seekerEmail === user.email);
+    autoWithdrawStaleApplications(myApplications);
     const allMessages = JSON.parse(localStorage.getItem('userMessages')) || [];
     const myMessages = allMessages.filter(m => m.userId === user.email && m.type === 'application_update');
 
@@ -1221,6 +1282,61 @@
         </tr>
       `;
     }).join('');
+    renderRecommendations();
+  }
+
+  // ==================== JOB RECOMMENDATIONS ====================
+  const RECO_STOPWORDS = new Set(['this','that','with','have','from','your','about','looking','role','join','team','been','will','they','their','which','would','also','into','were','when','what','make','more','some','than','then','them','very','just','full','time']);
+  function extractKeywords(text) {
+    return (text || '').toLowerCase().match(/[a-z]{4,}/g)?.filter(w => !RECO_STOPWORDS.has(w)) || [];
+  }
+  function renderRecommendations() {
+    const container = document.getElementById('recommendationsList');
+    if (!container) return;
+    const allJobs = getAllJobsList();
+    const savedIds = getSavedJobIds();
+    const appliedIds = myApplications.map(a => a.jobId);
+    const interestJobs = allJobs.filter(j => savedIds.includes(j.id) || appliedIds.includes(j.id));
+
+    if (allJobs.length === 0) {
+      container.innerHTML = `<div class="empty-state" style="padding:20px;"><p style="font-size:.82rem;">No jobs available yet — check back soon.</p></div>`;
+      return;
+    }
+    if (interestJobs.length === 0) {
+      container.innerHTML = `<div class="empty-state" style="padding:20px;"><p style="font-size:.82rem;">Apply or save a few jobs and we'll recommend similar ones here.</p></div>`;
+      return;
+    }
+
+    // Build an interest profile from titles + industries of saved/applied jobs
+    const profileWords = {};
+    interestJobs.forEach(j => {
+      extractKeywords(`${j.title} ${j.industry || ''} ${j.type || ''}`).forEach(w => { profileWords[w] = (profileWords[w] || 0) + 1; });
+    });
+
+    const excludeIds = new Set([...savedIds, ...appliedIds]);
+    const scored = allJobs
+      .filter(j => !excludeIds.has(j.id))
+      .map(job => {
+        const words = extractKeywords(`${job.title} ${job.industry || ''} ${job.type || ''}`);
+        let score = 0;
+        words.forEach(w => { if (profileWords[w]) score += profileWords[w]; });
+        return { job, score };
+      })
+      .filter(r => r.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 3);
+
+    if (scored.length === 0) {
+      container.innerHTML = `<div class="empty-state" style="padding:20px;"><p style="font-size:.82rem;">No close matches yet — browse <a href="home.html" style="color:var(--indigo);font-weight:700;">all jobs</a> to discover more.</p></div>`;
+      return;
+    }
+
+    container.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;">${scored.map(({ job }) => `
+      <div style="border:1px solid var(--border);border-radius:14px;padding:16px;background:white;">
+        <h3 style="font-family:'Sora',sans-serif;font-size:.92rem;font-weight:800;margin-bottom:3px;">${escapeHtml(job.title || 'Untitled Role')}</h3>
+        <p style="font-size:.78rem;color:var(--muted);font-weight:600;margin-bottom:10px;">${escapeHtml(job.company || 'Company')} · ${escapeHtml(job.location || 'Kigali')}</p>
+        <a href="home.html" class="btn-primary" style="display:block;text-align:center;font-size:.78rem;padding:8px;min-height:38px;line-height:22px;">View Job</a>
+      </div>`).join('')}</div>`;
   }
 
   function viewApplicationDetails(appId) {
@@ -1335,6 +1451,25 @@
     if (user.bio) document.getElementById('profile-bio-display').textContent = user.bio;
     const memberSince = document.getElementById('member-since');
     if (memberSince) memberSince.textContent = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+
+    // Profile completeness score (based on fields the user can currently edit)
+    const fieldChecks = [
+      { label: 'name', ok: !!user.name },
+      { label: 'phone number', ok: !!user.phone },
+      { label: 'location', ok: !!user.location },
+      { label: 'bio', ok: !!user.bio },
+    ];
+    const completed = fieldChecks.filter(f => f.ok).length;
+    const pct = Math.round((completed / fieldChecks.length) * 100);
+    const pctEl = document.getElementById('profile-completeness-pct');
+    const fillEl = document.getElementById('profile-completeness-fill');
+    const hintEl = document.getElementById('profile-completeness-hint');
+    if (pctEl) pctEl.textContent = `${pct}%`;
+    if (fillEl) fillEl.style.width = `${pct}%`;
+    if (hintEl) {
+      const missing = fieldChecks.filter(f => !f.ok).map(f => f.label);
+      hintEl.textContent = missing.length ? `Add your ${missing.slice(0, 3).join(', ')} to reach 100% and stand out to employers.` : "Your profile is complete — nice work!";
+    }
   }
 
   function editProfileField() {

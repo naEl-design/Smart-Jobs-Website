@@ -147,6 +147,7 @@
     
     /* Main Content */
     .main-content { flex: 1; padding: 32px 40px; max-width: calc(100% - 280px); overflow-x: auto; }
+    @media (min-width: 1900px) { .main-content { max-width: min(1680px, calc(100% - 280px)); } }
     
     /* Stats Grid */
     .stats-grid {
@@ -437,11 +438,8 @@
       .nav-hamburger { display: flex !important; }
     }
     @media (max-width: 768px) {
-      .sidebar { display: none; }
       .main-content { max-width: 100%; padding: 20px; }
       .stats-grid { grid-template-columns: 1fr 1fr; }
-      .kanban-board { flex-direction: column; }
-      .kanban-column { min-width: 100%; }
       .nav-content { padding: 0 16px; }
       .top-nav { height: 60px; }
       .jobs-table { min-width: 560px; }
@@ -554,6 +552,15 @@
   .stats-grid { grid-template-columns: 1fr !important; }
   .main-content { padding: 12px !important; }
 }
+@media (max-width: 360px) {
+  .nav-content { padding: 0 10px !important; }
+  .sj-logo-pill { font-size: 0.85rem; padding: 5px 10px; }
+  .stat-card { padding: 12px !important; gap: 10px !important; }
+  .stat-icon { width: 40px !important; height: 40px !important; font-size: .95rem !important; }
+  .stat-card h3 { font-size: 1.3rem !important; }
+  .kanban-column { min-width: 240px !important; }
+  #notifBell { width: 36px !important; height: 36px !important; }
+}
 </style>
 </head>
 <body>
@@ -625,12 +632,20 @@
         <p style="color:var(--muted);">Track your recruitment metrics and manage your hiring pipeline</p>
       </div>
       
-      <div id="profileBanner" class="hidden" style="display:none;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(90deg,var(--indigo-light),rgba(237,233,255,.3));border:1px solid var(--border-focus,#c7d2fe);border-radius:16px;padding:18px 22px;margin-bottom:24px;">
+      <div id="profileBanner" class="hidden" style="display:none;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(90deg,var(--indigo-light),rgba(237,233,255,.3));border:1px solid var(--border-focus,#c7d2fe);border-radius:16px;padding:18px 22px;margin-bottom:24px;">
         <div style="display:flex;align-items:center;gap:14px;">
           <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8b7ef5,var(--indigo));display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;"><i class="fas fa-building"></i></div>
           <div><strong style="font-size:.9rem;">Complete your company profile</strong><p style="color:var(--muted);font-size:.8rem;margin-top:2px;">A complete profile builds trust with job seekers and improves applications.</p></div>
         </div>
         <button class="nav-btn-primary" style="font-size:.78rem;padding:9px 18px;white-space:nowrap;" onclick="switchTab('profile')">Complete Profile</button>
+      </div>
+
+      <div id="expiryBanner" class="hidden" style="display:none;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;background:linear-gradient(90deg,var(--amber-light,#fef3c7),rgba(254,243,199,.3));border:1px solid #fde68a;border-radius:16px;padding:18px 22px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#fbbf24,#d97706);display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;"><i class="fas fa-hourglass-half"></i></div>
+          <div><strong style="font-size:.9rem;">Job listings need attention</strong><p id="expiryBannerText" style="color:#92400e;font-size:.8rem;margin-top:2px;"></p></div>
+        </div>
+        <button class="nav-btn-primary" style="font-size:.78rem;padding:9px 18px;white-space:nowrap;" onclick="switchTab('jobs')">Review Jobs</button>
       </div>
 
       <div class="stats-grid">
@@ -680,9 +695,12 @@
     <!-- Applications Tab -->
     <div id="tab-applications" class="tab-content" style="display:none;">
       <div class="section-card">
-        <div class="section-header">
+        <div class="section-header" style="flex-wrap:wrap;gap:10px;">
           <h2><i class="fas fa-file-alt"></i> All Applications</h2>
-          <div><input type="text" id="searchApps" placeholder="Search by name or job..." oninput="filterApplications()" style="padding:8px 14px; border:1px solid var(--border); border-radius:10px; width:220px;"></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input type="text" id="searchApps" placeholder="Search by name or job..." oninput="filterApplications()" style="padding:8px 14px; border:1px solid var(--border); border-radius:10px; width:220px;">
+            <button class="tbl-btn" style="background:var(--amber-light,#fef3c7);color:#92400e;min-height:38px;" onclick="runAutoScreen()" title="Auto-reject applications with no CV attached"><i class="fas fa-robot"></i> Run Auto-Screen</button>
+          </div>
         </div>
         <div id="allAppsList"></div>
       </div>
@@ -845,6 +863,27 @@
     renderApplicationsList(filtered);
   }
 
+  // ==================== CANDIDATE MATCH SCORING ====================
+  function computeMatchScore(app, job) {
+    if (!job) return null;
+    const jobText = `${job.title || ''} ${job.desc || ''} ${job.requirements || ''} ${job.industry || ''}`.toLowerCase();
+    const jobWords = new Set((jobText.match(/[a-z]{4,}/g) || []).filter(w => !STOPWORDS.has(w)));
+    const appText = `${app.message || ''}`.toLowerCase();
+    const appWords = new Set((appText.match(/[a-z]{4,}/g) || []).filter(w => !STOPWORDS.has(w)));
+    if (jobWords.size === 0 || appWords.size === 0) return null;
+    let overlap = 0;
+    appWords.forEach(w => { if (jobWords.has(w)) overlap++; });
+    const score = Math.round((overlap / Math.min(jobWords.size, 10)) * 100);
+    return Math.max(5, Math.min(100, score || 5));
+  }
+  const STOPWORDS = new Set(['this','that','with','have','from','your','about','looking','role','join','team','been','will','they','their','which','would','also','into','were','when','what','make','more','some','than','then','them','very','just']);
+  function matchScoreBadge(score) {
+    if (score === null) return '';
+    const color = score >= 70 ? '#065f46' : (score >= 40 ? '#92400e' : '#64748b');
+    const bg = score >= 70 ? 'var(--emerald-light)' : (score >= 40 ? 'var(--amber-light,#fef3c7)' : '#f1f5f9');
+    return `<span class="badge" style="background:${bg};color:${color};" title="Estimated keyword match between cover message and job description"><i class="fas fa-bullseye"></i> ${score}% match</span>`;
+  }
+
   function renderApplicationsList(apps) {
     const container = document.getElementById('allAppsList');
     if (!container) return;
@@ -852,11 +891,33 @@
       container.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i><p>No applications found</p></div>';
       return;
     }
+    const allJobs = getJobs();
     container.innerHTML = apps.slice().reverse().map(app => {
       const statusClass = { 'New': 'badge-blue', 'Reviewed': 'badge-yellow', 'Shortlisted': 'badge-green', 'Rejected': 'badge-red', 'approved': 'badge-green', 'rejected': 'badge-red' }[app.status] || 'badge-blue';
       const hasCV = app.cvData && app.cvData !== '';
-      return `<div class="application-item"><div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;"><div style="flex:1;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;"><div style="width:45px; height:45px; border-radius:50%; background:linear-gradient(135deg,var(--indigo),#6d51f7); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:1.1rem;">${(app.seekerName || '?')[0].toUpperCase()}</div><div><strong style="font-size:1.05rem;">${escapeHtml(app.seekerName)}</strong><p style="font-size:0.75rem; color:var(--muted);">${escapeHtml(app.seekerEmail)}</p></div></div><p><strong>Applied for:</strong> <span style="color:var(--indigo); font-weight:700;">${escapeHtml(app.jobTitle)}</span></p><p style="font-size:0.8rem; color:var(--muted); margin-top:8px;"><i class="fas fa-calendar"></i> ${app.date} &nbsp;|&nbsp; <i class="fas fa-phone"></i> ${escapeHtml(app.seekerPhone)} &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> ${escapeHtml(app.seekerPlace)}</p>${app.message && app.message !== 'No cover message provided.' ? `<p style="font-size:0.85rem; background:#f1f5f9; padding:12px; border-radius:10px; margin-top:12px;"><strong>📝 Cover Message:</strong><br>${escapeHtml(app.message)}</p>` : ''}${hasCV ? `<p style="margin-top:10px;"><button class="cv-btn" onclick="viewCV(${app.id})"><i class="fas fa-file-pdf"></i> View CV</button></p>` : ''}</div><div><select onchange="updateApplicationStatus(${app.id}, this.value)" style="padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); background:white; font-size:0.8rem; font-weight:600;"><option value="New" ${app.status === 'New' ? 'selected' : ''}>📩 New</option><option value="Reviewed" ${app.status === 'Reviewed' ? 'selected' : ''}>👁️ Reviewed</option><option value="Shortlisted" ${app.status === 'Shortlisted' ? 'selected' : ''}>⭐ Shortlisted</option><option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>❌ Rejected</option><option value="approved" ${app.status === 'approved' ? 'selected' : ''}>✅ Approved</option><option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>❌ Rejected</option></select></div></div></div>`;
+      const job = allJobs.find(j => j.id === app.jobId);
+      const matchScore = computeMatchScore(app, job);
+      return `<div class="application-item"><div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px;"><div style="flex:1;"><div style="display:flex; align-items:center; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><div style="width:45px; height:45px; border-radius:50%; background:linear-gradient(135deg,var(--indigo),#6d51f7); display:flex; align-items:center; justify-content:center; color:white; font-weight:800; font-size:1.1rem;">${(app.seekerName || '?')[0].toUpperCase()}</div><div><strong style="font-size:1.05rem;">${escapeHtml(app.seekerName)}</strong><p style="font-size:0.75rem; color:var(--muted);">${escapeHtml(app.seekerEmail)}</p></div>${matchScoreBadge(matchScore)}${!hasCV ? `<span class="badge badge-red" title="No CV attached — flagged by auto-screen"><i class="fas fa-exclamation-triangle"></i> No CV</span>` : ''}</div><p><strong>Applied for:</strong> <span style="color:var(--indigo); font-weight:700;">${escapeHtml(app.jobTitle)}</span></p><p style="font-size:0.8rem; color:var(--muted); margin-top:8px;"><i class="fas fa-calendar"></i> ${app.date} &nbsp;|&nbsp; <i class="fas fa-phone"></i> ${escapeHtml(app.seekerPhone)} &nbsp;|&nbsp; <i class="fas fa-map-marker-alt"></i> ${escapeHtml(app.seekerPlace)}</p>${app.message && app.message !== 'No cover message provided.' ? `<p style="font-size:0.85rem; background:#f1f5f9; padding:12px; border-radius:10px; margin-top:12px;"><strong>📝 Cover Message:</strong><br>${escapeHtml(app.message)}</p>` : ''}${hasCV ? `<p style="margin-top:10px;"><button class="cv-btn" onclick="viewCV(${app.id})"><i class="fas fa-file-pdf"></i> View CV</button></p>` : ''}</div><div><select onchange="updateApplicationStatus(${app.id}, this.value)" style="padding:8px 12px; border-radius:8px; border:1.5px solid var(--border); background:white; font-size:0.8rem; font-weight:600;"><option value="New" ${app.status === 'New' ? 'selected' : ''}>📩 New</option><option value="Reviewed" ${app.status === 'Reviewed' ? 'selected' : ''}>👁️ Reviewed</option><option value="Shortlisted" ${app.status === 'Shortlisted' ? 'selected' : ''}>⭐ Shortlisted</option><option value="Rejected" ${app.status === 'Rejected' ? 'selected' : ''}>❌ Rejected</option><option value="approved" ${app.status === 'approved' ? 'selected' : ''}>✅ Approved</option><option value="rejected" ${app.status === 'rejected' ? 'selected' : ''}>❌ Rejected</option></select></div></div></div>`;
     }).join('');
+  }
+
+  function runAutoScreen() {
+    const user = getUser();
+    if (!user) return;
+    const allApps = getApplications();
+    const myApps = allApps.filter(app => app.employerEmail === user.email);
+    const candidates = myApps.filter(app => (!app.cvData || app.cvData === '') && !['Rejected', 'rejected', 'Shortlisted', 'approved'].includes(app.status));
+    if (candidates.length === 0) {
+      showToast('No applications need screening — all have CVs attached or are already reviewed.', 'success');
+      return;
+    }
+    if (!confirm(`Auto-Screen will reject ${candidates.length} application(s) that have no CV attached. This can be undone manually per applicant. Continue?`)) return;
+    const ids = new Set(candidates.map(c => c.id));
+    const updated = allApps.map(app => ids.has(app.id) ? { ...app, status: 'Rejected', adminMessage: 'Auto-rejected by employer screening: no CV attached.' } : app);
+    localStorage.setItem('jobApplications', JSON.stringify(updated));
+    showToast(`${candidates.length} application(s) auto-rejected for missing a CV`, 'success');
+    filterApplications();
+    loadDashboard();
   }
 
   // Save company profile
@@ -921,11 +982,50 @@
     ];
     const board = document.getElementById('kanbanBoard');
     if (!board) return;
+    const allJobs = getJobs();
     board.innerHTML = stages.map(stage => {
       const stageApps = myApps.filter(app => app.status === stage.id);
-      return `<div class="kanban-column" style="animation-delay:0.1s;" ondragover="onDragOver(event)" ondrop="onDrop(event, '${stage.id}')"><div class="kanban-header"><h4>${stage.name}</h4><span class="kanban-count">${stageApps.length}</span></div><div class="kanban-cards" id="kanban-${stage.id}">${stageApps.map(app => `<div class="kanban-card" draggable="true" ondragstart="onDragStart(event, ${app.id}, '${app.status}')" ondragend="onDragEnd(event)"><div class="kanban-card-name">${escapeHtml(app.seekerName)}</div><div class="kanban-card-job">${escapeHtml(app.jobTitle)}</div><div class="kanban-card-details"><span><i class="fas fa-calendar"></i> ${app.date}</span>${app.cvData ? `<span><i class="fas fa-file-pdf"></i> CV</span>` : ''}</div></div>`).join('')}</div></div>`;
+      return `<div class="kanban-column" style="animation-delay:0.1s;" ondragover="onDragOver(event)" ondrop="onDrop(event, '${stage.id}')"><div class="kanban-header"><h4>${stage.name}</h4><span class="kanban-count">${stageApps.length}</span></div><div class="kanban-cards" id="kanban-${stage.id}">${stageApps.map(app => { const job = allJobs.find(j => j.id === app.jobId); const score = computeMatchScore(app, job); return `<div class="kanban-card" draggable="true" ondragstart="onDragStart(event, ${app.id}, '${app.status}')" ondragend="onDragEnd(event)"><div class="kanban-card-name">${escapeHtml(app.seekerName)}</div><div class="kanban-card-job">${escapeHtml(app.jobTitle)}</div><div class="kanban-card-details"><span><i class="fas fa-calendar"></i> ${app.date}</span>${app.cvData ? `<span><i class="fas fa-file-pdf"></i> CV</span>` : `<span style="color:var(--rose);"><i class="fas fa-exclamation-triangle"></i> No CV</span>`}${score !== null ? `<span><i class="fas fa-bullseye"></i> ${score}%</span>` : ''}</div></div>`; }).join('')}</div></div>`;
     }).join('');
   }
+
+  // ==================== JOB EXPIRY LOGIC ====================
+  const JOB_EXPIRY_DAYS = 30;
+  const JOB_EXPIRY_WARNING_DAYS = 23; // "expiring soon" once within 7 days of expiry
+
+  function getJobAgeDays(job) {
+    if (typeof job.renewedAt === 'number') return Math.floor((Date.now() - job.renewedAt) / 86400000);
+    if (typeof job.id === 'number' && job.id > 1e12) return Math.floor((Date.now() - job.id) / 86400000);
+    const text = (job.posted || '').toLowerCase();
+    if (text.includes('just now') || text.includes('today')) return 0;
+    const m = text.match(/(\d+)\s*(day|week|month)/);
+    if (m) { const n = parseInt(m[1], 10); return m[2] === 'day' ? n : (m[2] === 'week' ? n * 7 : n * 30); }
+    return 0;
+  }
+  function getJobExpiryInfo(job) {
+    const age = getJobAgeDays(job);
+    const limit = job.expiryDays || JOB_EXPIRY_DAYS;
+    if (age >= limit) return { state: 'expired', daysLeft: 0 };
+    if (age >= JOB_EXPIRY_WARNING_DAYS) return { state: 'expiring', daysLeft: limit - age };
+    return { state: 'active', daysLeft: limit - age };
+  }
+  function jobStatusCell(job) {
+    const info = getJobExpiryInfo(job);
+    if (info.state === 'expired') return `<span class="job-status" style="background:#f1f5f9;color:#475569;">⌛ Expired</span> <button class="tbl-btn" style="background:var(--indigo-light);color:var(--indigo);margin-left:4px;" onclick="renewJobListing(${job.id})"><i class="fas fa-redo"></i> Renew</button>`;
+    if (info.state === 'expiring') return `<span class="job-status" style="background:var(--amber-light,#fef3c7);color:#92400e;">⏰ Expires in ${info.daysLeft}d</span>`;
+    return `<span class="job-status status-active">● Active</span>`;
+  }
+  function renewJobListing(id) {
+    const jobs = getJobs();
+    const job = jobs.find(j => j.id === id);
+    if (!job) return;
+    job.posted = 'Just now';
+    job.renewedAt = Date.now();
+    saveJobs(jobs);
+    showToast('Job renewed — listing is live for another 30 days', 'success');
+    loadDashboard();
+  }
+  window.renewJobListing = renewJobListing;
 
   function loadDashboard() {
     function buildAppsProgressCell(count, target = 15) {
@@ -971,12 +1071,26 @@
     
     const jobsTbody = document.getElementById('recentJobsList');
     if (jobsTbody) {
-      jobsTbody.innerHTML = myJobs.slice(0, 5).map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td><i class="fas fa-map-marker-alt"></i> ${escapeHtml(job.location || 'Kigali')}</td><td>${job.posted || 'Recently'}</td><td>${buildAppsProgressCell(jobApps.length)}</td><td><span class="job-status status-active">● Active</span></td><td>${job.views || 0} views</td></tr>`; }).join('') || '<tr><td colspan="6" style="text-align:center; padding:40px;">No jobs posted yet. <a href="post-job.html">Post your first job</a></td></tr>';
+      jobsTbody.innerHTML = myJobs.slice(0, 5).map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td><i class="fas fa-map-marker-alt"></i> ${escapeHtml(job.location || 'Kigali')}</td><td>${job.posted || 'Recently'}</td><td>${buildAppsProgressCell(jobApps.length)}</td><td>${jobStatusCell(job)}</td><td>${job.views || 0} views</td></tr>`; }).join('') || '<tr><td colspan="6" style="text-align:center; padding:40px;">No jobs posted yet. <a href="post-job.html">Post your first job</a></td></tr>';
     }
     
     const allJobsTbody = document.getElementById('allJobsList');
     if (allJobsTbody) {
-      allJobsTbody.innerHTML = myJobs.map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.location || 'Kigali')}</td><td>${job.type || 'Full-time'}</td><td>RWF ${job.salary || 'N/A'}</td><td>${job.posted || 'Recently'}</td><td>${buildAppsProgressCell(jobApps.length)}</td><td>${job.views || 0}</td><td><span class="job-status status-active">Active</span></td><td><button class="nav-btn-primary" style="font-size:0.7rem; padding:4px 12px;" onclick="window.location.href='post-job.html'">Edit</button></td></tr>`; }).join('') || '<tr><td colspan="9" style="text-align:center; padding:40px;">No jobs posted yet.</td></tr>';
+      allJobsTbody.innerHTML = myJobs.map(job => { const jobApps = myApps.filter(app => app.jobId === job.id); return `<tr><td><strong>${escapeHtml(job.title)}</strong></td><td>${escapeHtml(job.location || 'Kigali')}</td><td>${job.type || 'Full-time'}</td><td>RWF ${job.salary || 'N/A'}</td><td>${job.posted || 'Recently'}</td><td>${buildAppsProgressCell(jobApps.length)}</td><td>${job.views || 0}</td><td>${jobStatusCell(job)}</td><td><button class="nav-btn-primary" style="font-size:0.7rem; padding:4px 12px;" onclick="window.location.href='post-job.html'">Edit</button></td></tr>`; }).join('') || '<tr><td colspan="9" style="text-align:center; padding:40px;">No jobs posted yet.</td></tr>';
+    }
+
+    // Expiry reminder banner
+    const expiryBanner = document.getElementById('expiryBanner');
+    if (expiryBanner) {
+      const needsAttention = myJobs.filter(j => { const s = getJobExpiryInfo(j).state; return s === 'expiring' || s === 'expired'; });
+      if (needsAttention.length > 0) {
+        const expiredN = needsAttention.filter(j => getJobExpiryInfo(j).state === 'expired').length;
+        const expiringN = needsAttention.length - expiredN;
+        expiryBanner.style.display = 'flex';
+        expiryBanner.querySelector('#expiryBannerText').textContent = `${expiredN ? `${expiredN} job listing(s) have expired. ` : ''}${expiringN ? `${expiringN} listing(s) are expiring within a week.` : ''}`;
+      } else {
+        expiryBanner.style.display = 'none';
+      }
     }
     
     renderApplicationsList(myApps);
@@ -989,6 +1103,7 @@
   window.closeCVModal = closeCVModal;
   window.switchTab = switchTab;
   window.filterApplications = filterApplications;
+  window.runAutoScreen = runAutoScreen;
   window.saveCompanyProfile = saveCompanyProfile;
   window.exportAnalytics = exportAnalytics;
   window.onDragStart = onDragStart;
